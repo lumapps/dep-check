@@ -23,7 +23,7 @@ Cons:
 
 #### MIT License
 
-Non copyleft license very permissive, allows almost everything under no conditions. It doesn't provides any grant of patent rights though.
+Non copyleft license very permissive, allows almost everything under no conditions. It doesn't provide any grant of patent rights though.
 
 Pros:
   - Compatible with GNU GPL
@@ -37,12 +37,12 @@ Cons:
 Copyleft license, meaning that any modification must be released under the same license when distributed. Allows commercial and private use, modification and distribution, changes must be stated and documented. It also provides a grant of patent rights. Source code must be made available when distributed.
 
 Pros:
-  - The most popular and known by developpers
+  - The most popular and known by developers
   - Ensure the program improvement over time
 
 Cons:
   - "Contaminating" license
-  - Can talk people out of using the tool in companies, because of too much constraints
+  - Can talk people out of using the tool in companies, because of too many constraints
 
 
 ## Decision proposed
