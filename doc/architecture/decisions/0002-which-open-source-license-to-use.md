@@ -1,13 +1,12 @@
 # 2. Which open-source license to use?
 
 * Status: pending
-* Date: 2019-06-19
-* JIRA issue: [LUM-4128](https://lumapps.atlassian.net/browse/LUM-4128)
+* Date: 2019-06-20
 
 ## Context
 
-As the dependency checker is going to be released in open-source, we have to chose which open-source license we are going to use, and why.
-This software is a tool that makes sure the dependencies between every file are well respected, based on the principles of Clean Architecture.
+As the dependency checker is going to be released as open-source software, we have to chose which open-source license we are going to use, and why.
+This tool makes sure the dependencies between every file are well respected, based on the principles of Clean Architecture.
 
 ## Considered options
 
@@ -48,5 +47,5 @@ Cons:
 
 ## Decision proposed
 
-We think that MIT License is the one that best applies to our tool, because it's the one that dgive the most freedom to future users.
+We think that MIT License is the one that best applies to our tool, because it's the one that gives the most freedom to future users.
 
