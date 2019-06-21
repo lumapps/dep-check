@@ -5,18 +5,6 @@ SHELL=/bin/bash
 
 include dev.mk
 
-define BROWSER_PYSCRIPT
-import os, webbrowser, sys
-
-try:
-	from urllib import pathname2url
-except:
-	from urllib.request import pathname2url
-
-webbrowser.open("file://" + pathname2url(os.path.abspath(sys.argv[1])))
-endef
-export BROWSER_PYSCRIPT
-
 define PRINT_HELP_PYSCRIPT
 import re, sys
 
@@ -27,8 +15,6 @@ for line in sys.stdin:
 		print("%-20s %s" % (target, help))
 endef
 export PRINT_HELP_PYSCRIPT
-
-BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
@@ -67,7 +53,7 @@ coverage: ## check code coverage quickly with the default Python
 	coverage run --source dep-check -m pytest
 	coverage report -m
 	coverage html
-	$(BROWSER) htmlcov/index.html
+	xdg-open htmlcov/index.html
 
 doc: ## generate Sphinx HTML documentation, including API doc
 	rm -f doc/dep-check.rst
@@ -75,7 +61,7 @@ doc: ## generate Sphinx HTML documentation, including API doc
 	sphinx-apidoc -o doc/ dep-check
 	$(MAKE) -C doc clean
 	$(MAKE) -C doc html
-	$(BROWSER) doc/_build/html/index.html
+	xdg-open doc/_build/html/index.html
 
 servedoc: doc ## compile the doc watching for changes
 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C doc html' -R -D .

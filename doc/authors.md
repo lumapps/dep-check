@@ -1,12 +1,9 @@
-Credits
-=======
+# Credits
 
-Development Lead
-----------------
+## Development Lead
 
--   LumApps <MAIL>
+- LumApps < MAIL >
 
-Contributors
-------------
+## Contributors
 
 None yet. Why not be the first?

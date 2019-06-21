@@ -1,6 +1,5 @@
-Usage
-=====
+# Usage
 
-To use dep-check in a project:
+To use dep_check in a project:
 
-    import dep-check
+    import dep_check
