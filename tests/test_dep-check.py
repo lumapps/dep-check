@@ -7,7 +7,7 @@ import pytest
 
 from click.testing import CliRunner
 
-from dep_check import dep_check
+from dep_check import main
 from dep_check import cli
 
 
