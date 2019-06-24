@@ -1,6 +1,3 @@
-include authors.md
-include contributing.md
-include history.md
 include LICENSE
 include README.md
 
