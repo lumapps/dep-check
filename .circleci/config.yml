@@ -12,7 +12,7 @@ version: 2.1
 jobs:
 
   # Check the source code quality with various static analysis tools
-  build:
+  static_analysis:
     machine: true
     steps:
       - checkout
@@ -46,16 +46,11 @@ jobs:
           command: |
             source venv/bin/activate && \
             make test
-      - run:
-          name: Run tox
-          command: |
-            source venv/bin/activate && \
-            tox
       - store_test_results:
           path: test-results
 workflows:
   version: 2.1
   build_and_test:
     jobs:
-      - build
+      - static_analysis
       - test

@@ -1,5 +1,5 @@
 """
-Build rules more restrictive rules from exsiting source use case.
+Build rules more restrictive rules from existing source use case.
 """
 from abc import ABC, abstractmethod
 from typing import Dict, Iterator
@@ -31,7 +31,7 @@ class IConfigurationWriter(ABC):
 
 class BuildConfigurationUC:
     """
-    Build more restrictive rules from exisiting list of files.
+    Build more restrictive rules from existing list of files.
     """
 
     def __init__(

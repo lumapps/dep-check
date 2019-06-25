@@ -62,7 +62,7 @@ development.
 
         python3.7 -m venv venv
         source venv/bin/activate && \
-        python setup.py develop && \
+        python3.7 setup.py develop && \
         make init
 
 4. Create a branch for local development:
@@ -74,8 +74,6 @@ development.
 5. When you're done making changes, check that your changes pass pylint
     and the tests, including testing other Python versions with tox:
 
-        pylint dep_check tests
-        pytest tests
         tox
 
 6. Commit your changes and push your branch to GitHub:
@@ -100,7 +98,7 @@ Before you submit a pull request, check that it meets these guidelines:
 
 To run a subset of tests:
 
-    py.test tests.test_dep-check
+    pytest tests.test_my_test
 
 ## Deploying (TO CHANGE?)
 

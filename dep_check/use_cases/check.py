@@ -1,5 +1,5 @@
 """
-Check all given source files dependencie use case.
+Check all given source files dependencies use case.
 """
 
 

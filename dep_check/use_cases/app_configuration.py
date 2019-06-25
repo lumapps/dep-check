@@ -23,7 +23,7 @@ class AppConfiguration:
 
 class AppConfigurationSingelton:
     """
-    App configuration sigleton
+    App configuration singleton
     """
 
     _instance: AppConfiguration
