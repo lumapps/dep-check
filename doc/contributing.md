@@ -58,11 +58,12 @@ development.
 
         git clone git@github.com:your_name_here/dep-check.git
 
-3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development:
+3. Install your local copy into a virtualenv:
 
-        mkvirtualenv dep-check
-        cd dep-check/
-        python setup.py develop
+        python3.7 -m venv venv
+        source venv/bin/activate && \
+        python3.7 setup.py develop && \
+        make init
 
 4. Create a branch for local development:
 
@@ -70,14 +71,10 @@ development.
 
     Now you can make your changes locally.
 
-5. When you're done making changes, check that your changes pass ~~flake8~~ pylint?
+5. When you're done making changes, check that your changes pass pylint
     and the tests, including testing other Python versions with tox:
 
-        flake8 dep-check tests
-        python setup.py test or py.test
         tox
-
-    To get flake8 and tox, just pip install them into your virtualenv.
 
 6. Commit your changes and push your branch to GitHub:
 
@@ -101,7 +98,7 @@ Before you submit a pull request, check that it meets these guidelines:
 
 To run a subset of tests:
 
-    py.test tests.test_dep-check
+    pytest tests.test_my_test
 
 ## Deploying (TO CHANGE?)
 

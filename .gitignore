@@ -3,7 +3,7 @@ venv/
 __pycache__/
 .eggs/
 dist/
-
+.tox/
 # Compiled source #
 ###################
 *.com

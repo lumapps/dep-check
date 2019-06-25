@@ -12,3 +12,4 @@ black
 pylint
 yamllint
 mypy
+pyenchant

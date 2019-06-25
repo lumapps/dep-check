@@ -44,7 +44,7 @@ class MainApp:
     """
     Main application class.
 
-    This class is and must be logicless. Its only aim is to connect
+    This class is and must be logic-less. Its only aim is to connect
     different components to each other in order to make use_cases working.
     For each abstract interface, this class selects a concrete implementation for the
     application lifetime.
