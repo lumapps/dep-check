@@ -1,8 +1,8 @@
 """
 Test check use case.
 """
-from checker import NotAllowedDependencyException, check_dependency
-from models import Module, Rule, Rules
+from dep_check.checker import NotAllowedDependencyException, check_dependency
+from dep_check.models import Module, Rule, Rules
 
 
 def test_empty() -> None:

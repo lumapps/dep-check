@@ -5,15 +5,15 @@ Test check use case.
 from typing import Iterator
 from unittest.mock import Mock
 
-from infra.std_lib_filter import StdLibSimpleFilter
-from models import Module, Rule, SourceCode, SourceFile
-from use_cases.app_configuration import (
+from dep_check.infra.std_lib_filter import StdLibSimpleFilter
+from dep_check.models import Module, Rule, SourceCode, SourceFile
+from dep_check.use_cases.app_configuration import (
     AppConfiguration,
     AppConfigurationAlreadySetException,
     AppConfigurationSingelton,
 )
-from use_cases.check import CheckDependenciesUC, DependencyError, IConfigurationReader
-from use_cases.interfaces import Configuration
+from dep_check.use_cases.check import CheckDependenciesUC, DependencyError, IConfigurationReader
+from dep_check.use_cases.interfaces import Configuration
 
 _SIMPLE_FILE = SourceFile(
     module=Module("simple_module"),

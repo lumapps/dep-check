@@ -3,7 +3,7 @@ Check that dependencies follow a set of rules.
 """
 import re
 
-from models import Module, Rules
+from dep_check.models import Module, Rules
 
 
 class NotAllowedDependencyException(Exception):

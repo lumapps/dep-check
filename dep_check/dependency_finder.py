@@ -1,7 +1,7 @@
 import ast
 from typing import Any, FrozenSet, List
 
-from models import Dependencies, Module, SourceFile
+from dep_check.models import Dependencies, Module, SourceFile
 
 
 class _ImportVisitor(ast.NodeVisitor):

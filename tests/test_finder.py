@@ -1,8 +1,8 @@
 """
 Tests about find_dependencies function.
 """
-from dependency_finder import find_dependencies
-from models import Module, SourceCode, SourceFile
+from dep_check.dependency_finder import find_dependencies
+from dep_check.models import Module, SourceCode, SourceFile
 
 
 def test_empty() -> None:

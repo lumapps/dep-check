@@ -4,8 +4,14 @@ Build rules more restrictive rules from exsiting source use case.
 from abc import ABC, abstractmethod
 from typing import Dict, Iterator
 
-from dependency_finder import find_dependencies
-from models import Dependencies, Module, SourceFile, build_module_regex, build_rule
+from dep_check.dependency_finder import find_dependencies
+from dep_check.models import (
+    Dependencies,
+    Module,
+    SourceFile,
+    build_module_regex,
+    build_rule,
+)
 
 from .app_configuration import AppConfigurationSingelton
 from .interfaces import Configuration

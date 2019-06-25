@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator
 
-from models import Module, SourceCode, SourceFile
+from dep_check.models import Module, SourceCode, SourceFile
 
 
 def _get_module_from_file_path(path: Path) -> Module:

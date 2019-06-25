@@ -1,8 +1,8 @@
 """
 Implementations of IStdLibFilter
 """
-from models import Dependencies
-from use_cases.interfaces import IStdLibFilter
+from dep_check.models import Dependencies
+from dep_check.use_cases.interfaces import IStdLibFilter
 
 _KNOWN_STANDARD_LIBRARIES = frozenset(
     (

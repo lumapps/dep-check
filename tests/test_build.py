@@ -5,15 +5,15 @@ Test build configuration use case.
 from typing import Iterator
 from unittest.mock import Mock
 
-from infra.std_lib_filter import StdLibSimpleFilter
-from models import Module, Rule, SourceCode, SourceFile
-from use_cases.app_configuration import (
+from dep_check.infra.std_lib_filter import StdLibSimpleFilter
+from dep_check.models import Module, Rule, SourceCode, SourceFile
+from dep_check.use_cases.app_configuration import (
     AppConfiguration,
     AppConfigurationAlreadySetException,
     AppConfigurationSingelton,
 )
-from use_cases.build import BuildConfigurationUC
-from use_cases.interfaces import Configuration
+from dep_check.use_cases.build import BuildConfigurationUC
+from dep_check.use_cases.interfaces import Configuration
 
 _SIMPLE_FILE = SourceFile(
     module=Module("simple_module"),

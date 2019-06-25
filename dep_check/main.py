@@ -6,13 +6,16 @@ Check dependencies of the project
 import argparse
 import sys
 
-from infra.file_system import source_file_iterator
-from infra.io import ErrorLogger, YamlConfigurationIO
-from infra.std_lib_filter import StdLibSimpleFilter
-from use_cases.app_configuration import AppConfiguration, AppConfigurationSingelton
-from use_cases.build import BuildConfigurationUC
-from use_cases.check import CheckDependenciesUC
-from use_cases.interfaces import ExitCode
+from dep_check.infra.file_system import source_file_iterator
+from dep_check.infra.io import ErrorLogger, YamlConfigurationIO
+from dep_check.infra.std_lib_filter import StdLibSimpleFilter
+from dep_check.use_cases.app_configuration import (
+    AppConfiguration,
+    AppConfigurationSingelton,
+)
+from dep_check.use_cases.build import BuildConfigurationUC
+from dep_check.use_cases.check import CheckDependenciesUC
+from dep_check.use_cases.interfaces import ExitCode
 
 PARSER = argparse.ArgumentParser(
     description="Small program that ensure dependency rules are respected"
@@ -91,9 +94,10 @@ class MainApp:
         source_files = source_file_iterator(self.args.root_dir)
         return CheckDependenciesUC(configuration_reader, error_printer, source_files)
 
+
 def main() -> None:
     sys.exit(MainApp().main())
 
+
 if __name__ == "__main__":
     main()
-

@@ -8,9 +8,9 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Iterator, List, Tuple
 
-from checker import NotAllowedDependencyException, check_dependency
-from dependency_finder import find_dependencies
-from models import Module, Rule, Rules, SourceFile, build_rule, get_parent
+from dep_check.checker import NotAllowedDependencyException, check_dependency
+from dep_check.dependency_finder import find_dependencies
+from dep_check.models import Module, Rule, Rules, SourceFile, build_rule, get_parent
 
 from .app_configuration import AppConfigurationSingelton
 from .interfaces import Configuration, ExitCode

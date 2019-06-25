@@ -7,9 +7,13 @@ from typing import List
 
 import yaml
 
-from use_cases.build import IConfigurationWriter
-from use_cases.check import DependencyError, IConfigurationReader, IErrorPrinter
-from use_cases.interfaces import Configuration
+from dep_check.use_cases.build import IConfigurationWriter
+from dep_check.use_cases.check import (
+    DependencyError,
+    IConfigurationReader,
+    IErrorPrinter,
+)
+from dep_check.use_cases.interfaces import Configuration
 
 
 class YamlConfigurationIO(IConfigurationWriter, IConfigurationReader):

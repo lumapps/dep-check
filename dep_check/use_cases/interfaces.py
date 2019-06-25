@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
 
-from models import Dependencies, DependencyRules
+from dep_check.models import Dependencies, DependencyRules
 
 
 @dataclass
