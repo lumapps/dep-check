@@ -40,7 +40,7 @@ min-public-methods=1
 [SPELLING]
 max-spelling-suggestions=4
 spelling-dict=en_US
-spelling-private-dict-file=.circleci/spellcheck_private_dictionnary
+spelling-private-dict-file=.circleci/spellcheck_private_dictionary
 
 
 [CLASSES]
