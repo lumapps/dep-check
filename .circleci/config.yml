@@ -29,7 +29,7 @@ jobs:
           command: make lint
 
   # Run the unit tests with coverage check, and make sure the integration tests have run
-  tests:
+  test:
     machine: true
     steps:
       - checkout
@@ -53,3 +53,9 @@ jobs:
             tox
       - store_test_results:
           path: test-results
+workflows:
+  version: 2.1
+  build_and_test:
+    jobs:
+      - build
+      - test
