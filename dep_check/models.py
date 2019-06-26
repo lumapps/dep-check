@@ -26,14 +26,18 @@ def build_rule(module: Module) -> Rule:
     """
     Return a rule that accept the given Module
     """
-    return Rule(module.replace(".", "\\."))
+    module_regex = module.replace(".", "\\.").replace("*", ".*")
+    module_regex = module_regex.replace("[!", "[^").replace("?", ".?")
+    return Rule(module_regex)
 
 
 def build_module_regex(module: Module) -> str:
     """
-    Return a rule that accept the given Module
+    Return a regex expression for the Module from wildcard
     """
-    return module.replace(".", "\\.")
+    module_regex = module.replace(".", "\\.").replace("*", ".*")
+    module_regex = module_regex.replace("[!", "[^").replace("?", ".?")
+    return module_regex
 
 
 @dataclass

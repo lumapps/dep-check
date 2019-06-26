@@ -32,7 +32,7 @@ def test_passing_case() -> None:
     """
     # Given
     dependency = Module("toto")
-    rules: Rules = [Rule("to.*"), Rule("titi\\.tata")]
+    rules: Rules = [Rule("to*"), Rule("titi.tata")]
 
     # When
     error = None
