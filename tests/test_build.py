@@ -107,15 +107,15 @@ def test_nominal() -> None:
     }
     assert dependency_rules == {
         "simple_module": set(
-            (Rule("module"), Rule(r"module\.inside\.module"), Rule("amodule"))
+            (Rule("module"), Rule("module.inside.module"), Rule("amodule"))
         ),
-        r"amodule\.local_module": set(
+        "amodule.local_module": set(
             (
                 Rule("module"),
-                Rule(r"module\.inside\.module"),
+                Rule("module.inside.module"),
                 Rule("amodule"),
-                Rule(r"amodule\.inside"),
+                Rule("amodule.inside"),
             )
         ),
-        r"amodule\.std_module": set((Rule("module"), Rule(r"module\.inside\.module"))),
+        "amodule.std_module": set((Rule("module"), Rule("module.inside.module"))),
     }
