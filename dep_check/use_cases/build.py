@@ -9,8 +9,7 @@ from dep_check.models import (
     Dependencies,
     Module,
     SourceFile,
-    build_module_regex,
-    build_rule,
+    Rule
 )
 
 from .app_configuration import AppConfigurationSingelton
@@ -55,8 +54,8 @@ class BuildConfigurationUC:
 
         dependency_rules = {}
         for module, dependencies in global_dependencies.items():
-            dependency_rules[build_module_regex(module)] = [
-                build_rule(dependency) for dependency in dependencies
+            dependency_rules[module] = [
+                Rule(dependency) for dependency in dependencies
             ]
 
         self.printer.write(Configuration(dependency_rules))
