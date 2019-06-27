@@ -15,7 +15,6 @@ from dep_check.models import (
     Rule,
     Rules,
     SourceFile,
-    build_rule,
     get_parent,
     build_module_regex,
 )
@@ -84,10 +83,8 @@ class CheckDependenciesUC:
         Return rules in configuration that match a given module.
         """
         if self.configuration.local_init and module.endswith(".__init__"):
-            parent_module_regex = build_rule(get_parent(module))
-            return [
-                Rule(r"{}*".format(parent_module_regex))
-            ]  # To change with % instead of *
+            parent_module_regex = Rule(get_parent(module))
+            return [Rule(r"{}%".format(parent_module_regex))]
 
         matching_rules: Rules = []
         for module_wildcard, rules in self.configuration.dependency_rules.items():

@@ -28,6 +28,9 @@ def build_rule(module: Module) -> Rule:
     """
     module_regex = module.replace(".", "\\.").replace("*", ".*")
     module_regex = module_regex.replace("[!", "[^").replace("?", ".?")
+
+    # Special char including a module along with all its submodules:
+    module_regex = module_regex.replace("%", r"(\..*)?$")
     return Rule(module_regex)
 
 
@@ -37,6 +40,9 @@ def build_module_regex(module: Module) -> str:
     """
     module_regex = module.replace(".", "\\.").replace("*", ".*")
     module_regex = module_regex.replace("[!", "[^").replace("?", ".?")
+
+    # Special char including a module along with all its submodules:
+    module_regex = module_regex.replace("%", r"(\..*)?$")
     return module_regex
 
 

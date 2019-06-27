@@ -125,11 +125,11 @@ def test_passing_rules() -> None:
     source_files = get_source_file_iterator()
     configuration = Configuration(
         dependency_rules={
-            _SIMPLE_FILE.module: [Rule("module*"), Rule("amodule")],
+            _SIMPLE_FILE.module: [Rule("module%"), Rule("amodule")],
             "amodule.*": [
                 Rule("module"),
                 Rule("module.inside.*"),
-                Rule("amodule*"),
+                Rule("amodule%"),
             ]
         }
     )
