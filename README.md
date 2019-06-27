@@ -19,6 +19,10 @@ Check out all the [Authors and contributors](doc/authors.md) of this project!
 
 * TODO
 
+## Usage
+
+Everything you need to know is in the [User Manual](doc/usage.md)!
+
 ## Contributing
 
 If you want to make a contribution, be sure to follow the [Contribution guide](doc/contributing.md).
