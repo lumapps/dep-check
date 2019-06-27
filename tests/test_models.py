@@ -58,6 +58,62 @@ class TestBuildModuleRegex:
         assert not re.match(regex, "tata")
         assert not re.match(regex, "titi.toto")
 
+    @staticmethod
+    def test_quesiton_mark() -> None:
+        """
+        Test question mark case
+        """
+        # Given
+        module = Module("t?to.?at?")
+
+        # When
+        regex = build_module_regex(module)
+
+        # Then
+        assert re.match(regex, "toto.tata")
+        assert re.match(regex, "t2to.bato")
+        assert re.match(regex, "t#to.!at&")
+        assert not re.match(regex, "toto")
+        assert not re.match(regex, "tata")
+        assert not re.match(regex, "toti.toto")
+
+    @staticmethod
+    def test_asterisk() -> None:
+        """
+        Test asterisk case
+        """
+        # Given
+        module = Module("toto*.*")
+
+        # When
+        regex = build_module_regex(module)
+
+        # Then
+        assert re.match(regex, "toto.tata")
+        assert re.match(regex, "toto_2351.titi")
+        assert re.match(regex, "toto_azerty.titi.toto.tata")
+        assert not re.match(regex, "toto")
+        assert not re.match(regex, "tototata")
+        assert not re.match(regex, "toti.toto")
+
+    @staticmethod
+    def test_percentage() -> None:
+        """
+        Test percentage case
+        """
+        # Given
+        module = Module("toto.tata%")
+
+        # When
+        regex = build_module_regex(module)
+
+        # Then
+        assert re.match(regex, "toto.tata")
+        assert re.match(regex, "toto.tata.titi")
+        assert re.match(regex, "toto.tata.titi.tutu.tototata.tititutu")
+        assert not re.match(regex, "toto")
+        assert not re.match(regex, "toto.tata_123")
+
 
 class TestBuildRule:
     """
@@ -111,6 +167,61 @@ class TestBuildRule:
         assert not re.match(regex, "tata")
         assert not re.match(regex, "titi.toto")
 
+    @staticmethod
+    def test_quesiton_mark() -> None:
+        """
+        Test question mark case
+        """
+        # Given
+        module = Module("t?to.?at?")
+
+        # When
+        regex = build_module_regex(module)
+
+        # Then
+        assert re.match(regex, "toto.tata")
+        assert re.match(regex, "t2to.bato")
+        assert re.match(regex, "t#to.!at&")
+        assert not re.match(regex, "toto")
+        assert not re.match(regex, "tata")
+        assert not re.match(regex, "toti.toto")
+
+    @staticmethod
+    def test_asterisk() -> None:
+        """
+        Test asterisk case
+        """
+        # Given
+        module = Module("toto*.*")
+
+        # When
+        regex = build_module_regex(module)
+
+        # Then
+        assert re.match(regex, "toto.tata")
+        assert re.match(regex, "toto_2351.titi")
+        assert re.match(regex, "toto_azerty.titi.toto.tata")
+        assert not re.match(regex, "toto")
+        assert not re.match(regex, "tototata")
+        assert not re.match(regex, "toti.toto")
+
+    @staticmethod
+    def test_percentage() -> None:
+        """
+        Test percentage case
+        """
+        # Given
+        module = Module("toto.tata%")
+
+        # When
+        regex = build_module_regex(module)
+
+        # Then
+        assert re.match(regex, "toto.tata")
+        assert re.match(regex, "toto.tata.titi")
+        assert re.match(regex, "toto.tata.titi.tutu.tototata.tititutu")
+        assert not re.match(regex, "toto")
+        assert not re.match(regex, "toto.tata_123")
 
 class TestGetParent:
     """
