@@ -125,12 +125,12 @@ def test_passing_rules() -> None:
     source_files = get_source_file_iterator()
     configuration = Configuration(
         dependency_rules={
-            _SIMPLE_FILE.module: [Rule("module.*"), Rule("amodule")],
-            r"amodule\..*": [
+            _SIMPLE_FILE.module: [Rule("module*"), Rule("amodule")],
+            "amodule.*": [
                 Rule("module"),
-                Rule(r"module\.inside\..*"),
-                Rule("amodule.*"),
-            ],
+                Rule("module.inside.*"),
+                Rule("amodule*"),
+            ]
         }
     )
     configuration_reader = build_conf_reader_stub(configuration)
@@ -152,13 +152,13 @@ def test_not_passing_rules() -> None:
     # Given
     source_files = get_source_file_iterator()
     dep_rules = {
-        "simple_module": [Rule(r"module\..*"), Rule("amodule")],
-        r"amodule\.local_module": [
+        "simple_module": [Rule("module.*"), Rule("amodule")],
+        "amodule.local_module": [
             Rule("module"),
-            Rule(r"module\.inside\..*"),
+            Rule("module.inside.*"),
             Rule("amod"),
         ],
-        r"amodule\.std_module": [Rule("mod")],
+        "amodule.std_module": [Rule("mod")],
     }
 
     configuration = Configuration(dependency_rules=dep_rules)
@@ -182,20 +182,20 @@ def test_not_passing_rules() -> None:
                 simple, Module("module"), tuple(dep_rules["simple_module"])
             ),
             DependencyError(
-                local, Module("amodule"), tuple(dep_rules[r"amodule\.local_module"])
+                local, Module("amodule"), tuple(dep_rules["amodule.local_module"])
             ),
             DependencyError(
                 local,
                 Module("amodule.inside"),
-                tuple(dep_rules[r"amodule\.local_module"]),
+                tuple(dep_rules["amodule.local_module"]),
             ),
             DependencyError(
-                std, Module("module"), tuple(dep_rules[r"amodule\.std_module"])
+                std, Module("module"), tuple(dep_rules["amodule.std_module"])
             ),
             DependencyError(
                 std,
                 Module("module.inside.module"),
-                tuple(dep_rules[r"amodule\.std_module"]),
+                tuple(dep_rules["amodule.std_module"]),
             ),
         )
     )

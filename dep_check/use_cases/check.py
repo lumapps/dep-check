@@ -10,7 +10,15 @@ from typing import Iterator, List, Tuple
 
 from dep_check.checker import NotAllowedDependencyException, check_dependency
 from dep_check.dependency_finder import find_dependencies
-from dep_check.models import Module, Rule, Rules, SourceFile, build_rule, get_parent
+from dep_check.models import (
+    Module,
+    Rule,
+    Rules,
+    SourceFile,
+    build_rule,
+    get_parent,
+    build_module_regex,
+)
 
 from .app_configuration import AppConfigurationSingelton
 from .interfaces import Configuration, ExitCode
@@ -77,11 +85,13 @@ class CheckDependenciesUC:
         """
         if self.configuration.local_init and module.endswith(".__init__"):
             parent_module_regex = build_rule(get_parent(module))
-            return [Rule(r"{}.*".format(parent_module_regex))]
+            return [
+                Rule(r"{}*".format(parent_module_regex))
+            ]  # To change with % instead of *
 
         matching_rules: Rules = []
-        for module_regex, rules in self.configuration.dependency_rules.items():
-            if re.match("{}$".format(module_regex), module):
+        for module_wildcard, rules in self.configuration.dependency_rules.items():
+            if re.match("{}$".format(build_module_regex(module_wildcard)), module):
                 matching_rules.extend(rules)
 
         return matching_rules
