@@ -128,7 +128,7 @@ def test_passing_rules() -> None:
             _SIMPLE_FILE.module: [Rule("module*"), Rule("amodule")],
             "amodule.*": [
                 Rule("module"),
-                Rule("module.inside*"),
+                Rule("module.inside.*"),
                 Rule("amodule*"),
             ]
         }
