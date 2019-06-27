@@ -126,7 +126,7 @@ def test_passing_rules() -> None:
     configuration = Configuration(
         dependency_rules={
             _SIMPLE_FILE.module: [Rule("module*"), Rule("amodule")],
-            "amodule*": [
+            "amodule.*": [
                 Rule("module"),
                 Rule("module.inside*"),
                 Rule("amodule*"),
