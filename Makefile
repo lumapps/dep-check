@@ -28,7 +28,9 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .pytest_cache
 
 lint: ## check style with pylint
+	isort -rc dep_check
 	pylint dep_check tests
+	black dep_check
 
 test: ## run tests quickly with the default Python
 	pytest -v

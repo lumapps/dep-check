@@ -15,8 +15,8 @@ from dep_check.models import (
     Rule,
     Rules,
     SourceFile,
-    get_parent,
     build_module_regex,
+    get_parent,
 )
 
 from .app_configuration import AppConfigurationSingelton
