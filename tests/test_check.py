@@ -12,7 +12,11 @@ from dep_check.use_cases.app_configuration import (
     AppConfigurationAlreadySetException,
     AppConfigurationSingelton,
 )
-from dep_check.use_cases.check import CheckDependenciesUC, DependencyError, IConfigurationReader
+from dep_check.use_cases.check import (
+    CheckDependenciesUC,
+    DependencyError,
+    IConfigurationReader,
+)
 from dep_check.use_cases.interfaces import Configuration
 
 _SIMPLE_FILE = SourceFile(
@@ -126,11 +130,7 @@ def test_passing_rules() -> None:
     configuration = Configuration(
         dependency_rules={
             _SIMPLE_FILE.module: [Rule("module%"), Rule("amodule")],
-            "amodule.*": [
-                Rule("module"),
-                Rule("module.inside.*"),
-                Rule("amodule%"),
-            ]
+            "amodule.*": [Rule("module"), Rule("module.inside.*"), Rule("amodule%")],
         }
     )
     configuration_reader = build_conf_reader_stub(configuration)
@@ -153,11 +153,7 @@ def test_not_passing_rules() -> None:
     source_files = get_source_file_iterator()
     dep_rules = {
         "simple_module": [Rule("module.*"), Rule("amodule")],
-        "amodule.local_module": [
-            Rule("module"),
-            Rule("module.inside.*"),
-            Rule("amod"),
-        ],
+        "amodule.local_module": [Rule("module"), Rule("module.inside.*"), Rule("amod")],
         "amodule.std_module": [Rule("mod")],
     }
 

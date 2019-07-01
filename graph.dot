@@ -1,0 +1,9 @@
+digraph G {
+size="16,16";
+splines=true;
+node[shape=box fontname=Arial style=filled fillcolor=white];
+bgcolor=transparent
+"simple_module" -> "module"
+"simple_module" -> "module.inside.module"
+"simple_module" -> "amodule"
+}

@@ -2,17 +2,20 @@
 Implementations of IDependenciesPrinter
 """
 import logging
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
+from subprocess import check_call
 from typing import List
 
 import yaml
 
+from dep_check.models import DependencyRules
 from dep_check.use_cases.build import IConfigurationWriter
 from dep_check.use_cases.check import (
     DependencyError,
     IConfigurationReader,
     IErrorPrinter,
 )
+from dep_check.use_cases.draw_graph import IGraphDrawer
 from dep_check.use_cases.interfaces import Configuration
 
 
@@ -50,3 +53,58 @@ class ErrorLogger(IErrorPrinter):
                 error.dependency,
                 error.rules,
             )
+
+
+@dataclass
+class Graph:
+    """
+    Dataclass representing the informations to draw a graph
+    """
+
+    svg_file_name: str
+    dot_file_name: str = "/tmp/graph.dot"
+    node_color: str = "white"
+    background_color: str = "transparent"
+
+
+class GraphDrawer(IGraphDrawer):
+    """
+    Write dot / svg files corresponding to the project dependencies
+    """
+
+    def __init__(self, graph: Graph):
+        self.graph = graph
+
+    def _write_dot(self, dep_rules: DependencyRules) -> bool:
+        if not dep_rules:
+            return False
+
+        with open(self.graph.dot_file_name, "w") as out:
+            for line in (
+                "digraph G {",
+                'size="16,16";',
+                "splines=true;",
+                "node[shape=box fontname=Arial style=filled fillcolor={}];".format(
+                    self.graph.node_color
+                ),
+                "bgcolor={}".format(self.graph.background_color),
+            ):
+                out.write("{}\n".format(line))
+            for module, rules in dep_rules.items():
+                for rule in rules:
+                    out.write('"{}" -> "{}"\n'.format(module, rule))
+            out.write("}\n")
+        return True
+
+    def _write_svg(self) -> None:
+        check_call(
+            ["dot", "-Tsvg", self.graph.dot_file_name, "-o", self.graph.svg_file_name]
+        )
+
+    def write(self, dep_rules: DependencyRules):
+        if self.graph.svg_file_name[-3:] == "dot":
+            self.graph.dot_file_name = self.graph.svg_file_name
+            self._write_dot(dep_rules)
+        else:
+            if self._write_dot(dep_rules):
+                self._write_svg()
