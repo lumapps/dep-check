@@ -31,6 +31,9 @@ def _change_dir(directory: str) -> Iterator[None]:
 
 
 def _get_project_root(root_dir: str) -> str:
+    """
+    Returns the project root to make sure every module name begins with it
+    """
     project_root = ""
 
     if "__init__.py" in os.listdir(Path(root_dir)):
