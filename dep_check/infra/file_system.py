@@ -33,8 +33,8 @@ def _change_dir(directory: str) -> Iterator[None]:
 def _get_project_root(root_dir: str) -> str:
     project_root = ""
 
-    if "__init__.py" in os.listdir(root_dir):
-        project_root = root_dir + "." + project_root
+    if "__init__.py" in os.listdir(Path(root_dir)):
+        project_root = Path(root_dir).name + "." + project_root
 
     for directory in Path(root_dir).parents:
         if "__init__.py" in os.listdir(directory):
