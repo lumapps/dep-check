@@ -32,15 +32,15 @@ def _change_dir(directory: str) -> Iterator[None]:
 
 def _get_project_root(root_dir: str) -> str:
     project_root = ""
-    done = False
-    current_dir = Path(root_dir)
-    while not done:
-        with _change_dir(current_dir):
-            if "__init__.py" in os.listdir("."):
-                project_root = current_dir.name + "." + project_root
-                current_dir = Path(current_dir).parents[0]
-            else:
-                done = True
+
+    if "__init__.py" in os.listdir(root_dir):
+        project_root = root_dir + "." + project_root
+
+    for directory in Path(root_dir).parents:
+        if "__init__.py" in os.listdir(directory):
+            project_root = directory.name + "." + project_root
+        else:
+            break
     return project_root
 
 
