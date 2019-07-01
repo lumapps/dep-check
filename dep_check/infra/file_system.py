@@ -30,12 +30,33 @@ def _change_dir(directory: str) -> Iterator[None]:
         os.chdir(saved_dir)
 
 
+def _get_project_root(root_dir: str) -> str:
+    """
+    Returns the project root to make sure every module name begins with it
+    """
+    project_root = ""
+
+    if "__init__.py" in os.listdir(Path(root_dir)):
+        project_root = Path(root_dir).name + "." + project_root
+
+    for directory in Path(root_dir).parents:
+        if "__init__.py" in os.listdir(directory):
+            project_root = directory.name + "." + project_root
+        else:
+            break
+    return project_root
+
+
 def source_file_iterator(root_dir: str) -> Iterator[SourceFile]:
     """
     Iterator of all python source files in a directory.
     """
+    project_root = _get_project_root(root_dir)
     with _change_dir(root_dir):
         for file_path in Path(".").rglob("*.py"):
             with open(str(file_path), "r") as stream:
                 content = stream.read()
-            yield SourceFile(_get_module_from_file_path(file_path), SourceCode(content))
+            yield SourceFile(
+                project_root + _get_module_from_file_path(file_path),
+                SourceCode(content),
+            )
