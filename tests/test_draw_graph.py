@@ -5,67 +5,10 @@ from typing import Iterator
 from unittest.mock import Mock, patch
 
 from dep_check.infra.io import Graph, GraphDrawer
-from dep_check.infra.std_lib_filter import StdLibSimpleFilter
-from dep_check.models import Module, Rule, SourceCode, SourceFile
-from dep_check.use_cases.app_configuration import (
-    AppConfiguration,
-    AppConfigurationAlreadySetException,
-    AppConfigurationSingelton,
-)
+from dep_check.models import Rule, SourceFile
 from dep_check.use_cases.draw_graph import DrawGraphUC
 
-_SIMPLE_FILE = SourceFile(
-    module=Module("simple_module"),
-    code=SourceCode(
-        """
-import module
-import module.inside.module
-from amodule import aclass
-"""
-    ),
-)
-_FILE_WITH_LOCAL_IMPORT = SourceFile(
-    module=Module("amodule.local_module"),
-    code=SourceCode(
-        """
-import module
-import module.inside.module
-from . import aclass
-from .inside import aclass
-"""
-    ),
-)
-_FILE_WITH_STD_IMPORT = SourceFile(
-    module=Module("amodule.std_module"),
-    code=SourceCode(
-        """
-import module
-import module.inside.module
-import itertools
-from abc import ABC
-"""
-    ),
-)
-
-
-def setup_module() -> None:
-    """
-    Define application configuration.
-    """
-    app_configuration = AppConfiguration(std_lib_filter=StdLibSimpleFilter())
-    try:
-        AppConfigurationSingelton.define_app_configuration(app_configuration)
-    except AppConfigurationAlreadySetException:
-        pass
-
-
-def get_source_file_iterator() -> Iterator[SourceFile]:
-    """
-    Iter over test source files.
-    """
-    yield _SIMPLE_FILE
-    yield _FILE_WITH_LOCAL_IMPORT
-    yield _FILE_WITH_STD_IMPORT
+from .fakefile import SIMPLE_FILE
 
 
 def test_empty_source_files() -> None:
@@ -84,12 +27,12 @@ def test_empty_source_files() -> None:
     drawer.write.assert_called_with({})
 
 
-def test_nominal() -> None:
+def test_nominal(get_source_file_iterator) -> None:
     """
     Test result with a set source files.
     """
     # Given
-    source_files = get_source_file_iterator()
+    source_files = get_source_file_iterator
     drawer = Mock()
     use_case = DrawGraphUC(drawer, source_files)
 
@@ -122,7 +65,7 @@ def test_nominal() -> None:
 def test_dot() -> None:
 
     # Given
-    source_files: Iterator[SourceFile] = iter([_SIMPLE_FILE])
+    source_files: Iterator[SourceFile] = iter([SIMPLE_FILE])
     drawer = GraphDrawer(Graph("graph.svg"))
     use_case = DrawGraphUC(drawer, source_files)
 
@@ -131,11 +74,10 @@ def test_dot() -> None:
 
     # Then
     with open("/tmp/graph.dot") as dot:
-        lines = set(dot.readlines())
+        lines = sorted(dot.readlines())
 
-    assert lines == {
+    assert lines == sorted([
         "digraph G {\n",
-        'size="16,16";\n',
         "splines=true;\n",
         "node[shape=box fontname=Arial style=filled fillcolor={}];\n".format(
             drawer.graph.node_color
@@ -144,15 +86,15 @@ def test_dot() -> None:
         '"simple_module" -> "module"\n',
         '"simple_module" -> "module.inside.module"\n',
         '"simple_module" -> "amodule"\n',
-        "}\n",
-    }
+        "}\n"
+    ])
 
 
 @patch.object(GraphDrawer, "_write_svg")
 def test_not_svg_with_dot(mock_method) -> None:
 
     # Given
-    source_files: Iterator[SourceFile] = iter([_SIMPLE_FILE])
+    source_files: Iterator[SourceFile] = iter([SIMPLE_FILE])
     drawer = GraphDrawer(Graph("graph.dot"))
     use_case = DrawGraphUC(drawer, source_files)
 

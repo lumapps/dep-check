@@ -7,7 +7,7 @@ from typing import Dict, Iterator
 from dep_check.dependency_finder import find_dependencies
 from dep_check.models import Dependencies, DependencyRules, Module, Rule, SourceFile
 
-from .app_configuration import AppConfigurationSingelton
+from .app_configuration import AppConfigurationSingleton
 
 
 class IGraphDrawer(ABC):
@@ -24,7 +24,7 @@ class IGraphDrawer(ABC):
 
 class DrawGraphUC:
     def __init__(self, drawer: IGraphDrawer, source_files: Iterator[SourceFile]):
-        app_configuration = AppConfigurationSingelton.get_instance()
+        app_configuration = AppConfigurationSingleton.get_instance()
         self.std_lib_filter = app_configuration.std_lib_filter
         self.source_files = source_files
         self.drawer = drawer

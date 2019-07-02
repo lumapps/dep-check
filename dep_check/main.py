@@ -11,7 +11,7 @@ from dep_check.infra.io import ErrorLogger, Graph, GraphDrawer, YamlConfiguratio
 from dep_check.infra.std_lib_filter import StdLibSimpleFilter
 from dep_check.use_cases.app_configuration import (
     AppConfiguration,
-    AppConfigurationSingelton,
+    AppConfigurationSingleton,
 )
 from dep_check.use_cases.build import BuildConfigurationUC
 from dep_check.use_cases.check import CheckDependenciesUC
@@ -83,7 +83,7 @@ class MainApp:
         Create and set the global application configuration.
         """
         app_configuration = AppConfiguration(std_lib_filter=StdLibSimpleFilter())
-        AppConfigurationSingelton.define_app_configuration(app_configuration)
+        AppConfigurationSingleton.define_app_configuration(app_configuration)
 
     def create_build_use_case(self) -> BuildConfigurationUC:
         """

@@ -7,7 +7,7 @@ from typing import Dict, Iterator
 from dep_check.dependency_finder import find_dependencies
 from dep_check.models import Dependencies, Module, Rule, SourceFile
 
-from .app_configuration import AppConfigurationSingelton
+from .app_configuration import AppConfigurationSingleton
 from .interfaces import Configuration
 
 
@@ -31,7 +31,7 @@ class BuildConfigurationUC:
     def __init__(
         self, printer: IConfigurationWriter, source_files: Iterator[SourceFile]
     ) -> None:
-        app_configuration = AppConfigurationSingelton.get_instance()
+        app_configuration = AppConfigurationSingleton.get_instance()
         self.std_lib_filter = app_configuration.std_lib_filter
         self.printer = printer
         self.source_files = source_files

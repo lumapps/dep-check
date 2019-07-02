@@ -2,7 +2,9 @@
 Implementations of IDependenciesPrinter
 """
 import logging
+from pathlib import Path
 from dataclasses import asdict, dataclass
+from jinja2 import Template
 from subprocess import check_call
 from typing import List
 
@@ -74,26 +76,28 @@ class GraphDrawer(IGraphDrawer):
 
     def __init__(self, graph: Graph):
         self.graph = graph
+        self.header = Template(
+            "digraph G {\n"
+            "splines=true;\n"
+            "node[shape=box fontname=Arial style=filled fillcolor={{nodecolor}}];\n"
+            "bgcolor={{bgcolor}}\n\n"
+        ).render(nodecolor=self.graph.node_color, bgcolor=self.graph.background_color)
+        self.body = ""
+        self.footer = "}\n"
 
     def _write_dot(self, dep_rules: DependencyRules) -> bool:
         if not dep_rules:
             return False
 
+        for module, rules in dep_rules.items():
+            for rule in rules:
+                self.body += '"{}" -> "{}"\n'.format(module, rule)
+
         with open(self.graph.dot_file_name, "w") as out:
-            for line in (
-                "digraph G {",
-                'size="16,16";',
-                "splines=true;",
-                "node[shape=box fontname=Arial style=filled fillcolor={}];".format(
-                    self.graph.node_color
-                ),
-                "bgcolor={}".format(self.graph.background_color),
-            ):
-                out.write("{}\n".format(line))
-            for module, rules in dep_rules.items():
-                for rule in rules:
-                    out.write('"{}" -> "{}"\n'.format(module, rule))
-            out.write("}\n")
+            out.write(self.header)
+            out.write(self.body)
+            out.write(self.footer)
+
         return True
 
     def _write_svg(self) -> None:
@@ -102,7 +106,7 @@ class GraphDrawer(IGraphDrawer):
         )
 
     def write(self, dep_rules: DependencyRules):
-        if self.graph.svg_file_name[-3:] == "dot":
+        if Path(self.graph.svg_file_name).suffix == ".dot":
             self.graph.dot_file_name = self.graph.svg_file_name
             self._write_dot(dep_rules)
         else:

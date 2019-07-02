@@ -19,7 +19,7 @@ from dep_check.models import (
     get_parent,
 )
 
-from .app_configuration import AppConfigurationSingelton
+from .app_configuration import AppConfigurationSingleton
 from .interfaces import Configuration, ExitCode
 
 
@@ -72,7 +72,7 @@ class CheckDependenciesUC:
         error_printer: IErrorPrinter,
         source_files: Iterator[SourceFile],
     ):
-        app_configuration = AppConfigurationSingelton.get_instance()
+        app_configuration = AppConfigurationSingleton.get_instance()
         self.std_lib_filter = app_configuration.std_lib_filter
         self.configuration = configuration_reader.read()
         self.error_printer = error_printer
