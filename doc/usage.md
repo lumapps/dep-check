@@ -75,3 +75,34 @@ If you prefer having the graph in a dot file, then run
     dep_check -g graph_file.dot ROOT_DIR
 
 *Note : if you generate a svg file, a dot file will be created in `/tmp/graph.dot`*
+
+### Adding options
+
+Don't forget to check out the [graph configuration example](../graph_config.yaml)
+
+The graph you'll get may seem unreadable if your project is pretty big. If that's the case, you can add options to the graph you want to draw, using a YAML file :
+
+    dep_check -g graph_file.svg -o graph_config.yaml ROOT_DIR
+
+Here are the different options:
+
+#### Fold a module
+
+You can chose to 'fold' one or more modules, which will bring together all of their submodules into the module(s), making the graph way more readable.
+
+To do so, you'll have to add a "fold_modules" in your graph config file :
+
+    fold_modules:
+        - root.amodule
+        - root.module.submodule
+
+**Make sure the name of the module you want to fold start at the root of your project** (e.g. 'root.amodule' and not 'amodule')
+
+#### Add color
+
+You can change the nodes and/or background color of the graph, using 'node_color' and 'bgcolor' options: ([Here are the colors you can use](https://www.graphviz.org/doc/info/colors.html))
+
+    node_color: crimson
+    bgcolor: gold
+
+*Note: if not defined, the nodes are white and the background is transparent.*
