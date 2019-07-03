@@ -20,7 +20,8 @@ You can build your own configuration file, using wildcards. Here are the charact
 * `*` corresponds to any string, including an empty one
 * `?` corresponds to any single character
 * `[abc]` corresponds to any character among 'a', 'b' or 'c'
-* `[d-y]` corresponds to anycharacter between 'd' and 'y'
+* `[d-y]` corresponds to any character between 'd' and 'y'
+* `[!d-y]` corresponds to any character which is **not** between 'd' and 'y'
 * `[!abc]` corresponds to any character except 'a', 'b' or 'c'
 * `mymodule%` corresponds to `mymodule` and all of its submodules
 
@@ -61,3 +62,16 @@ If nothing is printed, then congratulations! Everything is working great.
 Otherwise, every error will be displayed as following:
 
     ERROR:root:module mymodule import othermodule but is not allowed to (rules: (set of rules for mymodule))
+
+## Drawing a dependency graph
+
+If you want to visualize your project dependencies as a graph, just run
+
+    # You need to have graphviz installed to run this
+    dep_check -g graph_file.svg ROOT_DIR
+
+If you prefer having the graph in a dot file, then run
+
+    dep_check -g graph_file.dot ROOT_DIR
+
+*Note : if you generate a svg file, a dot file will be created in `/tmp/graph.dot`*

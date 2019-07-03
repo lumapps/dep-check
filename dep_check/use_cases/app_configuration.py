@@ -21,7 +21,7 @@ class AppConfiguration:
     std_lib_filter: IStdLibFilter
 
 
-class AppConfigurationSingelton:
+class AppConfigurationSingleton:
     """
     App configuration singleton
     """

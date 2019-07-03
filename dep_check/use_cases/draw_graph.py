@@ -1,54 +1,44 @@
 """
-Build rules more restrictive rules from existing source use case.
+Draws a graph of the dependencies between modules
 """
 from abc import ABC, abstractmethod
 from typing import Dict, Iterator
 
 from dep_check.dependency_finder import find_dependencies
-from dep_check.models import Dependencies, Module, Rule, SourceFile
+from dep_check.models import Dependencies, DependencyRules, Module, Rule, SourceFile
 
 from .app_configuration import AppConfigurationSingleton
-from .interfaces import Configuration
 
 
-class IConfigurationWriter(ABC):
+class IGraphDrawer(ABC):
     """
-    Interface for writing a script configuration.
+    Interface for writing a dependency graph.
     """
 
     @abstractmethod
-    def write(self, configuration: Configuration) -> None:
+    def write(self, dep_rules: DependencyRules) -> bool:
         """
-        Write a script configuration.
+        Writes a dot file corresponding to the dependency graph.
         """
 
 
-class BuildConfigurationUC:
-    """
-    Build more restrictive rules from existing list of files.
-    """
-
-    def __init__(
-        self, printer: IConfigurationWriter, source_files: Iterator[SourceFile]
-    ) -> None:
+class DrawGraphUC:
+    def __init__(self, drawer: IGraphDrawer, source_files: Iterator[SourceFile]):
         app_configuration = AppConfigurationSingleton.get_instance()
         self.std_lib_filter = app_configuration.std_lib_filter
-        self.printer = printer
         self.source_files = source_files
+        self.drawer = drawer
+        self.draw_svg = True
 
     def run(self) -> None:
-        """
-        Build configuration from existing source files.
-        """
         global_dependencies: Dict[Module, Dependencies] = {}
         for source_file in self.source_files:
             dependencies = find_dependencies(source_file)
             dependencies = self.std_lib_filter.filter(dependencies)
-
             global_dependencies[source_file.module] = dependencies
 
         dependency_rules = {}
         for module, dependencies in global_dependencies.items():
             dependency_rules[module] = [Rule(dependency) for dependency in dependencies]
 
-        self.printer.write(Configuration(dependency_rules))
+        self.drawer.write(dependency_rules)

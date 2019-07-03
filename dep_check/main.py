@@ -7,14 +7,15 @@ import argparse
 import sys
 
 from dep_check.infra.file_system import source_file_iterator
-from dep_check.infra.io import ErrorLogger, YamlConfigurationIO
+from dep_check.infra.io import ErrorLogger, Graph, GraphDrawer, YamlConfigurationIO
 from dep_check.infra.std_lib_filter import StdLibSimpleFilter
 from dep_check.use_cases.app_configuration import (
     AppConfiguration,
-    AppConfigurationSingelton,
+    AppConfigurationSingleton,
 )
 from dep_check.use_cases.build import BuildConfigurationUC
 from dep_check.use_cases.check import CheckDependenciesUC
+from dep_check.use_cases.draw_graph import DrawGraphUC
 from dep_check.use_cases.interfaces import ExitCode
 
 PARSER = argparse.ArgumentParser(
@@ -31,6 +32,9 @@ PARSER.add_argument(
 )
 PARSER.add_argument(
     "-b", "--build", type=str, help="Build configuration file with existing code."
+)
+PARSER.add_argument(
+    "-g", "--graph", type=str, help="The svg file representing the dependecy graph."
 )
 
 
@@ -64,8 +68,12 @@ class MainApp:
             check_uc = self.create_check_use_case()
             code = check_uc.run()
 
+        elif self.args.graph:
+            graph_uc = self.create_graph_use_case()
+            graph_uc.run()
+
         else:
-            raise MissingOptionError("need at least -c or -b option")
+            raise MissingOptionError("need at least -c, -b or -g option")
 
         return code.value
 
@@ -75,7 +83,7 @@ class MainApp:
         Create and set the global application configuration.
         """
         app_configuration = AppConfiguration(std_lib_filter=StdLibSimpleFilter())
-        AppConfigurationSingelton.define_app_configuration(app_configuration)
+        AppConfigurationSingleton.define_app_configuration(app_configuration)
 
     def create_build_use_case(self) -> BuildConfigurationUC:
         """
@@ -93,6 +101,15 @@ class MainApp:
         error_printer = ErrorLogger()
         source_files = source_file_iterator(self.args.root_dir)
         return CheckDependenciesUC(configuration_reader, error_printer, source_files)
+
+    def create_graph_use_case(self) -> DrawGraphUC:
+        """
+        Plumbing to make draw_graph use case working.
+        """
+        source_files = source_file_iterator(self.args.root_dir)
+        graph = Graph(self.args.graph)
+        graph_drawer = GraphDrawer(graph)
+        return DrawGraphUC(graph_drawer, source_files)
 
 
 def main() -> None:

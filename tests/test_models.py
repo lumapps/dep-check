@@ -223,6 +223,7 @@ class TestBuildRule:
         assert not re.match(regex, "toto")
         assert not re.match(regex, "toto.tata_123")
 
+
 class TestGetParent:
     """
     Test get_parent function.
