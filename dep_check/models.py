@@ -14,6 +14,8 @@ Rules = List[Rule]
 
 DependencyRules = Dict[str, Rules]
 
+GlobalDependencies = Dict[Module, Dependencies]
+
 
 def get_parent(module: Module) -> Module:
     """

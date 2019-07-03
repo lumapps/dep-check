@@ -7,7 +7,13 @@ import argparse
 import sys
 
 from dep_check.infra.file_system import source_file_iterator
-from dep_check.infra.io import ErrorLogger, Graph, GraphDrawer, YamlConfigurationIO
+from dep_check.infra.io import (
+    ErrorLogger,
+    Graph,
+    GraphDrawer,
+    YamlConfigurationIO,
+    read_graph_config,
+)
 from dep_check.infra.std_lib_filter import StdLibSimpleFilter
 from dep_check.use_cases.app_configuration import (
     AppConfiguration,
@@ -34,7 +40,13 @@ PARSER.add_argument(
     "-b", "--build", type=str, help="Build configuration file with existing code."
 )
 PARSER.add_argument(
-    "-g", "--graph", type=str, help="The svg file representing the dependecy graph."
+    "-g",
+    "--graph",
+    type=str,
+    help="The svg or dot file representing the dependecy graph.",
+)
+PARSER.add_argument(
+    "-o", "--options", type=str, help="The yaml file representing the graph options."
 )
 
 
@@ -107,9 +119,10 @@ class MainApp:
         Plumbing to make draw_graph use case working.
         """
         source_files = source_file_iterator(self.args.root_dir)
-        graph = Graph(self.args.graph)
+        graph_conf = read_graph_config(self.args.options) if self.args.options else None
+        graph = Graph(self.args.graph, graph_conf)
         graph_drawer = GraphDrawer(graph)
-        return DrawGraphUC(graph_drawer, source_files)
+        return DrawGraphUC(graph_drawer, source_files, graph_conf)
 
 
 def main() -> None:

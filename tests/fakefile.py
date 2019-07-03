@@ -1,9 +1,9 @@
-from dep_check.models import SourceCode, SourceFile, Module
+from dep_check.models import Module, SourceCode, SourceFile
 
 SIMPLE_FILE = SourceFile(
-module=Module("simple_module"),
-code=SourceCode(
-    """
+    module=Module("simple_module"),
+    code=SourceCode(
+        """
 import module
 import module.inside.module
 from amodule import aclass
@@ -32,3 +32,18 @@ from abc import ABC
 """
     ),
 )
+
+GLOBAL_DEPENDENCIES = {
+    "simple_module": set(
+        (Module("module"), Module("module.inside.module"), Module("amodule"))
+    ),
+    "amodule.local_module": set(
+        (
+            Module("module"),
+            Module("module.inside.module"),
+            Module("amodule"),
+            Module("amodule.inside"),
+        )
+    ),
+    "amodule.std_module": set((Module("module"), Module("module.inside.module"))),
+}

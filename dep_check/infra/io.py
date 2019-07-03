@@ -2,15 +2,15 @@
 Implementations of IDependenciesPrinter
 """
 import logging
-from pathlib import Path
 from dataclasses import asdict, dataclass
-from jinja2 import Template
+from pathlib import Path
 from subprocess import check_call
-from typing import List
+from typing import Dict, List, Optional
 
 import yaml
+from jinja2 import Template
 
-from dep_check.models import DependencyRules
+from dep_check.models import GlobalDependencies
 from dep_check.use_cases.build import IConfigurationWriter
 from dep_check.use_cases.check import (
     DependencyError,
@@ -57,16 +57,26 @@ class ErrorLogger(IErrorPrinter):
             )
 
 
-@dataclass
+def read_graph_config(conf_path: str) -> Dict:
+    """
+    Used to read the graph configuration file, and make it a Dictionary
+    """
+    with open(conf_path) as stream:
+        return dict(**yaml.safe_load(stream))
+
+
+@dataclass(init=False)
 class Graph:
     """
     Dataclass representing the informations to draw a graph
     """
 
-    svg_file_name: str
-    dot_file_name: str = "/tmp/graph.dot"
-    node_color: str = "white"
-    background_color: str = "transparent"
+    def __init__(self, svg_file_name: str, graph_config: Optional[Dict] = None):
+        self.svg_file_name = svg_file_name
+        self.graph_config = graph_config or {}
+        self.dot_file_name: str = "/tmp/graph.dot"
+        self.node_color: str = self.graph_config.get("node_color", "white")
+        self.background_color: str = self.graph_config.get("bgcolor", "transparent")
 
 
 class GraphDrawer(IGraphDrawer):
@@ -85,11 +95,11 @@ class GraphDrawer(IGraphDrawer):
         self.body = ""
         self.footer = "}\n"
 
-    def _write_dot(self, dep_rules: DependencyRules) -> bool:
-        if not dep_rules:
+    def _write_dot(self, global_dep: GlobalDependencies) -> bool:
+        if not global_dep:
             return False
 
-        for module, rules in dep_rules.items():
+        for module, rules in global_dep.items():
             for rule in rules:
                 self.body += '"{}" -> "{}"\n'.format(module, rule)
 
@@ -105,10 +115,10 @@ class GraphDrawer(IGraphDrawer):
             ["dot", "-Tsvg", self.graph.dot_file_name, "-o", self.graph.svg_file_name]
         )
 
-    def write(self, dep_rules: DependencyRules):
+    def write(self, global_dep: GlobalDependencies):
         if Path(self.graph.svg_file_name).suffix == ".dot":
             self.graph.dot_file_name = self.graph.svg_file_name
-            self._write_dot(dep_rules)
+            self._write_dot(global_dep)
         else:
-            if self._write_dot(dep_rules):
+            if self._write_dot(global_dep):
                 self._write_svg()

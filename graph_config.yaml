@@ -1,0 +1,5 @@
+fold_modules:
+  - dep_check.use_cases
+  - dep_check.infra
+node_color: powderblue
+bgcolor: violet
