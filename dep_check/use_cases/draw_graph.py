@@ -24,11 +24,11 @@ class IGraphDrawer(ABC):
 
 
 def _fold_dep(
-    gloabl_dep: GlobalDependencies, fold_module: Module
+    global_dep: GlobalDependencies, fold_module: Module
 ) -> GlobalDependencies:
 
-    flod_global_dep = defaultdict(set)
-    for module, rules in gloabl_dep.items():
+    fold_global_dep = defaultdict(set)
+    for module, rules in global_dep.items():
         new_rules = set()
         if module.startswith(fold_module):
             module = fold_module
@@ -36,9 +36,9 @@ def _fold_dep(
             fold_module if rule.startswith(fold_module) else rule for rule in rules
         )
         new_rules |= fold_rule
-        flod_global_dep[module] |= new_rules
+        fold_global_dep[module] |= new_rules
 
-    return flod_global_dep
+    return fold_global_dep
 
 
 class DrawGraphUC:

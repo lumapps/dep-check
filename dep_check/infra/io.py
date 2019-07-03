@@ -62,7 +62,7 @@ def read_graph_config(conf_path: str) -> Dict:
     Used to read the graph configuration file, and make it a Dictionary
     """
     with open(conf_path) as stream:
-        return dict(**yaml.safe_load(stream))
+        return yaml.safe_load(stream)
 
 
 @dataclass(init=False)
