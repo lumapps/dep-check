@@ -26,9 +26,7 @@ jobs:
           command: make init
       - run:
           name: Run all the linters
-          command: |
-          make check-format
-          make lint
+          command: make lint
 
   # Run the unit tests with coverage check, and make sure the integration tests have run
   test:
