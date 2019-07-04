@@ -33,8 +33,7 @@ def _fold_dep(
         if module.startswith(fold_module):
             module = fold_module
         fold_rule = set(
-            fold_module if rule.startswith(fold_module) else
-            rule for rule in rules
+            fold_module if rule.startswith(fold_module) else rule for rule in rules
         )
         new_rules |= fold_rule
         fold_global_dep[module] |= new_rules
@@ -84,7 +83,7 @@ class DrawGraphUC:
         for fold_module in self.config.get("fold_modules", []):
             global_dependencies = _fold_dep(global_dependencies, fold_module)
 
-        #To avoid a module to point itself, and make the graph more readable
+        # To avoid a module to point itself, and make the graph more readable
         for module, deps in global_dependencies.items():
             deps.discard(module)
 
