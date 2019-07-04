@@ -55,17 +55,18 @@ class DrawGraphUC:
         self.config = config or {}
 
     def _hide(self, global_dep: GlobalDependencies) -> GlobalDependencies:
-        if "hide_modules" not in self.config:
+        hide_modules = tuple(self.config.get("hide_modules", ()))
+        if not hide_modules:
             return global_dep
 
         filtered_global_dep = {}
         for module, dependencies in global_dep.items():
-            if not module.startswith(tuple(self.config["hide_modules"])):
+            if not module.startswith(hide_modules):
 
                 filtered_global_dep[module] = set(
                     dependency
                     for dependency in dependencies
-                    if not dependency.startswith(tuple(self.config["hide_modules"]))
+                    if not dependency.startswith(hide_modules)
                 )
 
         return filtered_global_dep

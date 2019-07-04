@@ -52,7 +52,7 @@ def test_dot() -> None:
     """
     # Given
     source_files: Iterator[SourceFile] = iter([SIMPLE_FILE])
-    drawer = GraphDrawer(Graph("graph.svg"))
+    drawer = GraphDrawer(Graph("tests/graph.svg"))
     use_case = DrawGraphUC(drawer, source_files)
 
     # When
@@ -85,7 +85,7 @@ def test_not_svg_with_dot(mock_method) -> None:
     """
     # Given
     source_files: Iterator[SourceFile] = iter([SIMPLE_FILE])
-    drawer = GraphDrawer(Graph("graph.dot"))
+    drawer = GraphDrawer(Graph("tests/graph.dot"))
     use_case = DrawGraphUC(drawer, source_files)
 
     # When
