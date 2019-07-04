@@ -11,7 +11,9 @@ from dep_check.use_cases.check import (
     IConfigurationReader,
 )
 from dep_check.use_cases.interfaces import Configuration
-from .fakefile import SIMPLE_FILE, FILE_WITH_LOCAL_IMPORT, FILE_WITH_STD_IMPORT
+
+from .fakefile import FILE_WITH_LOCAL_IMPORT, FILE_WITH_STD_IMPORT, SIMPLE_FILE
+
 
 def build_conf_reader_stub(configuration: Configuration) -> IConfigurationReader:
     """

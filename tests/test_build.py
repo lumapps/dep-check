@@ -5,9 +5,10 @@ Test build configuration use case.
 from typing import Iterator
 from unittest.mock import Mock
 
-from dep_check.models import  Rule, SourceFile
+from dep_check.models import Rule, SourceFile
 from dep_check.use_cases.build import BuildConfigurationUC
 from dep_check.use_cases.interfaces import Configuration
+
 
 def test_empty() -> None:
     """
