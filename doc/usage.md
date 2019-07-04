@@ -90,13 +90,22 @@ Here are the different options:
 
 You can chose to 'fold' one or more modules, which will bring together all of their submodules into the module(s), making the graph way more readable.
 
-To do so, you'll have to add a "fold_modules" in your graph config file :
+To do so, you'll have to add a "fold_modules" in your graph config file:
 
     fold_modules:
         - root.amodule
         - root.module.submodule
 
-**Make sure the name of the module you want to fold start at the root of your project** (e.g. 'root.amodule' and not 'amodule')
+#### Hide a module
+
+You can also chose to hide entirely a module, which will remove it from the dependency graph, along with its submodules.
+
+To do so, you'll have to add a "hide_modules" in your graph config file:
+
+    hide_modules:
+        - root.amodule
+
+**Make sure the name of the module you want to fold/hide start at the root of your project** (e.g. 'root.amodule' and not 'amodule')
 
 #### Add color
 
