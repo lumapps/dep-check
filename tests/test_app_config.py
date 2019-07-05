@@ -1,11 +1,12 @@
 from unittest.mock import Mock
 
+from pytest import raises
+
 from dep_check.use_cases.app_configuration import (
     AppConfigurationAlreadySetException,
     AppConfigurationSingleton,
 )
 
-from pytest import raises
 
 def test_app_configuration_already_set() -> None:
     """
@@ -19,6 +20,6 @@ def test_app_configuration_already_set() -> None:
     with raises(AppConfigurationAlreadySetException) as error:
         AppConfigurationSingleton.define_app_configuration(config)
 
-    # Then
+        # Then
         assert error
         assert str(error) == "app configuration can be set once"
