@@ -1,5 +1,8 @@
 fold_modules:
   - dep_check.use_cases
   - dep_check.infra
-node_color: powderblue
-bgcolor: violet
+hide_modules:
+- dep_check.main
+
+node_color: chartreuse
+bgcolor: powderblue
