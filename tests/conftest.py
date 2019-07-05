@@ -1,4 +1,4 @@
-from typing import Iterator
+from typing import Iterable
 
 import pytest
 
@@ -22,8 +22,8 @@ def setup_application_config() -> None:
 
 
 @pytest.fixture(scope="session")
-def source_files() -> Iterator[SourceFile]:
+def source_files() -> Iterable[SourceFile]:
     """
     Iter over test source files.
     """
-    yield SIMPLE_FILE, FILE_WITH_LOCAL_IMPORT, FILE_WITH_STD_IMPORT
+    return SIMPLE_FILE, FILE_WITH_LOCAL_IMPORT, FILE_WITH_STD_IMPORT
