@@ -28,7 +28,6 @@ def test_empty_rules(source_files) -> None:
     Test result with no rule given.
     """
     # Given
-    source_files = source_files
     configuration = Configuration()
     configuration_reader = build_conf_reader_stub(configuration)
     error_printer = Mock()
@@ -68,7 +67,6 @@ def test_passing_rules(source_files) -> None:
     Test result with a set rules that accept files.
     """
     # Given
-    source_files = source_files
     configuration = Configuration(
         dependency_rules={
             SIMPLE_FILE.module: [Rule("module%"), Rule("amodule")],
@@ -92,7 +90,6 @@ def test_not_passing_rules(source_files) -> None:
     Test result with a set rules that not accept files.
     """
     # Given
-    source_files = source_files
     dep_rules = {
         "simple_module": [Rule("module.*"), Rule("amodule")],
         "amodule.local_module": [Rule("module"), Rule("module.inside.*"), Rule("amod")],

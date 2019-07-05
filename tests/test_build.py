@@ -31,7 +31,6 @@ def test_nominal(source_files) -> None:
     Test result with a set source files.
     """
     # Given
-    source_files = source_files
     dependencies_writer = Mock()
     use_case = BuildConfigurationUC(dependencies_writer, source_files)
 
