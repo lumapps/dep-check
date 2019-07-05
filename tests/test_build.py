@@ -5,7 +5,7 @@ Test build configuration use case.
 from typing import Iterator
 from unittest.mock import Mock
 
-from dep_check.models import Rule, SourceFile
+from dep_check.models import ModuleWildcard, SourceFile
 from dep_check.use_cases.build import BuildConfigurationUC
 from dep_check.use_cases.interfaces import Configuration
 
@@ -47,15 +47,15 @@ def test_nominal(source_files) -> None:
     }
     assert dependency_rules == {
         "simple_module": set(
-            (Rule("module"), Rule("module.inside.module"), Rule("amodule"))
+            (ModuleWildcard("module"), ModuleWildcard("module.inside.module"), ModuleWildcard("amodule"))
         ),
         "amodule.local_module": set(
             (
-                Rule("module"),
-                Rule("module.inside.module"),
-                Rule("amodule"),
-                Rule("amodule.inside"),
+                ModuleWildcard("module"),
+                ModuleWildcard("module.inside.module"),
+                ModuleWildcard("amodule"),
+                ModuleWildcard("amodule.inside"),
             )
         ),
-        "amodule.std_module": set((Rule("module"), Rule("module.inside.module"))),
+        "amodule.std_module": set((ModuleWildcard("module"), ModuleWildcard("module.inside.module"))),
     }

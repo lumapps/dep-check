@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, Iterator
 
 from dep_check.dependency_finder import find_dependencies
-from dep_check.models import Dependencies, Module, Rule, SourceFile
+from dep_check.models import Dependencies, Module, ModuleWildcard, SourceFile
 
 from .app_configuration import AppConfigurationSingleton
 from .interfaces import Configuration
@@ -49,6 +49,6 @@ class BuildConfigurationUC:
 
         dependency_rules = {}
         for module, dependencies in global_dependencies.items():
-            dependency_rules[module] = [Rule(dependency) for dependency in dependencies]
+            dependency_rules[module] = [ModuleWildcard(dependency) for dependency in dependencies]
 
         self.printer.write(Configuration(dependency_rules))
