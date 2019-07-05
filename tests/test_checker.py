@@ -1,10 +1,10 @@
 """
 Test check use case.
 """
+from pytest import raises
+
 from dep_check.checker import NotAllowedDependencyException, check_dependency
 from dep_check.models import Module, Rule, Rules
-
-from pytest import raises
 
 
 def test_empty() -> None:
