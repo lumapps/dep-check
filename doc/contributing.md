@@ -48,7 +48,7 @@ If you are proposing a feature:
 - Remember that this is a volunteer-driven project, and that
     contributions are welcome :)
 
-## Get Started! (TO CHANGE)
+## Get Started!
 
 Ready to contribute? Here's how to set up dep-check for local
 development.
@@ -99,14 +99,3 @@ Before you submit a pull request, check that it meets these guidelines:
 To run a subset of tests:
 
     pytest tests.test_my_test
-
-## Deploying (TO CHANGE?)
-
-A reminder for the maintainers on how to deploy. Make sure all your
-changes are committed (including an entry in [history.md](history.md)). Then run:
-
-    bumpversion patch # possible: major / minor / patch
-    git push
-    git push --tags
-
-~~Travis~~ CircleCI? will then deploy to PyPI if tests pass.

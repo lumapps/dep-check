@@ -13,7 +13,8 @@ jobs:
 
   # Check the source code quality with various static analysis tools
   static_analysis:
-    machine: true
+    docker:
+      - image: circleci/python:3.7
     steps:
       - checkout
       - run:
@@ -30,7 +31,8 @@ jobs:
 
   # Run the unit tests with coverage check, and make sure the integration tests have run
   test:
-    machine: true
+    docker:
+      - image: circleci/python:3.7
     steps:
       - checkout
       - run:
