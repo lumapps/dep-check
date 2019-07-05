@@ -28,15 +28,15 @@ def _fold_dep(
 ) -> GlobalDependencies:
 
     fold_global_dep = defaultdict(set)
-    for module, rules in global_dep.items():
-        new_rules = set()
+    for module, deps in global_dep.items():
+        new_deps = set()
         if module.startswith(fold_module):
             module = fold_module
-        fold_rule = set(
-            fold_module if rule.startswith(fold_module) else rule for rule in rules
+        fold_dep = set(
+            fold_module if dep.startswith(fold_module) else dep for dep in deps
         )
-        new_rules |= fold_rule
-        fold_global_dep[module] |= new_rules
+        new_deps |= fold_dep
+        fold_global_dep[module] |= new_deps
 
     return fold_global_dep
 
@@ -85,7 +85,9 @@ class DrawGraphUC:
             global_dependencies = _fold_dep(global_dependencies, fold_module)
 
         # To avoid a module to point itself, and make the graph more readable
-        for module, deps in global_dependencies.items():
+        for module, deps in list(global_dependencies.items()):
             deps.discard(module)
+            if not global_dependencies[module]:
+                global_dependencies.pop(module, None)
 
         self.drawer.write(global_dependencies)

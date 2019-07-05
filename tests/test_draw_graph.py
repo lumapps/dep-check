@@ -166,10 +166,9 @@ def test_fold_module(source_files) -> None:
         "simple_module": set(
             (Module("module"), Module("module.inside.module"), Module("amodule"))
         ),
-        "amodule": set(
-            (Module("module"), Module("module.inside.module"))
-        ),
+        "amodule": set((Module("module"), Module("module.inside.module"))),
     }
+
 
 @patch.object(DrawGraphUC, "_hide")
 def test_hide_empty_config(mock_method, source_files) -> None:
@@ -182,25 +181,25 @@ def test_hide_empty_config(mock_method, source_files) -> None:
     # When
     use_case.run()
 
-    #Then
+    # Then
     mock_method.assert_called_with(GLOBAL_DEPENDENCIES)
 
 
 @patch.object(DrawGraphUC, "_hide")
 def test_hide_empty_dict(mock_method) -> None:
 
-    with patch.object(DrawGraphUC, "_hide") as mock_method:
-        # Given
-        source_files: Iterator[SourceFile] = iter([])
-        drawer = Mock()
-        config = {"hide_modules": ["toto", "tata"]}
-        use_case = DrawGraphUC(drawer, source_files, config)
+    # Given
+    source_files: Iterator[SourceFile] = iter([])
+    drawer = Mock()
+    config = {"hide_modules": ["toto", "tata"]}
+    use_case = DrawGraphUC(drawer, source_files, config)
 
-        # When
-        use_case.run()
+    # When
+    use_case.run()
 
-        #Then
-        mock_method.assert_called_with(dict())
+    # Then
+    mock_method.assert_called_with(dict())
+
 
 def test_hide_nominal(source_files) -> None:
     # Given
@@ -211,12 +210,28 @@ def test_hide_nominal(source_files) -> None:
     # When
     use_case.run()
 
-    #Then
+    # Then
     drawer.write.assert_called()  # type: ignore
     global_dep = drawer.write.call_args[0][0]
 
     assert global_dep == {
-        "simple_module": set(
-            (Module("module"), Module("module.inside.module"))
-        )
+        "simple_module": set((Module("module"), Module("module.inside.module")))
     }
+
+
+def test_pop_empty_module_from_dependencies(source_files) -> None:
+    # Given
+    drawer = Mock()
+    config = {"hide_modules": ["module"]}
+    use_case = DrawGraphUC(drawer, source_files, config)
+
+    # When
+    use_case.run()
+
+    # Then
+    drawer.write.assert_called_with(
+        {
+            "simple_module": set((Module("amodule"),)),
+            "amodule.local_module": set((Module("amodule"), Module("amodule.inside"))),
+        }
+    )

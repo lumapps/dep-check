@@ -32,7 +32,7 @@ lint: ## check style with pylint
 	black --check dep_check && \
 	black --check tests && \
 	isort --check-only -rc dep_check && \
-	isort --check-only tests && \
+	isort --check-only -rc tests && \
 	pylint dep_check tests
 
 test: ## run tests quickly with the default Python
