@@ -16,10 +16,6 @@ def test_app_configuration_already_set() -> None:
     AppConfigurationSingleton._already_set = True  # pylint: disable=protected-access
     config = Mock()
 
-    # When
-    with raises(AppConfigurationAlreadySetException) as error:
+    # When -Then
+    with raises(AppConfigurationAlreadySetException):
         AppConfigurationSingleton.define_app_configuration(config)
-
-        # Then
-        assert error
-        assert str(error) == "app configuration can be set once"

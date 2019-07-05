@@ -4,6 +4,8 @@ Test check use case.
 from dep_check.checker import NotAllowedDependencyException, check_dependency
 from dep_check.models import Module, Rule, Rules
 
+from pytest import raises
+
 
 def test_empty() -> None:
     """
@@ -14,16 +16,13 @@ def test_empty() -> None:
     rules: Rules = []
 
     # When
-    error = None
-    try:
+    with raises(NotAllowedDependencyException) as error:
         check_dependency(dependency, rules)
-    except NotAllowedDependencyException as exception:
-        error = exception
 
     # Then
     assert error
-    assert error.dependency == dependency
-    assert error.rules == rules
+    assert error.value.dependency == dependency
+    assert error.value.rules == rules
 
 
 def test_passing_case() -> None:
@@ -54,13 +53,10 @@ def test_not_passing_case() -> None:
     rules: Rules = [Rule("toto"), Rule("te.*"), Rule("titi\\.tata")]
 
     # When
-    error = None
-    try:
+    with raises(NotAllowedDependencyException) as error:
         check_dependency(dependency, rules)
-    except NotAllowedDependencyException as exception:
-        error = exception
 
     # Then
     assert error
-    assert error.dependency == dependency
-    assert error.rules == rules
+    assert error.value.dependency == dependency
+    assert error.value.rules == rules
