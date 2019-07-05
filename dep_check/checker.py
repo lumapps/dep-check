@@ -23,5 +23,7 @@ def check_dependency(dependency: Module, rules: Rules) -> None:
     """
     Check that dependencies match a given set of rules.
     """
-    if not any(re.match("{}$".format(wildcard_to_regex(rule)), dependency) for rule in rules):
+    if not any(
+        re.match("{}$".format(wildcard_to_regex(rule)), dependency) for rule in rules
+    ):
         raise NotAllowedDependencyException(dependency, rules)

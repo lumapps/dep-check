@@ -47,7 +47,11 @@ def test_nominal(source_files) -> None:
     }
     assert dependency_rules == {
         "simple_module": set(
-            (ModuleWildcard("module"), ModuleWildcard("module.inside.module"), ModuleWildcard("amodule"))
+            (
+                ModuleWildcard("module"),
+                ModuleWildcard("module.inside.module"),
+                ModuleWildcard("amodule"),
+            )
         ),
         "amodule.local_module": set(
             (
@@ -57,5 +61,7 @@ def test_nominal(source_files) -> None:
                 ModuleWildcard("amodule.inside"),
             )
         ),
-        "amodule.std_module": set((ModuleWildcard("module"), ModuleWildcard("module.inside.module"))),
+        "amodule.std_module": set(
+            (ModuleWildcard("module"), ModuleWildcard("module.inside.module"))
+        ),
     }

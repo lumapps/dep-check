@@ -50,7 +50,11 @@ def test_not_passing_case() -> None:
     """
     # Given
     dependency = Module("toto.tata")
-    rules: Rules = [ModuleWildcard("toto"), ModuleWildcard("te.*"), ModuleWildcard("titi\\.tata")]
+    rules: Rules = [
+        ModuleWildcard("toto"),
+        ModuleWildcard("te.*"),
+        ModuleWildcard("titi\\.tata"),
+    ]
 
     # When
     with raises(NotAllowedDependencyException) as error:

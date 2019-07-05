@@ -70,7 +70,11 @@ def test_passing_rules(source_files) -> None:
     configuration = Configuration(
         dependency_rules={
             SIMPLE_FILE.module: [ModuleWildcard("module%"), ModuleWildcard("amodule")],
-            "amodule.*": [ModuleWildcard("module"), ModuleWildcard("module.inside.*"), ModuleWildcard("amodule%")],
+            "amodule.*": [
+                ModuleWildcard("module"),
+                ModuleWildcard("module.inside.*"),
+                ModuleWildcard("amodule%"),
+            ],
         }
     )
     configuration_reader = build_conf_reader_stub(configuration)
@@ -92,7 +96,11 @@ def test_not_passing_rules(source_files) -> None:
     # Given
     dep_rules = {
         "simple_module": [ModuleWildcard("module.*"), ModuleWildcard("amodule")],
-        "amodule.local_module": [ModuleWildcard("module"), ModuleWildcard("module.inside.*"), ModuleWildcard("amod")],
+        "amodule.local_module": [
+            ModuleWildcard("module"),
+            ModuleWildcard("module.inside.*"),
+            ModuleWildcard("amod"),
+        ],
         "amodule.std_module": [ModuleWildcard("mod")],
     }
 

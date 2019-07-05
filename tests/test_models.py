@@ -3,7 +3,7 @@ Test functions in models module.
 """
 import re
 
-from dep_check.models import Module, wildcard_to_regex, get_parent
+from dep_check.models import Module, get_parent, wildcard_to_regex
 
 
 class TestBuildModuleRegex:

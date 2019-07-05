@@ -15,8 +15,8 @@ from dep_check.models import (
     ModuleWildcard,
     Rules,
     SourceFile,
-    wildcard_to_regex,
     get_parent,
+    wildcard_to_regex,
 )
 
 from .app_configuration import AppConfigurationSingleton
