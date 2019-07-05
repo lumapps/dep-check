@@ -134,3 +134,19 @@ def test_not_passing_rules(source_files) -> None:
             ),
         )
     )
+
+
+def test_get_rules_with_init_module():
+
+    # Given
+    module = Module("module.__init__")
+    configuration = Configuration(local_init=True)
+    configuration_reader = build_conf_reader_stub(configuration)
+    error_printer = Mock()
+    use_case = CheckDependenciesUC(configuration_reader, error_printer, iter([]))
+
+    # When
+    rule = use_case._get_rules(module)  # pylint: disable=protected-access
+
+    # Then
+    assert rule == [Rule("module%")]

@@ -83,8 +83,8 @@ class CheckDependenciesUC:
         Return rules in configuration that match a given module.
         """
         if self.configuration.local_init and module.endswith(".__init__"):
-            parent_module_regex = Rule(get_parent(module))
-            return [Rule(r"{}%".format(parent_module_regex))]
+            parent_module = get_parent(module)
+            return [Rule(r"{}%".format(parent_module))]
 
         matching_rules: Rules = []
         for module_wildcard, rules in self.configuration.dependency_rules.items():
