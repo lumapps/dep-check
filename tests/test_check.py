@@ -23,12 +23,12 @@ def build_conf_reader_stub(configuration: Configuration) -> IConfigurationReader
     return Mock(**attrs)
 
 
-def test_empty_rules(get_source_file_iterator) -> None:
+def test_empty_rules(source_files) -> None:
     """
     Test result with no rule given.
     """
     # Given
-    source_files = get_source_file_iterator
+    source_files = source_files
     configuration = Configuration()
     configuration_reader = build_conf_reader_stub(configuration)
     error_printer = Mock()
@@ -63,12 +63,12 @@ def test_empty_rules(get_source_file_iterator) -> None:
     )
 
 
-def test_passing_rules(get_source_file_iterator) -> None:
+def test_passing_rules(source_files) -> None:
     """
     Test result with a set rules that accept files.
     """
     # Given
-    source_files = get_source_file_iterator
+    source_files = source_files
     configuration = Configuration(
         dependency_rules={
             SIMPLE_FILE.module: [Rule("module%"), Rule("amodule")],
@@ -87,12 +87,12 @@ def test_passing_rules(get_source_file_iterator) -> None:
     error_printer.print.assert_called_with([])
 
 
-def test_not_passing_rules(get_source_file_iterator) -> None:
+def test_not_passing_rules(source_files) -> None:
     """
     Test result with a set rules that not accept files.
     """
     # Given
-    source_files = get_source_file_iterator
+    source_files = source_files
     dep_rules = {
         "simple_module": [Rule("module.*"), Rule("amodule")],
         "amodule.local_module": [Rule("module"), Rule("module.inside.*"), Rule("amod")],

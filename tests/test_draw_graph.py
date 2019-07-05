@@ -27,12 +27,12 @@ def test_empty_source_files() -> None:
     drawer.write.assert_called_with({})
 
 
-def test_nominal(get_source_file_iterator) -> None:
+def test_nominal(source_files) -> None:
     """
     Test result with a set source files.
     """
     # Given
-    source_files = get_source_file_iterator
+    source_files = source_files
     drawer = Mock()
     use_case = DrawGraphUC(drawer, source_files)
 
@@ -147,12 +147,12 @@ def test_fold_dep() -> None:
     }
 
 
-def test_fold_module(get_source_file_iterator) -> None:
+def test_fold_module(source_files) -> None:
     """
     Test result with a set source files and a module to fold.
     """
     # Given
-    source_files = get_source_file_iterator
+    source_files = source_files
     conf_graph = {"fold_modules": ["amodule"]}
     drawer = Mock()
     use_case = DrawGraphUC(drawer, source_files, conf_graph)
@@ -174,10 +174,10 @@ def test_fold_module(get_source_file_iterator) -> None:
     }
 
 @patch.object(DrawGraphUC, "_hide")
-def test_hide_empty_config(mock_method, get_source_file_iterator) -> None:
+def test_hide_empty_config(mock_method, source_files) -> None:
 
     # Given
-    source_files = get_source_file_iterator
+    source_files = source_files
     drawer = Mock()
     config = {"fold_modules": ["module"]}
     use_case = DrawGraphUC(drawer, source_files, config)
@@ -205,9 +205,9 @@ def test_hide_empty_dict(mock_method) -> None:
         #Then
         mock_method.assert_called_with(dict())
 
-def test_hide_nominal(get_source_file_iterator) -> None:
+def test_hide_nominal(source_files) -> None:
     # Given
-    source_files = get_source_file_iterator
+    source_files = source_files
     drawer = Mock()
     config = {"hide_modules": ["amodule"]}
     use_case = DrawGraphUC(drawer, source_files, config)

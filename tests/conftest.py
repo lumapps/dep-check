@@ -22,7 +22,7 @@ def setup_application_config() -> None:
 
 
 @pytest.fixture(scope="session")
-def get_source_file_iterator() -> Iterator[SourceFile]:
+def source_files() -> Iterator[SourceFile]:
     """
     Iter over test source files.
     """
