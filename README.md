@@ -2,14 +2,11 @@
 
 [![image](https://img.shields.io/pypi/v/dep-check.svg)](https://pypi.python.org/pypi/dep-check)
 
-[![image](https://img.shields.io/travis/lumapps/dep-check.svg)](https://travis-ci.org/lumapps/dep-check) (Not used)
-
-[![Documentation Status](https://readthedocs.org/projects/dep-check/badge/?version=latest)](https://dep-check.readthedocs.io/en/latest/?badge=latest) (Not used)
+## Version: Pre-alpha
 
 Python Dependency Check Tool
 
 * Free software: MIT license
-* ~~Documentation: <https://dep-check.readthedocs.io>.~~
 
 ## Authors & contributors
 
@@ -17,7 +14,9 @@ Check out all the [Authors and contributors](doc/authors.md) of this project!
 
 ## Features
 
-* TODO
+* [Auto-build your configuration file](doc/usage.md#the-configuration-file)
+* [Check your configuration](doc/usage.md#checking-your-configuration)
+* [Draw a dependency graph](doc/usage.md#drawing-a-dependency-graph)
 
 ## Usage
 
