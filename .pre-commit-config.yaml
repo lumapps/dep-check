@@ -1,0 +1,23 @@
+---
+repos:
+    # Apply a selection of the pre-commit built-in validators
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v2.0.0
+      hooks:
+          - id: check-added-large-files
+          - id: check-case-conflict
+          - id: check-executables-have-shebangs
+          - id: check-json
+          - id: check-merge-conflict
+          - id: check-yaml
+          - id: debug-statements
+          - id: check-symlinks
+          - id: detect-private-key
+          - id: end-of-file-fixer
+            exclude_types: [svg]
+          - id: trailing-whitespace
+
+    # Make sure there are no unnecessary excludes in the above checks
+    - repo: meta
+      hooks:
+          - id: check-useless-excludes

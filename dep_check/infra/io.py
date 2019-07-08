@@ -31,7 +31,8 @@ class YamlConfigurationIO(IConfigurationWriter, IConfigurationReader):
 
     def write(self, configuration: Configuration) -> None:
         with open(self.config_path, "w") as stream:
-            yaml.dump(asdict(configuration), stream)
+            stream.write("---\n\n")
+            yaml.safe_dump(asdict(configuration), stream)
 
     def read(self) -> Configuration:
         with open(self.config_path) as stream:

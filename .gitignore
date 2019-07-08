@@ -5,6 +5,8 @@ __pycache__/
 dist/
 .tox/
 htmlcov/
+.mypy_cache/
+
 # Compiled source #
 ###################
 *.com
@@ -20,7 +22,6 @@ htmlcov/
 *.dot
 *.svg
 .coverage
-*.json
 # Packages #
 ############
 # it's better to unpack these files and commit the raw source

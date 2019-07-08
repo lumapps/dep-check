@@ -88,7 +88,9 @@ class CheckDependenciesUC:
 
         matching_rules: Rules = []
         for module_wildcard, rules in self.configuration.dependency_rules.items():
-            if re.match("{}$".format(wildcard_to_regex(module_wildcard)), module):
+            if re.match(
+                "{}$".format(wildcard_to_regex(ModuleWildcard(module_wildcard))), module
+            ):
                 matching_rules.extend(rules)
 
         return matching_rules

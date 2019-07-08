@@ -57,6 +57,6 @@ def source_file_iterator(root_dir: str) -> Iterator[SourceFile]:
             with open(str(file_path), "r") as stream:
                 content = stream.read()
             yield SourceFile(
-                project_root + _get_module_from_file_path(file_path),
+                Module(project_root + _get_module_from_file_path(file_path)),
                 SourceCode(content),
             )

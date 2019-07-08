@@ -6,7 +6,7 @@ from collections import defaultdict
 from typing import Dict, Iterator, Optional
 
 from dep_check.dependency_finder import find_dependencies
-from dep_check.models import GlobalDependencies, Module, SourceFile
+from dep_check.models import Dependencies, GlobalDependencies, Module, SourceFile
 
 from .app_configuration import AppConfigurationSingleton
 
@@ -27,9 +27,9 @@ def _fold_dep(
     global_dep: GlobalDependencies, fold_module: Module
 ) -> GlobalDependencies:
 
-    fold_global_dep = defaultdict(set)
+    fold_global_dep: GlobalDependencies = defaultdict(set)
     for module, deps in global_dep.items():
-        new_deps = set()
+        new_deps: Dependencies = set()
         if module.startswith(fold_module):
             module = fold_module
         fold_dep = set(
@@ -74,7 +74,7 @@ class DrawGraphUC:
     def run(self) -> None:
         global_dependencies: GlobalDependencies = {}
         for source_file in self.source_files:
-            module = source_file.module.replace(".__init__", "")
+            module = Module(source_file.module.replace(".__init__", ""))
             dependencies = find_dependencies(source_file)
             dependencies = self.std_lib_filter.filter(dependencies)
             global_dependencies[module] = dependencies

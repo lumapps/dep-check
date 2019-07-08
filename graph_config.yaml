@@ -1,8 +1,11 @@
+---
+
 fold_modules:
   - dep_check.use_cases
   - dep_check.infra
+
 hide_modules:
-- dep_check.main
+  - dep_check.main
 
 node_color: chartreuse
 bgcolor: powderblue
