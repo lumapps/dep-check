@@ -29,10 +29,12 @@ clean-test: ## remove test and coverage artifacts
 
 lint: ## check style with pylint
 	source venv/bin/activate && \
+	pre-commit run --all-files && \
 	black --check dep_check && \
 	black --check tests && \
 	isort --check-only -rc dep_check && \
 	isort --check-only -rc tests && \
+	mypy dep_check && \
 	pylint dep_check tests
 
 test: ## run tests quickly with the default Python

@@ -1,3 +1,5 @@
+---
+
 dependency_rules:
   __init__: []
   checker:
