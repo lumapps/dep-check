@@ -30,7 +30,7 @@ jobs:
           command: make lint
 
   # Run the unit tests with coverage check, and make sure the integration tests have run
-  test:
+  tests:
     docker:
       - image: circleci/python:3.7
     steps:
@@ -50,9 +50,44 @@ jobs:
             make test
       - store_test_results:
           path: test-results
+
+  deploy:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run:
+          name: Initialize .pypirc
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = lumapps" >> ~/.pypirc
+            echo -e "password = $pypi_password" >> ~/.pypirc
+      - run:
+          name: Create package
+          command: python3.7 setup.py sdist
+      - run:
+          name: Upload to PyPI
+          command: |
+            source venv/bin/activate && \
+            twine upload dist/*
 workflows:
   version: 2.1
-  build_and_test:
+  build_and_deploy:
     jobs:
-      - static_analysis
-      - test
+      - static_analysis:
+          filters:
+            tags:
+              only: /.*/
+      - tests:
+          filters:
+            tags:
+              only: /.*/
+      - deploy:
+          requires:
+            - static_analysis
+            - tests
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*/
+            branches:
+              ignore: /.*/
