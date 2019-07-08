@@ -64,7 +64,7 @@ jobs:
             echo -e "password = $pypi_password" >> ~/.pypirc
       - run:
           name: Create package
-          command: python3.7 setup.py sdist
+          command: make dist
       - run:
           name: Upload to PyPI
           command: |

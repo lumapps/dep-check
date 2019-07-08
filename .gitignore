@@ -3,6 +3,7 @@ venv/
 __pycache__/
 .eggs/
 dist/
+build/
 .tox/
 htmlcov/
 .mypy_cache/
