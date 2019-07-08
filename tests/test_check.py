@@ -4,7 +4,7 @@ Test check use case.
 
 from unittest.mock import Mock
 
-from dep_check.models import Module, Rule
+from dep_check.models import Module, ModuleWildcard
 from dep_check.use_cases.check import (
     CheckDependenciesUC,
     DependencyError,
@@ -69,8 +69,12 @@ def test_passing_rules(source_files) -> None:
     # Given
     configuration = Configuration(
         dependency_rules={
-            SIMPLE_FILE.module: [Rule("module%"), Rule("amodule")],
-            "amodule.*": [Rule("module"), Rule("module.inside.*"), Rule("amodule%")],
+            SIMPLE_FILE.module: [ModuleWildcard("module%"), ModuleWildcard("amodule")],
+            "amodule.*": [
+                ModuleWildcard("module"),
+                ModuleWildcard("module.inside.*"),
+                ModuleWildcard("amodule%"),
+            ],
         }
     )
     configuration_reader = build_conf_reader_stub(configuration)
@@ -91,9 +95,13 @@ def test_not_passing_rules(source_files) -> None:
     """
     # Given
     dep_rules = {
-        "simple_module": [Rule("module.*"), Rule("amodule")],
-        "amodule.local_module": [Rule("module"), Rule("module.inside.*"), Rule("amod")],
-        "amodule.std_module": [Rule("mod")],
+        "simple_module": [ModuleWildcard("module.*"), ModuleWildcard("amodule")],
+        "amodule.local_module": [
+            ModuleWildcard("module"),
+            ModuleWildcard("module.inside.*"),
+            ModuleWildcard("amod"),
+        ],
+        "amodule.std_module": [ModuleWildcard("mod")],
     }
 
     configuration = Configuration(dependency_rules=dep_rules)
@@ -146,7 +154,7 @@ def test_get_rules_with_init_module():
     use_case = CheckDependenciesUC(configuration_reader, error_printer, iter([]))
 
     # When
-    rule = use_case._get_rules(module)  # pylint: disable=protected-access
+    rules = use_case._get_rules(module)  # pylint: disable=protected-access
 
     # Then
-    assert rule == [Rule("module%")]
+    assert rules == [ModuleWildcard("module%")]

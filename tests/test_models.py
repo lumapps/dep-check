@@ -3,7 +3,7 @@ Test functions in models module.
 """
 import re
 
-from dep_check.models import Module, build_module_regex, build_rule, get_parent
+from dep_check.models import Module, get_parent, wildcard_to_regex
 
 
 class TestBuildModuleRegex:
@@ -20,7 +20,7 @@ class TestBuildModuleRegex:
         module = Module("")
 
         # When
-        regex = build_module_regex(module)
+        regex = wildcard_to_regex(module)
 
         # Then
         assert regex == ""
@@ -34,7 +34,7 @@ class TestBuildModuleRegex:
         module = Module("toto")
 
         # When
-        regex = build_module_regex(module)
+        regex = wildcard_to_regex(module)
 
         # Then
         assert re.match(regex, "toto")
@@ -50,7 +50,7 @@ class TestBuildModuleRegex:
         module = Module("toto.tata")
 
         # When
-        regex = build_module_regex(module)
+        regex = wildcard_to_regex(module)
 
         # Then
         assert re.match(regex, "toto.tata")
@@ -67,7 +67,7 @@ class TestBuildModuleRegex:
         module = Module("t?to.?at?")
 
         # When
-        regex = build_module_regex(module)
+        regex = wildcard_to_regex(module)
 
         # Then
         assert re.match(regex, "toto.tata")
@@ -86,7 +86,7 @@ class TestBuildModuleRegex:
         module = Module("toto*.*")
 
         # When
-        regex = build_module_regex(module)
+        regex = wildcard_to_regex(module)
 
         # Then
         assert re.match(regex, "toto.tata")
@@ -105,7 +105,7 @@ class TestBuildModuleRegex:
         module = Module("toto.tata%")
 
         # When
-        regex = build_module_regex(module)
+        regex = wildcard_to_regex(module)
 
         # Then
         assert re.match(regex, "toto.tata")
@@ -129,7 +129,7 @@ class TestBuildRule:
         module = Module("")
 
         # When
-        regex = build_rule(module)
+        regex = wildcard_to_regex(module)
 
         # Then
         assert regex == ""
@@ -143,7 +143,7 @@ class TestBuildRule:
         module = Module("toto")
 
         # When
-        regex = build_rule(module)
+        regex = wildcard_to_regex(module)
 
         # Then
         assert re.match(regex, "toto")
@@ -159,7 +159,7 @@ class TestBuildRule:
         module = Module("toto.tata")
 
         # When
-        regex = build_rule(module)
+        regex = wildcard_to_regex(module)
 
         # Then
         assert re.match(regex, "toto.tata")
@@ -176,7 +176,7 @@ class TestBuildRule:
         module = Module("t?to.?at?")
 
         # When
-        regex = build_module_regex(module)
+        regex = wildcard_to_regex(module)
 
         # Then
         assert re.match(regex, "toto.tata")
@@ -195,7 +195,7 @@ class TestBuildRule:
         module = Module("toto*.*")
 
         # When
-        regex = build_module_regex(module)
+        regex = wildcard_to_regex(module)
 
         # Then
         assert re.match(regex, "toto.tata")
@@ -214,7 +214,7 @@ class TestBuildRule:
         module = Module("toto.tata%")
 
         # When
-        regex = build_module_regex(module)
+        regex = wildcard_to_regex(module)
 
         # Then
         assert re.match(regex, "toto.tata")

@@ -12,11 +12,11 @@ from dep_check.checker import NotAllowedDependencyException, check_dependency
 from dep_check.dependency_finder import find_dependencies
 from dep_check.models import (
     Module,
-    Rule,
+    ModuleWildcard,
     Rules,
     SourceFile,
-    build_module_regex,
     get_parent,
+    wildcard_to_regex,
 )
 
 from .app_configuration import AppConfigurationSingleton
@@ -43,7 +43,7 @@ class DependencyError:
 
     module: Module
     dependency: Module
-    rules: Tuple[Rule, ...]
+    rules: Tuple[ModuleWildcard, ...]
 
 
 class IErrorPrinter(ABC):
@@ -84,11 +84,11 @@ class CheckDependenciesUC:
         """
         if self.configuration.local_init and module.endswith(".__init__"):
             parent_module = get_parent(module)
-            return [Rule(r"{}%".format(parent_module))]
+            return [ModuleWildcard(r"{}%".format(parent_module))]
 
         matching_rules: Rules = []
         for module_wildcard, rules in self.configuration.dependency_rules.items():
-            if re.match("{}$".format(build_module_regex(module_wildcard)), module):
+            if re.match("{}$".format(wildcard_to_regex(module_wildcard)), module):
                 matching_rules.extend(rules)
 
         return matching_rules

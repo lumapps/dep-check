@@ -3,7 +3,7 @@ Check that dependencies follow a set of rules.
 """
 import re
 
-from dep_check.models import Module, Rules, build_rule
+from dep_check.models import Module, Rules, wildcard_to_regex
 
 
 class NotAllowedDependencyException(Exception):
@@ -23,5 +23,7 @@ def check_dependency(dependency: Module, rules: Rules) -> None:
     """
     Check that dependencies match a given set of rules.
     """
-    if not any(re.match("{}$".format(build_rule(rule)), dependency) for rule in rules):
+    if not any(
+        re.match("{}$".format(wildcard_to_regex(rule)), dependency) for rule in rules
+    ):
         raise NotAllowedDependencyException(dependency, rules)

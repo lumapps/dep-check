@@ -9,8 +9,8 @@ Module = NewType("Module", str)
 Dependencies = Set[Module]
 SourceCode = NewType("SourceCode", str)
 
-Rule = NewType("Rule", str)
-Rules = List[Rule]
+ModuleWildcard = NewType("ModuleWildcard", str)
+Rules = List[ModuleWildcard]
 
 DependencyRules = Dict[str, Rules]
 
@@ -24,19 +24,7 @@ def get_parent(module: Module) -> Module:
     return Module(module.rpartition(".")[0])
 
 
-def build_rule(module: Module) -> Rule:
-    """
-    Return a rule that accept the given Module
-    """
-    module_regex = module.replace(".", "\\.").replace("*", ".*")
-    module_regex = module_regex.replace("[!", "[^").replace("?", ".?")
-
-    # Special char including a module along with all its submodules:
-    module_regex = module_regex.replace("%", r"(\..*)?$")
-    return Rule(module_regex)
-
-
-def build_module_regex(module: Module) -> str:
+def wildcard_to_regex(module: ModuleWildcard) -> str:
     """
     Return a regex expression for the Module from wildcard
     """

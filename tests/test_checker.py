@@ -1,8 +1,10 @@
 """
 Test check use case.
 """
+from pytest import raises
+
 from dep_check.checker import NotAllowedDependencyException, check_dependency
-from dep_check.models import Module, Rule, Rules
+from dep_check.models import Module, ModuleWildcard, Rules
 
 
 def test_empty() -> None:
@@ -14,16 +16,13 @@ def test_empty() -> None:
     rules: Rules = []
 
     # When
-    error = None
-    try:
+    with raises(NotAllowedDependencyException) as error:
         check_dependency(dependency, rules)
-    except NotAllowedDependencyException as exception:
-        error = exception
 
     # Then
     assert error
-    assert error.dependency == dependency
-    assert error.rules == rules
+    assert error.value.dependency == dependency
+    assert error.value.rules == rules
 
 
 def test_passing_case() -> None:
@@ -32,7 +31,7 @@ def test_passing_case() -> None:
     """
     # Given
     dependency = Module("toto")
-    rules: Rules = [Rule("to*"), Rule("titi.tata")]
+    rules: Rules = [ModuleWildcard("to*"), ModuleWildcard("titi.tata")]
 
     # When
     error = None
@@ -51,16 +50,17 @@ def test_not_passing_case() -> None:
     """
     # Given
     dependency = Module("toto.tata")
-    rules: Rules = [Rule("toto"), Rule("te.*"), Rule("titi\\.tata")]
+    rules: Rules = [
+        ModuleWildcard("toto"),
+        ModuleWildcard("te.*"),
+        ModuleWildcard("titi\\.tata"),
+    ]
 
     # When
-    error = None
-    try:
+    with raises(NotAllowedDependencyException) as error:
         check_dependency(dependency, rules)
-    except NotAllowedDependencyException as exception:
-        error = exception
 
     # Then
     assert error
-    assert error.dependency == dependency
-    assert error.rules == rules
+    assert error.value.dependency == dependency
+    assert error.value.rules == rules
