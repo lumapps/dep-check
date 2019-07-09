@@ -69,6 +69,7 @@ def test_dot() -> None:
                 drawer.graph.node_color
             ),
             "bgcolor={}\n".format(drawer.graph.background_color),
+            "\n",
             '"simple_module" -> "module"\n',
             '"simple_module" -> "module.inside.module"\n',
             '"simple_module" -> "amodule"\n',

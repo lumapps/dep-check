@@ -5,12 +5,12 @@ import logging
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from subprocess import check_call
-from typing import Dict, List, Optional
+from typing import Dict, Iterable, Iterator, List, Optional, Tuple
 
 import yaml
 from jinja2 import Template
 
-from dep_check.models import GlobalDependencies
+from dep_check.models import GlobalDependencies, Module, iter_all_modules
 from dep_check.use_cases.build import IConfigurationWriter
 from dep_check.use_cases.check import (
     DependencyError,
@@ -78,6 +78,7 @@ class Graph:
         self.dot_file_name: str = "/tmp/graph.dot"
         self.node_color: str = self.graph_config.get("node_color", "white")
         self.background_color: str = self.graph_config.get("bgcolor", "transparent")
+        self.layers: dict = self.graph_config.get("layers", {})
 
 
 class GraphDrawer(IGraphDrawer):
@@ -91,14 +92,43 @@ class GraphDrawer(IGraphDrawer):
             "digraph G {\n"
             "splines=true;\n"
             "node[shape=box fontname=Arial style=filled fillcolor={{nodecolor}}];\n"
-            "bgcolor={{bgcolor}}\n\n"
+            "bgcolor={{bgcolor}}\n\n\n"
         ).render(nodecolor=self.graph.node_color, bgcolor=self.graph.background_color)
         self.body = ""
         self.footer = "}\n"
 
+        self.subgraph = Template(
+            "subgraph cluster_{{subgraph_name}} {\n"
+            "node [style=filled fillcolor={{color}}];\n"
+            "{{list_modules}};\n"
+            'label="{{subgraph_name}}";\n'
+            "color={{color}};\n"
+            "penwidth=2;\n"
+            "}\n\n\n"
+        )
+
+    def _iter_layer_modules(
+        self, global_dep: GlobalDependencies
+    ) -> Iterator[Tuple[str, Iterable[Module]]]:
+
+        for layer in self.graph.layers:
+            yield layer, [
+                m
+                for m in iter_all_modules(global_dep)
+                if m.startswith(tuple(self.graph.layers[layer]["modules"]))
+            ]
+
     def _write_dot(self, global_dep: GlobalDependencies) -> bool:
         if not global_dep:
             return False
+
+        for layer, modules in self._iter_layer_modules(global_dep):
+
+            self.body += self.subgraph.render(
+                subgraph_name=layer,
+                color=self.graph.layers[layer].get("color", self.graph.node_color),
+                list_modules=str(modules)[1:-1].replace("'", '"'),
+            )
 
         for module, rules in global_dep.items():
             for rule in rules:

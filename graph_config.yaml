@@ -1,11 +1,20 @@
----
+layers:
+  entities:
+    color: khaki1
+    modules:
+      - dep_check.models
+      - dep_check.dependency_finder
+      - dep_check.checker
 
-fold_modules:
-  - dep_check.use_cases
-  - dep_check.infra
+  use_cases:
+    color: red
+    modules:
+      - dep_check.use_cases
 
-hide_modules:
-  - dep_check.main
+  external:
+    color: deepskyblue
+    modules:
+      - dep_check.infra
+      - dep_check.main
 
-node_color: chartreuse
-bgcolor: powderblue
+bgcolor: lightgray
