@@ -50,4 +50,9 @@ coverage: ## check code coverage quickly with the default Python
 	xdg-open htmlcov/index.html
 
 install: clean ## install the package to the active Python's site-packages
-	python setup.py install
+	python3.7 setup.py install
+
+dist: clean ## builds source and wheel package
+	source venv/bin/activate && \
+	python3.7 setup.py sdist && \
+	python3.7 setup.py bdist_wheel

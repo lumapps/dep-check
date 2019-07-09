@@ -10,25 +10,25 @@ Python Dependency Check Tool
 
 ## Authors & contributors
 
-Check out all the [Authors and contributors](doc/authors.md) of this project!
+Check out all the [Authors and contributors](https://github.com/lumapps/dep-check/blob/master/doc/authors.md) of this project!
 
 ## Features
 
-* [Auto-build your configuration file](doc/usage.md#the-configuration-file)
-* [Check your configuration](doc/usage.md#checking-your-configuration)
-* [Draw a dependency graph](doc/usage.md#drawing-a-dependency-graph)
+* [Auto-build your configuration file](https://github.com/lumapps/dep-check/blob/master/doc/usage.md#the-configuration-file)
+* [Check your configuration](https://github.com/lumapps/dep-check/blob/master/doc/usage.md#checking-your-configuration)
+* [Draw a dependency graph](https://github.com/lumapps/dep-check/blob/master/doc/usage.md#drawing-a-dependency-graph)
 
 ## Usage
 
-Everything you need to know is in the [User Manual](doc/usage.md)!
+Everything you need to know is in the [User Manual](https://github.com/lumapps/dep-check/blob/master/doc/usage.md)!
 
 ## Contributing
 
-If you want to make a contribution, be sure to follow the [Contribution guide](doc/contributing.md).
+If you want to make a contribution, be sure to follow the [Contribution guide](https://github.com/lumapps/dep-check/blob/master/doc/contributing.md).
 
 ## History
 
-Here is all the [histoy of this project](doc/history.md).
+Here is all the [histoy of this project](https://github.com/lumapps/dep-check/blob/master/doc/history.md).
 
 ## Credits
 

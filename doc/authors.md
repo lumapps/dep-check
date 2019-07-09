@@ -2,7 +2,7 @@
 
 ## Development Lead
 
-- LumApps < MAIL >
+- LumApps <core-devs@lumapps.com>
 
 ## Contributors
 
