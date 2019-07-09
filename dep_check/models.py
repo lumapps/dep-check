@@ -3,7 +3,7 @@ Define all the business models of the application.
 """
 
 from dataclasses import dataclass
-from typing import Dict, List, NewType, Set
+from typing import Dict, Iterator, List, NewType, Set
 
 Module = NewType("Module", str)
 Dependencies = Set[Module]
@@ -34,6 +34,16 @@ def wildcard_to_regex(module: ModuleWildcard) -> str:
     # Special char including a module along with all its submodules:
     module_regex = module_regex.replace("%", r"(\..*)?$")
     return module_regex
+
+
+def iter_all_modules(global_dep: GlobalDependencies) -> Iterator[Module]:
+    def iter_(global_dep: GlobalDependencies) -> Iterator[Module]:
+        for module, dependencies in global_dep.items():
+            yield module
+            for dep in dependencies:
+                yield dep
+
+    return iter(set(iter_(global_dep)))
 
 
 @dataclass

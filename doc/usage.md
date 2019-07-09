@@ -115,3 +115,24 @@ You can change the nodes and/or background color of the graph, using 'node_color
     bgcolor: gold
 
 *Note: if not defined, the nodes are white and the background is transparent.*
+
+#### Add layers
+
+You can add layers to your graph, grouping modules as you want (e.g. according to Clean Architecture layers).
+
+To do so, you'll have to add a "layers" in your graph config file. Then for each layer you want, you have to inform the color of the nodes, and the list of modules in your layer.
+
+*Note: each module you'll write will include its submodules. If you write `root.module` in a layer's list of modules, all of its submodules will be added in the layer as well*
+
+    layers:
+        my_first_layer:
+            color: green
+            modules:
+                - root.module.submodule
+                - root.othermodule
+        my_second_layer:
+            color: blue
+            modules:
+                -root.amodule
+
+All of the modules which are not in a layer will be displayed normally.
