@@ -63,6 +63,11 @@ jobs:
             echo -e "username = lumapps" >> ~/.pypirc
             echo -e "password = $pypi_password" >> ~/.pypirc
       - run:
+          name: Install CircleCI-specific dependencies
+          command: |
+            sudo apt update
+            sudo apt install -y libenchant1c2a
+      - run:
           name: Install the project dependencies
           command: make init
       - run:
