@@ -1,53 +1,24 @@
 ---
 
 dependency_rules:
-  dep_check.__init__: []
-  dep_check.checker:
-  - dep_check.models
-  dep_check.dependency_finder:
-  - dep_check.models
-  dep_check.infra.__init__: []
-  dep_check.infra.file_system:
-  - dep_check.models
+  '*':
+    - dep_check.models
+    - dep_check.dependency_finder
+    - dep_check.checker
+
   dep_check.infra.io:
-  - yaml
-  - dep_check.models
-  - dep_check.use_cases.interfaces
-  - dep_check.use_cases.build
-  - dep_check.use_cases.draw_graph
-  - jinja2
-  - dep_check.use_cases.check
+    - dep_check.use_cases%
+    - jinja2
+    - yaml
+
   dep_check.infra.std_lib_filter:
-  - dep_check.models
   - dep_check.use_cases.interfaces
+
+  dep_check.use_cases.*:
+    - dep_check.use_cases.app_configuration
+    - dep_check.use_cases.interfaces
+
   dep_check.main:
-  - dep_check.infra.file_system
-  - dep_check.use_cases.app_configuration
-  - dep_check.use_cases.interfaces
-  - dep_check.use_cases.draw_graph
-  - dep_check.use_cases.build
-  - dep_check.use_cases.check
-  - dep_check.infra.std_lib_filter
-  - dep_check.infra.io
-  dep_check.models: []
-  dep_check.use_cases.__init__: []
-  dep_check.use_cases.app_configuration:
-  - dep_check.use_cases.interfaces
-  dep_check.use_cases.build:
-  - dep_check.models
-  - dep_check.use_cases.app_configuration
-  - dep_check.use_cases.interfaces
-  - dep_check.dependency_finder
-  dep_check.use_cases.check:
-  - dep_check.models
-  - dep_check.use_cases.interfaces
-  - dep_check.dependency_finder
-  - dep_check.checker
-  - dep_check.use_cases.app_configuration
-  dep_check.use_cases.draw_graph:
-  - dep_check.models
-  - dep_check.use_cases.app_configuration
-  - dep_check.dependency_finder
-  dep_check.use_cases.interfaces:
-  - dep_check.models
+    - '*'
+
 local_init: false
