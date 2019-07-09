@@ -28,8 +28,13 @@ jobs:
       - run:
           name: Run all the linters
           command: make lint
+      - run:
+          name: Check dependencies
+          command: |
+            source venv/bin/activate && \
+            PYTHONPATH=. python3.7 dep_check/main.py -c dependency_config.yaml dep_check
 
-  # Run the unit tests with coverage check, and make sure the integration tests have run
+  # Run the unit tests
   tests:
     docker:
       - image: circleci/python:3.7
