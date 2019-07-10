@@ -38,9 +38,11 @@ lint: ## check style with pylint
 	pylint dep_check tests
 
 test: ## run tests quickly with the default Python
+	source venv/bin/activate && \
 	pytest -v tests
 
 test-all: ## run tests on every Python version with tox
+	source venv/bin/activate && \
 	tox
 
 coverage: ## check code coverage quickly with the default Python

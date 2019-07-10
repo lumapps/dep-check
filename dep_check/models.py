@@ -40,8 +40,7 @@ def iter_all_modules(global_dep: GlobalDependencies) -> Iterator[Module]:
     def iter_(global_dep: GlobalDependencies) -> Iterator[Module]:
         for module, dependencies in global_dep.items():
             yield module
-            for dep in dependencies:
-                yield dep
+            yield from dependencies
 
     return iter(set(iter_(global_dep)))
 
