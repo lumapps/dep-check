@@ -63,6 +63,10 @@ Otherwise, every error will be displayed as following:
 
     ERROR:root:module mymodule import othermodule but is not allowed to (rules: (set of rules for mymodule))
 
+Furthermore, every unused rule in your configuration file will be displayed as a warning:
+
+    WARNING:root:rule not used  mymodule: amodule.*
+
 ## Drawing a dependency graph
 
 If you want to visualize your project dependencies as a graph, just run
