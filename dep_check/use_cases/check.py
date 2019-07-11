@@ -6,13 +6,14 @@ Check all given source files dependencies use case.
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Iterator, List, Set, Tuple
+from typing import Iterator, List, Tuple
 
 from dep_check.checker import NotAllowedDependencyException, check_dependency
 from dep_check.dependency_finder import find_dependencies
 from dep_check.models import (
     Module,
     ModuleWildcard,
+    Rules,
     SourceFile,
     get_parent,
     wildcard_to_regex,
@@ -57,7 +58,7 @@ class IErrorPrinter(ABC):
         """
 
     @abstractmethod
-    def warn(self, unused_rules: Set[Tuple[ModuleWildcard, ModuleWildcard]]) -> None:
+    def warn(self, unused_rules: Rules) -> None:
         """
         Print warnings.
         """
@@ -82,25 +83,25 @@ class CheckDependenciesUC:
         self.configuration = configuration_reader.read()
         self.error_printer = error_printer
         self.source_files = source_files
-        self.used_rules: Set[Tuple[ModuleWildcard, ModuleWildcard]] = set()
-        self.all_rules: Set[Tuple[ModuleWildcard, ModuleWildcard]] = set()
+        self.used_rules: Rules = set()
+        self.all_rules: Rules = set()
 
-    def _get_rules(self, module: Module) -> List[Tuple[ModuleWildcard, ModuleWildcard]]:
+    def _get_rules(self, module: Module) -> Rules:
         """
         Return rules in configuration that match a given module.
         """
         if self.configuration.local_init and module.endswith(".__init__"):
             parent_module = get_parent(module)
-            return [
+            return {
                 (ModuleWildcard(module), ModuleWildcard(r"{}%".format(parent_module)))
-            ]
+            }
 
-        matching_rules: List[Tuple[ModuleWildcard, ModuleWildcard]] = []
+        matching_rules: Rules = set()
         for module_wildcard, rules in self.configuration.dependency_rules.items():
             if re.match(
                 "{}$".format(wildcard_to_regex(ModuleWildcard(module_wildcard))), module
             ):
-                matching_rules.extend(
+                matching_rules.update(
                     (ModuleWildcard(module_wildcard), r) for r in rules
                 )
 
@@ -116,7 +117,7 @@ class CheckDependenciesUC:
                 self.used_rules.add(check_dependency(dependency, rules))
             except NotAllowedDependencyException:
                 yield DependencyError(
-                    source_file.module, dependency, tuple([r for _, r in rules])
+                    source_file.module, dependency, tuple({r for _, r in rules})
                 )
 
     def run(self) -> ExitCode:

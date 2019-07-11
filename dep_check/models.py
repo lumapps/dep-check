@@ -3,16 +3,18 @@ Define all the business models of the application.
 """
 
 from dataclasses import dataclass
-from typing import Dict, Iterator, List, NewType, Set
+from typing import Dict, Iterator, List, NewType, Set, Tuple
 
 Module = NewType("Module", str)
 Dependencies = Set[Module]
 SourceCode = NewType("SourceCode", str)
 
 ModuleWildcard = NewType("ModuleWildcard", str)
-Rules = List[ModuleWildcard]
 
-DependencyRules = Dict[str, Rules]
+Rule = Tuple[ModuleWildcard, ModuleWildcard]
+Rules = Set[Rule]
+
+DependencyRules = Dict[str, List[ModuleWildcard]]
 
 GlobalDependencies = Dict[Module, Dependencies]
 

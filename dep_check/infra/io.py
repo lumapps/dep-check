@@ -5,17 +5,12 @@ import logging
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from subprocess import check_call
-from typing import Dict, Iterable, Iterator, List, Optional, Set, Tuple
+from typing import Dict, Iterable, Iterator, List, Optional, Tuple
 
 import yaml
 from jinja2 import Template
 
-from dep_check.models import (
-    GlobalDependencies,
-    Module,
-    ModuleWildcard,
-    iter_all_modules,
-)
+from dep_check.models import GlobalDependencies, Module, Rules, iter_all_modules
 from dep_check.use_cases.build import IConfigurationWriter
 from dep_check.use_cases.check import (
     DependencyError,
@@ -63,7 +58,7 @@ class ErrorLogger(IErrorPrinter):
             )
 
     @staticmethod
-    def warn(unused_rules: Set[Tuple[ModuleWildcard, ModuleWildcard]]) -> None:
+    def warn(unused_rules: Rules) -> None:
         """
         Log warnings
         """
