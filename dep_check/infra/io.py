@@ -5,12 +5,17 @@ import logging
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from subprocess import check_call
-from typing import Dict, Iterable, Iterator, List, Optional, Tuple
+from typing import Dict, Iterable, Iterator, List, Optional, Set, Tuple
 
 import yaml
 from jinja2 import Template
 
-from dep_check.models import GlobalDependencies, Module, iter_all_modules
+from dep_check.models import (
+    GlobalDependencies,
+    Module,
+    ModuleWildcard,
+    iter_all_modules,
+)
 from dep_check.use_cases.build import IConfigurationWriter
 from dep_check.use_cases.check import (
     DependencyError,
@@ -56,6 +61,14 @@ class ErrorLogger(IErrorPrinter):
                 error.dependency,
                 error.rules,
             )
+
+    @staticmethod
+    def warn(unused_rules: Set[Tuple[ModuleWildcard, ModuleWildcard]]) -> None:
+        """
+        Log warnings
+        """
+        for module, rule in unused_rules:
+            logging.warning("rule not used  %s: %s", module, rule)
 
 
 def read_graph_config(conf_path: str) -> Dict:

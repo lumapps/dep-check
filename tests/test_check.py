@@ -157,4 +157,4 @@ def test_get_rules_with_init_module():
     rules = use_case._get_rules(module)  # pylint: disable=protected-access
 
     # Then
-    assert rules == [ModuleWildcard("module%")]
+    assert rules == [(ModuleWildcard(module), ModuleWildcard("module%"))]

@@ -1,6 +1,8 @@
 """
 Test check use case.
 """
+from typing import List, Tuple
+
 from pytest import raises
 
 from dep_check.checker import NotAllowedDependencyException, check_dependency
@@ -31,7 +33,10 @@ def test_passing_case() -> None:
     """
     # Given
     dependency = Module("toto")
-    rules: Rules = [ModuleWildcard("to*"), ModuleWildcard("titi.tata")]
+    rules: List[Tuple[ModuleWildcard, ModuleWildcard]] = [
+        (ModuleWildcard("toto"), ModuleWildcard("to*")),
+        (ModuleWildcard("toto"), ModuleWildcard("titi.tata")),
+    ]
 
     # When
     error = None
@@ -50,10 +55,10 @@ def test_not_passing_case() -> None:
     """
     # Given
     dependency = Module("toto.tata")
-    rules: Rules = [
-        ModuleWildcard("toto"),
-        ModuleWildcard("te.*"),
-        ModuleWildcard("titi\\.tata"),
+    rules: List[Tuple[ModuleWildcard, ModuleWildcard]] = [
+        (ModuleWildcard("toto.*"), ModuleWildcard("toto")),
+        (ModuleWildcard("toto.*"), ModuleWildcard("te.*")),
+        (ModuleWildcard("toto.*"), ModuleWildcard("titi\\.tata")),
     ]
 
     # When
@@ -63,4 +68,4 @@ def test_not_passing_case() -> None:
     # Then
     assert error
     assert error.value.dependency == dependency
-    assert error.value.rules == rules
+    assert error.value.rules == [r for _, r in rules]
