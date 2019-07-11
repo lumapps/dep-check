@@ -1,6 +1,8 @@
 """
 Test check use case.
 """
+from typing import List
+
 from pytest import raises
 
 from dep_check.checker import NotAllowedDependencyException, check_dependency
@@ -13,16 +15,16 @@ def test_empty() -> None:
     """
     # Given
     dependency = Module("toto")
-    rules: Rules = []
+    authorized_modules: List[ModuleWildcard] = []
 
     # When
     with raises(NotAllowedDependencyException) as error:
-        check_dependency(dependency, rules)
+        check_dependency(dependency, authorized_modules)
 
     # Then
     assert error
     assert error.value.dependency == dependency
-    assert error.value.rules == rules
+    assert error.value.authorized_modules == authorized_modules
 
 
 def test_passing_case() -> None:
@@ -31,7 +33,10 @@ def test_passing_case() -> None:
     """
     # Given
     dependency = Module("toto")
-    rules: Rules = [ModuleWildcard("to*"), ModuleWildcard("titi.tata")]
+    rules: Rules = [
+        (ModuleWildcard("toto"), ModuleWildcard("to*")),
+        (ModuleWildcard("toto"), ModuleWildcard("titi.tata")),
+    ]
 
     # When
     error = None
@@ -51,9 +56,9 @@ def test_not_passing_case() -> None:
     # Given
     dependency = Module("toto.tata")
     rules: Rules = [
-        ModuleWildcard("toto"),
-        ModuleWildcard("te.*"),
-        ModuleWildcard("titi\\.tata"),
+        (ModuleWildcard("toto.*"), ModuleWildcard("toto")),
+        (ModuleWildcard("toto.*"), ModuleWildcard("te.*")),
+        (ModuleWildcard("toto.*"), ModuleWildcard("titi\\.tata")),
     ]
 
     # When
@@ -63,4 +68,4 @@ def test_not_passing_case() -> None:
     # Then
     assert error
     assert error.value.dependency == dependency
-    assert error.value.rules == rules
+    assert error.value.authorized_modules == [r for _, r in rules]

@@ -122,23 +122,23 @@ def test_not_passing_rules(source_files) -> None:
     assert set(error_printer.print.call_args[0][0]) == set(
         (
             DependencyError(
-                simple, Module("module"), tuple(dep_rules["simple_module"])
+                simple, Module("module"), tuple(set(dep_rules["simple_module"]))
             ),
             DependencyError(
-                local, Module("amodule"), tuple(dep_rules["amodule.local_module"])
+                local, Module("amodule"), tuple(set(dep_rules["amodule.local_module"]))
             ),
             DependencyError(
                 local,
                 Module("amodule.inside"),
-                tuple(dep_rules["amodule.local_module"]),
+                tuple(set(dep_rules["amodule.local_module"])),
             ),
             DependencyError(
-                std, Module("module"), tuple(dep_rules["amodule.std_module"])
+                std, Module("module"), tuple(set(dep_rules["amodule.std_module"]))
             ),
             DependencyError(
                 std,
                 Module("module.inside.module"),
-                tuple(dep_rules["amodule.std_module"]),
+                tuple(set(dep_rules["amodule.std_module"])),
             ),
         )
     )
@@ -157,4 +157,4 @@ def test_get_rules_with_init_module():
     rules = use_case._get_rules(module)  # pylint: disable=protected-access
 
     # Then
-    assert rules == [ModuleWildcard("module%")]
+    assert rules == {(ModuleWildcard(module), ModuleWildcard("module%"))}

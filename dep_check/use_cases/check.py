@@ -57,6 +57,12 @@ class IErrorPrinter(ABC):
         Print errors.
         """
 
+    @abstractmethod
+    def warn(self, unused_rules: Rules) -> None:
+        """
+        Print warnings.
+        """
+
 
 class CheckDependenciesUC:
     """
@@ -77,6 +83,8 @@ class CheckDependenciesUC:
         self.configuration = configuration_reader.read()
         self.error_printer = error_printer
         self.source_files = source_files
+        self.used_rules: Rules = set()
+        self.all_rules: Rules = set()
 
     def _get_rules(self, module: Module) -> Rules:
         """
@@ -84,26 +92,33 @@ class CheckDependenciesUC:
         """
         if self.configuration.local_init and module.endswith(".__init__"):
             parent_module = get_parent(module)
-            return [ModuleWildcard(r"{}%".format(parent_module))]
+            return {
+                (ModuleWildcard(module), ModuleWildcard(r"{}%".format(parent_module)))
+            }
 
-        matching_rules: Rules = []
+        matching_rules: Rules = set()
         for module_wildcard, rules in self.configuration.dependency_rules.items():
             if re.match(
                 "{}$".format(wildcard_to_regex(ModuleWildcard(module_wildcard))), module
             ):
-                matching_rules.extend(rules)
+                matching_rules.update(
+                    (ModuleWildcard(module_wildcard), r) for r in rules
+                )
 
         return matching_rules
 
     def _iter_error(self, source_file: SourceFile) -> Iterator[DependencyError]:
         rules = self._get_rules(source_file.module)
+        self.all_rules.update(set(rules))
         dependencies = find_dependencies(source_file)
         dependencies = self.std_lib_filter.filter(dependencies)
         for dependency in dependencies:
             try:
-                check_dependency(dependency, rules)
+                self.used_rules.add(check_dependency(dependency, rules))
             except NotAllowedDependencyException:
-                yield DependencyError(source_file.module, dependency, tuple(rules))
+                yield DependencyError(
+                    source_file.module, dependency, tuple({r for _, r in rules})
+                )
 
     def run(self) -> ExitCode:
         errors = [
@@ -112,4 +127,9 @@ class CheckDependenciesUC:
             for error in self._iter_error(source_file)
         ]
         self.error_printer.print(errors)
+
+        unused = self.all_rules.difference(self.used_rules)
+        if unused:
+            self.error_printer.warn(unused)
+
         return ExitCode.OK if not errors else ExitCode.KO
