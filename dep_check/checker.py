@@ -4,7 +4,14 @@ Check that dependencies follow a set of rules.
 import re
 from typing import List, Optional
 
-from dep_check.models import Module, ModuleWildcard, Rule, Rules, wildcard_to_regex
+from dep_check.models import (
+    Dependency,
+    Module,
+    ModuleWildcard,
+    Rule,
+    Rules,
+    wildcard_to_regex,
+)
 
 
 class NotAllowedDependencyException(Exception):
@@ -24,15 +31,37 @@ class NotAllowedDependencyException(Exception):
         self.authorized_modules = authorized_modules
 
 
-def check_dependency(dependency: Module, rules: Rules) -> Rule:
+def check_dependency(dependency: Dependency, rules: Rules) -> Rules:
     """
     Check that dependencies match a given set of rules.
     """
     used_rule: Optional[Rule] = None
     for module, rule in rules:
-        if re.match("{}$".format(wildcard_to_regex(rule)), dependency):
+        if re.match("{}$".format(wildcard_to_regex(rule)), dependency.main_import):
             used_rule = (module, rule)
-            break
-    if not used_rule:
-        raise NotAllowedDependencyException(dependency, [r for _, r in rules])
-    return used_rule
+            return set((used_rule,))
+    if not dependency.sub_imports:
+        raise NotAllowedDependencyException(
+            dependency.main_import, [r for _, r in rules]
+        )
+
+    return check_import_from_dependency(dependency, rules)
+
+
+def check_import_from_dependency(dependency: Dependency, rules: Rules) -> Rules:
+    used_rules: Rules = set()
+    for import_module in dependency.sub_imports:
+        used_rule = None
+        for module, rule in rules:
+            if re.match(
+                "{}$".format(wildcard_to_regex(rule)),
+                f"{dependency.main_import}.{import_module}",
+            ):
+                used_rule = (module, rule)
+                used_rules.add(used_rule)
+        if not used_rule:
+            raise NotAllowedDependencyException(
+                Module(f"{dependency.main_import}.{import_module}"),
+                [r for _, r in rules],
+            )
+    return used_rules

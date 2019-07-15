@@ -77,7 +77,7 @@ def read_graph_config(conf_path: str) -> Dict:
 @dataclass(init=False)
 class Graph:
     """
-    Dataclass representing the informations to draw a graph
+    Dataclass representing the information to draw a graph
     """
 
     def __init__(self, svg_file_name: str, graph_config: Optional[Dict] = None):
@@ -138,9 +138,9 @@ class GraphDrawer(IGraphDrawer):
                 list_modules=str(modules)[1:-1].replace("'", '"'),
             )
 
-        for module, rules in global_dep.items():
-            for rule in rules:
-                self.body += '"{}" -> "{}"\n'.format(module, rule)
+        for module, deps in global_dep.items():
+            for dep in deps:
+                self.body += '"{}" -> "{}"\n'.format(module, dep.main_import)
 
         with open(self.graph.dot_file_name, "w") as out:
             out.write(self.header)

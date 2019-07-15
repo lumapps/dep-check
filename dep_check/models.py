@@ -2,11 +2,27 @@
 Define all the business models of the application.
 """
 
-from dataclasses import dataclass
-from typing import Dict, Iterator, List, NewType, Set, Tuple
+from dataclasses import dataclass, field
+from typing import Dict, FrozenSet, Iterator, List, NewType, Set, Tuple
 
 Module = NewType("Module", str)
-Dependencies = Set[Module]
+
+
+@dataclass(frozen=True)
+class Dependency:
+    """
+    A complete information about a dependency
+
+    With 'from a import b, c', main_import = 'a' and sub_imports = {b, c}
+    With 'import e', main_import = 'e' and sub_imports = {}
+    """
+
+    main_import: Module = Module("")
+    sub_imports: FrozenSet[Module] = field(default_factory=frozenset)
+
+
+Dependencies = Set[Dependency]
+
 SourceCode = NewType("SourceCode", str)
 
 ModuleWildcard = NewType("ModuleWildcard", str)
@@ -33,7 +49,7 @@ def wildcard_to_regex(module: ModuleWildcard) -> str:
     module_regex = module.replace(".", "\\.").replace("*", ".*")
     module_regex = module_regex.replace("[!", "[^").replace("?", ".?")
 
-    # Special char including a module along with all its submodules:
+    # Special char including a module along with all its sub-modules:
     module_regex = module_regex.replace("%", r"(\..*)?$")
     return module_regex
 
@@ -42,7 +58,7 @@ def iter_all_modules(global_dep: GlobalDependencies) -> Iterator[Module]:
     def iter_(global_dep: GlobalDependencies) -> Iterator[Module]:
         for module, dependencies in global_dep.items():
             yield module
-            yield from dependencies
+            yield from (d.main_import for d in dependencies)
 
     return iter(set(iter_(global_dep)))
 

@@ -50,7 +50,7 @@ class BuildConfigurationUC:
         dependency_rules = {}
         for module, dependencies in global_dependencies.items():
             dependency_rules[str(module)] = [
-                ModuleWildcard(dependency) for dependency in dependencies
+                ModuleWildcard(dependency.main_import) for dependency in dependencies
             ]
 
         self.printer.write(Configuration(dependency_rules))

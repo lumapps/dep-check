@@ -5,7 +5,7 @@ from typing import Iterator
 from unittest.mock import Mock, patch
 
 from dep_check.infra.io import Graph, GraphDrawer
-from dep_check.models import Module, SourceFile
+from dep_check.models import Dependency, Module, SourceFile
 from dep_check.use_cases.draw_graph import DrawGraphUC, _fold_dep
 
 from .fakefile import GLOBAL_DEPENDENCIES, SIMPLE_FILE
@@ -139,10 +139,18 @@ def test_fold_dep() -> None:
     # Then
     assert global_dep == {
         "simple_module": set(
-            (Module("module"), Module("module.inside.module"), Module("amodule"))
+            (
+                Dependency(Module("module")),
+                Dependency(Module("module.inside.module")),
+                Dependency(Module("amodule")),
+            )
         ),
         "amodule": set(
-            (Module("module"), Module("module.inside.module"), Module("amodule"))
+            (
+                Dependency(Module("module")),
+                Dependency(Module("module.inside.module")),
+                Dependency(Module("amodule")),
+            )
         ),
     }
 
@@ -165,9 +173,15 @@ def test_fold_module(source_files) -> None:
 
     assert global_dep == {
         "simple_module": set(
-            (Module("module"), Module("module.inside.module"), Module("amodule"))
+            (
+                Dependency(Module("module")),
+                Dependency(Module("module.inside.module")),
+                Dependency(Module("amodule")),
+            )
         ),
-        "amodule": set((Module("module"), Module("module.inside.module"))),
+        "amodule": set(
+            (Dependency(Module("module")), Dependency(Module("module.inside.module")))
+        ),
     }
 
 
@@ -216,7 +230,9 @@ def test_hide_nominal(source_files) -> None:
     global_dep = drawer.write.call_args[0][0]
 
     assert global_dep == {
-        "simple_module": set((Module("module"), Module("module.inside.module")))
+        "simple_module": set(
+            (Dependency(Module("module")), Dependency(Module("module.inside.module")))
+        )
     }
 
 
@@ -232,7 +248,9 @@ def test_pop_empty_module_from_dependencies(source_files) -> None:
     # Then
     drawer.write.assert_called_with(
         {
-            "simple_module": set((Module("amodule"),)),
-            "amodule.local_module": set((Module("amodule"), Module("amodule.inside"))),
+            "simple_module": set((Dependency(Module("amodule")),)),
+            "amodule.local_module": set(
+                (Dependency(Module("amodule")), Dependency(Module("amodule.inside")))
+            ),
         }
     )

@@ -6,7 +6,13 @@ from collections import defaultdict
 from typing import Dict, Iterator, Optional
 
 from dep_check.dependency_finder import find_dependencies
-from dep_check.models import Dependencies, GlobalDependencies, Module, SourceFile
+from dep_check.models import (
+    Dependencies,
+    Dependency,
+    GlobalDependencies,
+    Module,
+    SourceFile,
+)
 
 from .app_configuration import AppConfigurationSingleton
 
@@ -33,7 +39,8 @@ def _fold_dep(
         if module.startswith(fold_module):
             module = fold_module
         fold_dep = set(
-            fold_module if dep.startswith(fold_module) else dep for dep in deps
+            Dependency(fold_module) if dep.main_import.startswith(fold_module) else dep
+            for dep in deps
         )
         new_deps |= fold_dep
         fold_global_dep[module] |= new_deps
@@ -66,7 +73,7 @@ class DrawGraphUC:
                 filtered_global_dep[module] = set(
                     dependency
                     for dependency in dependencies
-                    if not dependency.startswith(hide_modules)
+                    if not dependency.main_import.startswith(hide_modules)
                 )
 
         return filtered_global_dep
@@ -86,7 +93,8 @@ class DrawGraphUC:
 
         # To avoid a module to point itself, and make the graph more readable
         for module, deps in list(global_dependencies.items()):
-            deps.discard(module)
+            deps -= {dep for dep in deps if dep.main_import == module}
+
             if not global_dependencies[module]:
                 global_dependencies.pop(module, None)
 
