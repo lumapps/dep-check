@@ -2,11 +2,24 @@
 Define all the business models of the application.
 """
 
-from dataclasses import dataclass
-from typing import Dict, Iterator, List, NewType, Set, Tuple
+from dataclasses import dataclass, field
+from typing import Dict, FrozenSet, Iterator, List, NewType, Set, Tuple
 
 Module = NewType("Module", str)
-Dependencies = Set[Module]
+
+
+@dataclass(frozen=True)
+class Dependency:
+    """
+    A complete information about a dependency
+    """
+
+    main_import: Module = Module("")
+    other_imports: FrozenSet[Module] = field(default_factory=frozenset)
+
+
+Dependencies = Set[Dependency]
+
 SourceCode = NewType("SourceCode", str)
 
 ModuleWildcard = NewType("ModuleWildcard", str)
@@ -42,7 +55,8 @@ def iter_all_modules(global_dep: GlobalDependencies) -> Iterator[Module]:
     def iter_(global_dep: GlobalDependencies) -> Iterator[Module]:
         for module, dependencies in global_dep.items():
             yield module
-            yield from dependencies
+            for dep in dependencies:
+                yield dep.main_import
 
     return iter(set(iter_(global_dep)))
 

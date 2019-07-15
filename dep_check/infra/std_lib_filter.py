@@ -332,4 +332,8 @@ class StdLibSimpleFilter(IStdLibFilter):
     """
 
     def filter(self, dependencies: Dependencies) -> Dependencies:
-        return dependencies - _KNOWN_STANDARD_LIBRARIES
+        return dependencies - {
+            dep
+            for dep in dependencies
+            if dep.main_import.startswith(tuple(_KNOWN_STANDARD_LIBRARIES))
+        }

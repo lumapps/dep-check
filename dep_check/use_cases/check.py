@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from typing import Iterator, List, Tuple
 
 from dep_check.checker import NotAllowedDependencyException, check_dependency
-from dep_check.dependency_finder import find_dependencies
+from dep_check.dependency_finder import find_import_from_dependencies
 from dep_check.models import (
     Module,
     ModuleWildcard,
@@ -110,14 +110,16 @@ class CheckDependenciesUC:
     def _iter_error(self, source_file: SourceFile) -> Iterator[DependencyError]:
         rules = self._get_rules(source_file.module)
         self.all_rules.update(set(rules))
-        dependencies = find_dependencies(source_file)
+        dependencies = find_import_from_dependencies(source_file)
         dependencies = self.std_lib_filter.filter(dependencies)
         for dependency in dependencies:
             try:
-                self.used_rules.add(check_dependency(dependency, rules))
-            except NotAllowedDependencyException:
+                self.used_rules |= check_dependency(dependency, rules)
+            except NotAllowedDependencyException as error:
                 yield DependencyError(
-                    source_file.module, dependency, tuple({r for _, r in rules})
+                    source_file.module,
+                    error.dependency,
+                    tuple(sorted(error.authorized_modules)),
                 )
 
     def run(self) -> ExitCode:

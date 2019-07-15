@@ -1,4 +1,4 @@
-from dep_check.models import Module, SourceCode, SourceFile
+from dep_check.models import Dependency, Module, SourceCode, SourceFile
 
 SIMPLE_FILE = SourceFile(
     module=Module("simple_module"),
@@ -35,15 +35,21 @@ from abc import ABC
 
 GLOBAL_DEPENDENCIES = {
     "simple_module": set(
-        (Module("module"), Module("module.inside.module"), Module("amodule"))
+        (
+            Dependency(Module("module")),
+            Dependency(Module("module.inside.module")),
+            Dependency(Module("amodule")),
+        )
     ),
     "amodule.local_module": set(
         (
-            Module("module"),
-            Module("module.inside.module"),
-            Module("amodule"),
-            Module("amodule.inside"),
+            Dependency(Module("module")),
+            Dependency(Module("module.inside.module")),
+            Dependency(Module("amodule")),
+            Dependency(Module("amodule.inside")),
         )
     ),
-    "amodule.std_module": set((Module("module"), Module("module.inside.module"))),
+    "amodule.std_module": set(
+        (Dependency(Module("module")), Dependency(Module("module.inside.module")))
+    ),
 }
