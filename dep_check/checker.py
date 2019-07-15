@@ -40,7 +40,7 @@ def check_dependency(dependency: Dependency, rules: Rules) -> Rules:
         if re.match("{}$".format(wildcard_to_regex(rule)), dependency.main_import):
             used_rule = (module, rule)
             return set((used_rule,))
-    if not dependency.other_imports:
+    if not dependency.sub_imports:
         raise NotAllowedDependencyException(
             dependency.main_import, [r for _, r in rules]
         )
@@ -50,7 +50,7 @@ def check_dependency(dependency: Dependency, rules: Rules) -> Rules:
 
 def check_import_from_dependency(dependency: Dependency, rules: Rules) -> Rules:
     used_rules: Rules = set()
-    for import_module in dependency.other_imports:
+    for import_module in dependency.sub_imports:
         used_rule = None
         for module, rule in rules:
             if re.match(
@@ -60,7 +60,6 @@ def check_import_from_dependency(dependency: Dependency, rules: Rules) -> Rules:
                 used_rule = (module, rule)
                 used_rules.add(used_rule)
         if not used_rule:
-            print("yessay")
             raise NotAllowedDependencyException(
                 Module(f"{dependency.main_import}.{import_module}"),
                 [r for _, r in rules],

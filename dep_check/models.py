@@ -12,10 +12,13 @@ Module = NewType("Module", str)
 class Dependency:
     """
     A complete information about a dependency
+
+    With 'from a import b, c', main_import = 'a' and sub_imports = {b, c}
+    With 'import e', main_import = 'e' and sub_imports = {}
     """
 
     main_import: Module = Module("")
-    other_imports: FrozenSet[Module] = field(default_factory=frozenset)
+    sub_imports: FrozenSet[Module] = field(default_factory=frozenset)
 
 
 Dependencies = Set[Dependency]
@@ -55,8 +58,7 @@ def iter_all_modules(global_dep: GlobalDependencies) -> Iterator[Module]:
     def iter_(global_dep: GlobalDependencies) -> Iterator[Module]:
         for module, dependencies in global_dep.items():
             yield module
-            for dep in dependencies:
-                yield dep.main_import
+            yield from (d.main_import for d in dependencies)
 
     return iter(set(iter_(global_dep)))
 

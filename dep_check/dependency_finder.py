@@ -63,8 +63,8 @@ class _ImportFromVisitor(ast.NodeVisitor):
                     module = Module("{}.{}".format(parent_module, node.module))
                 else:
                     module = Module(parent_module)
-            other_imports = frozenset(Module(alias.name) for alias in node.names)
-            modules = frozenset((Dependency(module, other_imports),))
+            sub_imports = frozenset(Module(alias.name) for alias in node.names)
+            modules = frozenset((Dependency(module, sub_imports),))
 
         self._dependencies |= modules
 
