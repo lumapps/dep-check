@@ -77,7 +77,7 @@ def read_graph_config(conf_path: str) -> Dict:
 @dataclass(init=False)
 class Graph:
     """
-    Dataclass representing the informations to draw a graph
+    Dataclass representing the information to draw a graph
     """
 
     def __init__(self, svg_file_name: str, graph_config: Optional[Dict] = None):

@@ -46,7 +46,7 @@ def wildcard_to_regex(module: ModuleWildcard) -> str:
     module_regex = module.replace(".", "\\.").replace("*", ".*")
     module_regex = module_regex.replace("[!", "[^").replace("?", ".?")
 
-    # Special char including a module along with all its submodules:
+    # Special char including a module along with all its sub-modules:
     module_regex = module_regex.replace("%", r"(\..*)?$")
     return module_regex
 
