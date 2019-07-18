@@ -4,6 +4,7 @@ Test check use case.
 
 from unittest.mock import Mock
 
+from dep_check.infra.python_parser import PythonParser
 from dep_check.models import Module, ModuleWildcard, SourceCode, SourceFile
 from dep_check.use_cases.check import (
     CheckDependenciesUC,
@@ -13,6 +14,8 @@ from dep_check.use_cases.check import (
 from dep_check.use_cases.interfaces import Configuration
 
 from .fakefile import FILE_WITH_LOCAL_IMPORT, FILE_WITH_STD_IMPORT, SIMPLE_FILE
+
+PARSER = PythonParser()
 
 
 def build_conf_reader_stub(configuration: Configuration) -> IConfigurationReader:
@@ -31,7 +34,9 @@ def test_empty_rules(source_files) -> None:
     configuration = Configuration()
     configuration_reader = build_conf_reader_stub(configuration)
     error_printer = Mock()
-    use_case = CheckDependenciesUC(configuration_reader, error_printer, source_files)
+    use_case = CheckDependenciesUC(
+        configuration_reader, error_printer, PARSER, source_files
+    )
 
     # When
     use_case.run()
@@ -81,7 +86,9 @@ def test_passing_rules(source_files) -> None:
     )
     configuration_reader = build_conf_reader_stub(configuration)
     error_printer = Mock()
-    use_case = CheckDependenciesUC(configuration_reader, error_printer, source_files)
+    use_case = CheckDependenciesUC(
+        configuration_reader, error_printer, PARSER, source_files
+    )
 
     # When
     use_case.run()
@@ -109,7 +116,9 @@ def test_not_passing_rules(source_files) -> None:
     configuration = Configuration(dependency_rules=dep_rules)
     configuration_reader = build_conf_reader_stub(configuration)
     error_printer = Mock()
-    use_case = CheckDependenciesUC(configuration_reader, error_printer, source_files)
+    use_case = CheckDependenciesUC(
+        configuration_reader, error_printer, PARSER, source_files
+    )
 
     # When
     use_case.run()
@@ -155,7 +164,9 @@ def test_get_rules_with_init_module():
     configuration = Configuration(local_init=True)
     configuration_reader = build_conf_reader_stub(configuration)
     error_printer = Mock()
-    use_case = CheckDependenciesUC(configuration_reader, error_printer, iter([]))
+    use_case = CheckDependenciesUC(
+        configuration_reader, error_printer, PARSER, iter([])
+    )
 
     # When
     rules = use_case._get_rules(module)  # pylint: disable=protected-access
@@ -178,7 +189,7 @@ def test_passing_rules_with_import_from() -> None:
     configuration_reader = build_conf_reader_stub(configuration)
     error_printer = Mock()
     use_case = CheckDependenciesUC(
-        configuration_reader, error_printer, iter([source_file])
+        configuration_reader, error_printer, PARSER, iter([source_file])
     )
 
     # When
@@ -204,7 +215,7 @@ def test_not_passing_rules_with_import_from() -> None:
     configuration_reader = build_conf_reader_stub(configuration)
     error_printer = Mock()
     use_case = CheckDependenciesUC(
-        configuration_reader, error_printer, iter([source_file])
+        configuration_reader, error_printer, PARSER, iter([source_file])
     )
 
     # When

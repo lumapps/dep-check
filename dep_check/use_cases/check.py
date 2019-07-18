@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from typing import Iterator, List, Tuple
 
 from dep_check.checker import NotAllowedDependencyException, check_dependency
-from dep_check.dependency_finder import find_import_from_dependencies
+from dep_check.dependency_finder import IParser, get_import_from_dependencies
 from dep_check.models import (
     Module,
     ModuleWildcard,
@@ -76,12 +76,14 @@ class CheckDependenciesUC:
         self,
         configuration_reader: IConfigurationReader,
         error_printer: IErrorPrinter,
+        parser: IParser,
         source_files: Iterator[SourceFile],
     ):
         app_configuration = AppConfigurationSingleton.get_instance()
         self.std_lib_filter = app_configuration.std_lib_filter
         self.configuration = configuration_reader.read()
         self.error_printer = error_printer
+        self.parser = parser
         self.source_files = source_files
         self.used_rules: Rules = set()
         self.all_rules: Rules = set()
@@ -110,7 +112,7 @@ class CheckDependenciesUC:
     def _iter_error(self, source_file: SourceFile) -> Iterator[DependencyError]:
         rules = self._get_rules(source_file.module)
         self.all_rules.update(set(rules))
-        dependencies = find_import_from_dependencies(source_file)
+        dependencies = get_import_from_dependencies(source_file, self.parser)
         dependencies = self.std_lib_filter.filter(dependencies)
         for dependency in dependencies:
             try:

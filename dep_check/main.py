@@ -6,7 +6,9 @@ Check dependencies of the project
 import argparse
 import sys
 
+from dep_check.dependency_finder import IParser
 from dep_check.infra.file_system import source_file_iterator
+from dep_check.infra.go_parser import GoParser
 from dep_check.infra.io import (
     ErrorLogger,
     Graph,
@@ -14,6 +16,7 @@ from dep_check.infra.io import (
     YamlConfigurationIO,
     read_graph_config,
 )
+from dep_check.infra.python_parser import PythonParser
 from dep_check.infra.std_lib_filter import StdLibSimpleFilter
 from dep_check.use_cases.app_configuration import (
     AppConfiguration,
@@ -48,6 +51,7 @@ PARSER.add_argument(
 PARSER.add_argument(
     "-o", "--options", type=str, help="The yaml file representing the graph options."
 )
+PARSER.add_argument("--go", action="store_true", help="If your project is in go")
 
 
 class MissingOptionError(Exception):
@@ -72,16 +76,19 @@ class MainApp:
     def main(self) -> int:
         code = ExitCode.OK
         self.create_app_configuration()
+        code_parser = GoParser() if self.args.go else PythonParser()
+        file_extension = "go" if self.args.go else "py"
+
         if self.args.build:
-            build_uc = self.create_build_use_case()
+            build_uc = self.create_build_use_case(code_parser, file_extension)
             build_uc.run()
 
         elif self.args.config:
-            check_uc = self.create_check_use_case()
+            check_uc = self.create_check_use_case(code_parser, file_extension)
             code = check_uc.run()
 
         elif self.args.graph:
-            graph_uc = self.create_graph_use_case()
+            graph_uc = self.create_graph_use_case(code_parser, file_extension)
             graph_uc.run()
 
         else:
@@ -97,32 +104,40 @@ class MainApp:
         app_configuration = AppConfiguration(std_lib_filter=StdLibSimpleFilter())
         AppConfigurationSingleton.define_app_configuration(app_configuration)
 
-    def create_build_use_case(self) -> BuildConfigurationUC:
+    def create_build_use_case(
+        self, code_parser: IParser, file_extension: str
+    ) -> BuildConfigurationUC:
         """
         Plumbing to make build use case working.
         """
         configuration_io = YamlConfigurationIO(self.args.build)
-        source_files = source_file_iterator(self.args.root_dir)
-        return BuildConfigurationUC(configuration_io, source_files)
+        source_files = source_file_iterator(self.args.root_dir, file_extension)
+        return BuildConfigurationUC(configuration_io, code_parser, source_files)
 
-    def create_check_use_case(self) -> CheckDependenciesUC:
+    def create_check_use_case(
+        self, code_parser: IParser, file_extension: str
+    ) -> CheckDependenciesUC:
         """
         Plumbing to make check use case working.
         """
         configuration_reader = YamlConfigurationIO(self.args.config)
         error_printer = ErrorLogger()
-        source_files = source_file_iterator(self.args.root_dir)
-        return CheckDependenciesUC(configuration_reader, error_printer, source_files)
+        source_files = source_file_iterator(self.args.root_dir, file_extension)
+        return CheckDependenciesUC(
+            configuration_reader, error_printer, code_parser, source_files
+        )
 
-    def create_graph_use_case(self) -> DrawGraphUC:
+    def create_graph_use_case(
+        self, code_parser: IParser, file_extension: str
+    ) -> DrawGraphUC:
         """
         Plumbing to make draw_graph use case working.
         """
-        source_files = source_file_iterator(self.args.root_dir)
+        source_files = source_file_iterator(self.args.root_dir, file_extension)
         graph_conf = read_graph_config(self.args.options) if self.args.options else None
         graph = Graph(self.args.graph, graph_conf)
         graph_drawer = GraphDrawer(graph)
-        return DrawGraphUC(graph_drawer, source_files, graph_conf)
+        return DrawGraphUC(graph_drawer, code_parser, source_files, graph_conf)
 
 
 def main() -> None:

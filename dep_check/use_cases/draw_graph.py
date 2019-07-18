@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import Dict, Iterator, Optional
 
-from dep_check.dependency_finder import find_dependencies
+from dep_check.dependency_finder import IParser, get_dependencies
 from dep_check.models import (
     Dependencies,
     Dependency,
@@ -52,6 +52,7 @@ class DrawGraphUC:
     def __init__(
         self,
         drawer: IGraphDrawer,
+        parser: IParser,
         source_files: Iterator[SourceFile],
         config: Optional[Dict] = None,
     ):
@@ -59,6 +60,7 @@ class DrawGraphUC:
         self.std_lib_filter = app_configuration.std_lib_filter
         self.source_files = source_files
         self.drawer = drawer
+        self.parser = parser
         self.config = config or {}
 
     def _hide(self, global_dep: GlobalDependencies) -> GlobalDependencies:
@@ -82,7 +84,7 @@ class DrawGraphUC:
         global_dependencies: GlobalDependencies = {}
         for source_file in self.source_files:
             module = Module(source_file.module.replace(".__init__", ""))
-            dependencies = find_dependencies(source_file)
+            dependencies = get_dependencies(source_file, self.parser)
             dependencies = self.std_lib_filter.filter(dependencies)
             global_dependencies[module] = dependencies
 
