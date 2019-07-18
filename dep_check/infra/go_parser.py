@@ -1,5 +1,5 @@
-from ctypes import Structure, c_char_p, c_longlong, cdll
 import logging
+from ctypes import Structure, c_char_p, c_longlong, cdll
 
 from dep_check.dependency_finder import IParser
 from dep_check.models import Dependencies, Dependency, SourceFile
@@ -8,15 +8,19 @@ from dep_check.models import Dependencies, Dependency, SourceFile
 class GoString(Structure):  # pylint: disable=too-few-public-methods
     _fields_ = [("data", c_char_p), ("n", c_longlong)]
 
+
 class GoParser(IParser):
     """
     Implementation of the interface, to parse go
     """
+
     def __init__(self):
         try:
             self.lib = cdll.LoadLibrary("dep_check/lib/go_parse.so")
         except OSError:
-            logging.error("You have to build the go lib to parse go. Run 'make build-go'")
+            logging.error(
+                "You have to build the go lib to parse go. Run 'make build-go'"
+            )
             raise
         self.lib.FindDependencies.argtypes = [GoString]
         self.lib.FindDependencies.restype = GoString
