@@ -5,10 +5,13 @@ from typing import Iterator
 from unittest.mock import Mock, patch
 
 from dep_check.infra.io import Graph, GraphDrawer
+from dep_check.infra.python_parser import PythonParser
 from dep_check.models import Dependency, Module, SourceFile
 from dep_check.use_cases.draw_graph import DrawGraphUC, _fold_dep
 
 from .fakefile import GLOBAL_DEPENDENCIES, SIMPLE_FILE
+
+PARSER = PythonParser()
 
 
 def test_empty_source_files() -> None:
@@ -18,7 +21,7 @@ def test_empty_source_files() -> None:
     # Given
     source_files: Iterator[SourceFile] = iter([])
     drawer = Mock()
-    use_case = DrawGraphUC(drawer, source_files)
+    use_case = DrawGraphUC(drawer, PARSER, source_files)
 
     # When
     use_case.run()
@@ -33,7 +36,7 @@ def test_nominal(source_files) -> None:
     """
     # Given
     drawer = Mock()
-    use_case = DrawGraphUC(drawer, source_files)
+    use_case = DrawGraphUC(drawer, PARSER, source_files)
 
     # When
     use_case.run()
@@ -52,7 +55,7 @@ def test_dot() -> None:
     # Given
     source_files: Iterator[SourceFile] = iter([SIMPLE_FILE])
     drawer = GraphDrawer(Graph("tests/graph.svg"))
-    use_case = DrawGraphUC(drawer, source_files)
+    use_case = DrawGraphUC(drawer, PARSER, source_files)
 
     # When
     use_case.run()
@@ -86,7 +89,7 @@ def test_not_svg_with_dot(mock_method) -> None:
     # Given
     source_files: Iterator[SourceFile] = iter([SIMPLE_FILE])
     drawer = GraphDrawer(Graph("tests/graph.dot"))
-    use_case = DrawGraphUC(drawer, source_files)
+    use_case = DrawGraphUC(drawer, PARSER, source_files)
 
     # When
     use_case.run()
@@ -162,7 +165,7 @@ def test_fold_module(source_files) -> None:
     # Given
     conf_graph = {"fold_modules": ["amodule"]}
     drawer = Mock()
-    use_case = DrawGraphUC(drawer, source_files, conf_graph)
+    use_case = DrawGraphUC(drawer, PARSER, source_files, conf_graph)
 
     # When
     use_case.run()
@@ -191,7 +194,7 @@ def test_hide_empty_config(mock_method, source_files) -> None:
     # Given
     drawer = Mock()
     config = {"fold_modules": ["module"]}
-    use_case = DrawGraphUC(drawer, source_files, config)
+    use_case = DrawGraphUC(drawer, PARSER, source_files, config)
 
     # When
     use_case.run()
@@ -207,7 +210,7 @@ def test_hide_empty_dict(mock_method) -> None:
     source_files: Iterator[SourceFile] = iter([])
     drawer = Mock()
     config = {"hide_modules": ["toto", "tata"]}
-    use_case = DrawGraphUC(drawer, source_files, config)
+    use_case = DrawGraphUC(drawer, PARSER, source_files, config)
 
     # When
     use_case.run()
@@ -220,7 +223,7 @@ def test_hide_nominal(source_files) -> None:
     # Given
     drawer = Mock()
     config = {"hide_modules": ["amodule"]}
-    use_case = DrawGraphUC(drawer, source_files, config)
+    use_case = DrawGraphUC(drawer, PARSER, source_files, config)
 
     # When
     use_case.run()
@@ -240,7 +243,7 @@ def test_pop_empty_module_from_dependencies(source_files) -> None:
     # Given
     drawer = Mock()
     config = {"hide_modules": ["module"]}
-    use_case = DrawGraphUC(drawer, source_files, config)
+    use_case = DrawGraphUC(drawer, PARSER, source_files, config)
 
     # When
     use_case.run()

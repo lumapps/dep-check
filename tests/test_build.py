@@ -5,9 +5,12 @@ Test build configuration use case.
 from typing import Iterator
 from unittest.mock import Mock
 
+from dep_check.infra.python_parser import PythonParser
 from dep_check.models import ModuleWildcard, SourceFile
 from dep_check.use_cases.build import BuildConfigurationUC
 from dep_check.use_cases.interfaces import Configuration
+
+PARSER = PythonParser()
 
 
 def test_empty() -> None:
@@ -17,7 +20,7 @@ def test_empty() -> None:
     # Given
     source_files: Iterator[SourceFile] = iter([])
     dependencies_writer = Mock()
-    use_case = BuildConfigurationUC(dependencies_writer, source_files)
+    use_case = BuildConfigurationUC(dependencies_writer, PARSER, source_files)
 
     # When
     use_case.run()
@@ -32,7 +35,7 @@ def test_nominal(source_files) -> None:
     """
     # Given
     dependencies_writer = Mock()
-    use_case = BuildConfigurationUC(dependencies_writer, source_files)
+    use_case = BuildConfigurationUC(dependencies_writer, PARSER, source_files)
 
     # When
     use_case.run()

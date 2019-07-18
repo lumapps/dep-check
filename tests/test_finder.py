@@ -1,7 +1,8 @@
 """
-Tests about find_dependencies function.
+Tests about get_dependencies function.
 """
-from dep_check.dependency_finder import find_dependencies, find_import_from_dependencies
+from dep_check.dependency_finder import get_dependencies, get_import_from_dependencies
+from dep_check.infra.python_parser import PythonParser
 from dep_check.models import Dependency, Module, SourceCode, SourceFile
 
 _SIMPLE_CASE = """
@@ -44,8 +45,10 @@ _LOCAL_RESULT_IMPORT_FROM = set(
     )
 )
 
+PARSER = PythonParser()
 
-class TestFindDependencies:
+
+class TestGetDependencies:
     @staticmethod
     def test_empty() -> None:
         """
@@ -57,7 +60,7 @@ class TestFindDependencies:
         source_file = SourceFile(module=module, code=source_code)
 
         # When
-        dependencies = find_dependencies(source_file)
+        dependencies = get_dependencies(source_file, PARSER)
 
         # Then
         assert dependencies == frozenset()
@@ -72,7 +75,7 @@ class TestFindDependencies:
         source_file = SourceFile(module=module, code=SourceCode(_SIMPLE_CASE))
 
         # When
-        dependencies = find_dependencies(source_file)
+        dependencies = get_dependencies(source_file, PARSER)
 
         # Then
         assert dependencies == _SIMPLE_RESULT
@@ -87,13 +90,13 @@ class TestFindDependencies:
         source_file = SourceFile(module=module, code=SourceCode(_LOCAL_CASE))
 
         # When
-        dependencies = find_dependencies(source_file)
+        dependencies = get_dependencies(source_file, PARSER)
 
         # Then
         assert dependencies == _LOCAL_RESULT
 
 
-class TestFindImportFromDependencies:
+class TestGetImportFromDependencies:
     @staticmethod
     def test_empty() -> None:
         """
@@ -105,7 +108,7 @@ class TestFindImportFromDependencies:
         source_file = SourceFile(module=module, code=source_code)
 
         # When
-        dependencies = find_import_from_dependencies(source_file)
+        dependencies = get_import_from_dependencies(source_file, PARSER)
 
         # Then
         assert dependencies == frozenset()
@@ -120,7 +123,7 @@ class TestFindImportFromDependencies:
         source_file = SourceFile(module=module, code=SourceCode(_SIMPLE_CASE))
 
         # When
-        dependencies = find_import_from_dependencies(source_file)
+        dependencies = get_import_from_dependencies(source_file, PARSER)
 
         # Then
         assert dependencies == _SIMPLE_RESULT_IMPORT_FROM
@@ -135,7 +138,7 @@ class TestFindImportFromDependencies:
         source_file = SourceFile(module=module, code=SourceCode(_LOCAL_CASE))
 
         # When
-        dependencies = find_import_from_dependencies(source_file)
+        dependencies = get_import_from_dependencies(source_file, PARSER)
 
         # Then
         assert dependencies == _LOCAL_RESULT_IMPORT_FROM
@@ -150,7 +153,7 @@ class TestFindImportFromDependencies:
         )
 
         # When
-        dependencies = find_import_from_dependencies(source_file)
+        dependencies = get_import_from_dependencies(source_file, PARSER)
 
         # Then
         assert dependencies == set(
