@@ -18,9 +18,7 @@ class GoParser(IParser):
         try:
             self.lib = cdll.LoadLibrary("dep_check/lib/go_parse.so")
         except OSError:
-            logging.error(
-                "You have to build the go lib to parse go. Run 'make build-go'"
-            )
+            logging.error("You have to install go to parse go.")
             raise
         self.lib.FindDependencies.argtypes = [GoString]
         self.lib.FindDependencies.restype = GoString

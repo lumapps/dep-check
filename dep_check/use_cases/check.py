@@ -23,18 +23,6 @@ from .app_configuration import AppConfigurationSingleton
 from .interfaces import Configuration, ExitCode
 
 
-class IConfigurationReader(ABC):
-    """
-    Configuration reader interface.
-    """
-
-    @abstractmethod
-    def read(self) -> Configuration:
-        """
-        Read configuration for a source.
-        """
-
-
 @dataclass(frozen=True)
 class DependencyError:
     """
@@ -74,14 +62,14 @@ class CheckDependenciesUC:
 
     def __init__(
         self,
-        configuration_reader: IConfigurationReader,
+        configuration: Configuration,
         error_printer: IErrorPrinter,
         parser: IParser,
         source_files: Iterator[SourceFile],
     ):
         app_configuration = AppConfigurationSingleton.get_instance()
         self.std_lib_filter = app_configuration.std_lib_filter
-        self.configuration = configuration_reader.read()
+        self.configuration = configuration
         self.error_printer = error_printer
         self.parser = parser
         self.source_files = source_files

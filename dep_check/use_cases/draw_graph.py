@@ -36,7 +36,7 @@ def _fold_dep(
     fold_global_dep: GlobalDependencies = defaultdict(set)
     for module, deps in global_dep.items():
         new_deps: Dependencies = set()
-        if module.startswith(fold_module):
+        if module.startswith(tuple((f"{fold_module}.", f"{fold_module}/"))):
             module = fold_module
         fold_dep = set(
             Dependency(fold_module) if dep.main_import.startswith(fold_module) else dep

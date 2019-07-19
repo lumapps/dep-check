@@ -4,7 +4,8 @@ Implementations of IDependenciesPrinter
 import logging
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from subprocess import check_call
+from subprocess import check_output
+from sys import stdin, stdout
 from typing import Dict, Iterable, Iterator, List, Optional, Tuple
 
 import yaml
@@ -12,16 +13,12 @@ from jinja2 import Template
 
 from dep_check.models import GlobalDependencies, Module, Rules, iter_all_modules
 from dep_check.use_cases.build import IConfigurationWriter
-from dep_check.use_cases.check import (
-    DependencyError,
-    IConfigurationReader,
-    IErrorPrinter,
-)
+from dep_check.use_cases.check import DependencyError, IErrorPrinter
 from dep_check.use_cases.draw_graph import IGraphDrawer
 from dep_check.use_cases.interfaces import Configuration
 
 
-class YamlConfigurationIO(IConfigurationWriter, IConfigurationReader):
+class YamlConfigurationIO(IConfigurationWriter):
     """
     Configuration yaml serialization.
     """
@@ -30,11 +27,19 @@ class YamlConfigurationIO(IConfigurationWriter, IConfigurationReader):
         self.config_path = config_path
 
     def write(self, configuration: Configuration) -> None:
-        with open(self.config_path, "w") as stream:
+        if self.config_path == "-":
+            stream = stdout
             stream.write("---\n\n")
             yaml.safe_dump(asdict(configuration), stream)
+        else:
+            with open(self.config_path, "w") as stream:
+                stream.write("---\n\n")
+                yaml.safe_dump(asdict(configuration), stream)
 
     def read(self) -> Configuration:
+        if self.config_path == "-":
+            return Configuration(**yaml.safe_load(stdin))
+
         with open(self.config_path) as stream:
             return Configuration(**yaml.safe_load(stream))
 
@@ -150,9 +155,12 @@ class GraphDrawer(IGraphDrawer):
         return True
 
     def _write_svg(self) -> None:
-        check_call(
-            ["dot", "-Tsvg", self.graph.dot_file_name, "-o", self.graph.svg_file_name]
-        )
+        svg_string = check_output(["dot", "-Tsvg", self.graph.dot_file_name]).decode()
+        if self.graph.svg_file_name == "-":
+            stdout.write(svg_string)
+        else:
+            with open(self.graph.svg_file_name, "w") as stream:
+                stream.write(svg_string)
 
     def write(self, global_dep: GlobalDependencies):
         if Path(self.graph.svg_file_name).suffix == ".dot":
