@@ -4,11 +4,18 @@
 
 Don't forget to check out the [configuration file example](../dependency_config.yaml)
 
+The supported languages are
+
+* [Python](https://www.python.org/)
+* [Golang](https://golang.org/)
+
+By default, the tool will assume it's Python.
+
 ### Auto-build your configuration file
 
 To build the configration file corresponding to your project, just run
 
-    dep_check -b config_file.yaml ROOT_DIR
+    dep_check build <ROOT_DIR> [-o config.yaml] [--lang LANG]
 
 The file provided will only be a list of all the dependencies within your source files.
 We recommend building your config file automatically, then editing it to match what you want.
@@ -55,7 +62,7 @@ Though, `mymodule` won't be able to import:
 
 Once you've got your configuration file ready, simply run
 
-    dep_check -c your_config_file.yaml ROOT_DIR
+    dep_check check <ROOT_DIR> [-c config.yaml] [--lang LANG]
 
 If nothing is printed, then congratulations! Everything is working great.
 
@@ -72,23 +79,48 @@ Furthermore, every unused rule in your configuration file will be displayed as a
 If you want to visualize your project dependencies as a graph, just run
 
     # You need to have graphviz installed to run this
-    dep_check -g graph_file.svg ROOT_DIR
-
-If you prefer having the graph in a dot file, then run
-
-    dep_check -g graph_file.dot ROOT_DIR
+    dep_check graph <ROOT_DIR> [-o file.svg/dot] [-c config.yaml] [--lang LANG]
 
 *Note : if you generate a svg file, a dot file will be created in `/tmp/graph.dot`*
 
+![simple_graph](images/dependency_graph.svg)
+
 ### Adding options
 
-Don't forget to check out the [graph configuration example](../graph_config.yaml)
+The graph you'll get may seem unreadable if your project is pretty big. If that's the case, you can add options to the graph you want to draw, using a conifg YAML file.
 
-The graph you'll get may seem unreadable if your project is pretty big. If that's the case, you can add options to the graph you want to draw, using a YAML file :
+Here is a config example:
 
-    dep_check -g graph_file.svg -o graph_config.yaml ROOT_DIR
+    layers:
+        entities:
+            color: khaki1
+            modules:
+            - dep_check.models
+            - dep_check.dependency_finder
+            - dep_check.checker
 
-Here are the different options:
+        use_cases:
+            color: red
+            modules:
+            - dep_check.use_cases
+
+        external:
+            color: deepskyblue
+            modules:
+            - dep_check.infra
+            - dep_check.main
+
+    bgcolor: lightgray
+
+    fold_modules:
+    - dep_check.infra
+
+    hide_modules:
+    - dep_check.models
+
+![graph_with_wonfig](images/graph.svg)
+
+Let's see each option in detail:
 
 #### Fold a module
 
@@ -97,8 +129,9 @@ You can chose to 'fold' one or more modules, which will bring together all of th
 To do so, you'll have to add a "fold_modules" in your graph config file:
 
     fold_modules:
-        - root.amodule
-        - root.module.submodule
+        - google
+
+![fold_example](images/fold_example.svg)
 
 #### Hide a module
 

@@ -18,3 +18,9 @@ layers:
       - dep_check.main
 
 bgcolor: lightgray
+
+fold_modules:
+  - dep_check.infra
+
+hide_modules:
+  - dep_check.models

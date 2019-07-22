@@ -72,9 +72,10 @@ development.
     Now you can make your changes locally.
 
 5. When you're done making changes, check that your changes pass pylint
-    and the tests, including testing other Python versions with tox:
+    and the tests:
 
-        tox
+        make lint
+        make test
 
 6. Commit your changes and push your branch to GitHub:
 
@@ -91,11 +92,11 @@ Before you submit a pull request, check that it meets these guidelines:
 1. The pull request should include tests.
 2. If the pull request adds functionality, the docs should be updated.
     Put your new functionality into a function with a docstring, and add
-    the feature to the list in [README.md](../README.md).
+    the feature to the [README.md](../README.md).
 3. The pull request should work for Python 3.7.
 
 ## Tips
 
 To run a subset of tests:
 
-    pytest tests.test_my_test
+    pytest tests/test_my_test
