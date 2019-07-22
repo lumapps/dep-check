@@ -2,6 +2,8 @@
 
 ## 0.2.0 (2019-07-16)
 
+### Added
+
 - You can now add layers to your graph.
 - The tool now warns you if a rule in your configuration file is not used.
 
