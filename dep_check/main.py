@@ -6,6 +6,8 @@ Check dependencies of the project
 import argparse
 import logging
 import sys
+from dataclasses import dataclass
+from typing import Callable
 
 from dep_check.infra.file_system import source_file_iterator
 from dep_check.infra.go_parser import GoParser
@@ -35,7 +37,11 @@ BUILD_PARSER.add_argument(
     "root_dir", type=str, help="The source root dir for search and check."
 )
 BUILD_PARSER.add_argument(
-    "-o", "--output", type=str, help="The name of the yaml file you want"
+    "-o",
+    "--output",
+    type=str,
+    help="The name of the yaml file you want",
+    default="dependency_config.yaml",
 )
 BUILD_PARSER.add_argument(
     "--lang",
@@ -54,7 +60,11 @@ CHECK_PARSER.add_argument(
     "root_dir", type=str, help="The source root dir for search and check."
 )
 CHECK_PARSER.add_argument(
-    "-c", "--config", type=str, help="The name of the yaml file you want"
+    "-c",
+    "--config",
+    type=str,
+    help="The name of the yaml file you want",
+    default="dependency_config.yaml",
 )
 
 
@@ -66,7 +76,11 @@ GRAPH_PARSER.add_argument(
     "root_dir", type=str, help="The source root dir for search and check."
 )
 GRAPH_PARSER.add_argument(
-    "-o", "--output", type=str, help="The name of the svg/dot file you want"
+    "-o",
+    "--output",
+    type=str,
+    help="The name of the svg/dot file you want",
+    default="dependency_graph.svg",
 )
 GRAPH_PARSER.add_argument(
     "-c", "--config", type=str, help="The yaml file representing the graph options."
@@ -83,6 +97,12 @@ class MissingOptionError(Exception):
     """
     DependencyError raised when a missing option is found.
     """
+
+
+@dataclass
+class Feature:
+    parser: argparse.ArgumentParser
+    use_case_factory: Callable
 
 
 class MainApp:
@@ -103,39 +123,21 @@ class MainApp:
                 "You have to write which feature you want to use among [build,check,graph]"
             )
             raise
-        if self.feature == "build":
-            self.args = BUILD_PARSER.parse_args()
-            self.file_name = (
-                self.args.output if self.args.output else "dependency_config.yaml"
-            )
-        elif self.feature == "check":
-            self.args = CHECK_PARSER.parse_args()
-            self.file_name = (
-                self.args.config if self.args.config else "dependency_config.yaml"
-            )
-        elif self.feature == "graph":
-            self.args = GRAPH_PARSER.parse_args()
-            self.file_name = (
-                self.args.output if self.args.output else "dependency_graph.svg"
+        try:
+            self.args = DEP_CHECK_FEATURES[self.feature].parser.parse_args()
+        except KeyError:
+            raise MissingOptionError(
+                "You have to write which feature you want to use among [build,check,graph]"
             )
 
     def main(self) -> int:
         code = ExitCode.OK
         self.create_app_configuration()
+        try:
+            use_case = DEP_CHECK_FEATURES[self.feature].use_case_factory(self)
+            use_case.run()
 
-        if self.feature == "build":
-            build_uc = self.create_build_use_case()
-            build_uc.run()
-
-        elif self.feature == "check":
-            check_uc = self.create_check_use_case()
-            code = check_uc.run()
-
-        elif self.feature == "graph":
-            graph_uc = self.create_graph_use_case()
-            graph_uc.run()
-
-        else:
+        except KeyError:
             raise MissingOptionError(
                 "You have to write which feature you want to use among [build,check,graph]"
             )
@@ -154,7 +156,7 @@ class MainApp:
         """
         Plumbing to make build use case working.
         """
-        configuration_io = YamlConfigurationIO(self.file_name)
+        configuration_io = YamlConfigurationIO(self.args.output)
         code_parser = (
             PythonParser() if self.args.lang in ["py", "python"] else GoParser()
         )
@@ -167,7 +169,7 @@ class MainApp:
         """
         Plumbing to make check use case working.
         """
-        configuration = YamlConfigurationIO(self.file_name).read()
+        configuration = YamlConfigurationIO(self.args.config).read()
         code_parser = (
             PythonParser() if configuration.lang in ["py", "python"] else GoParser()
         )
@@ -192,9 +194,16 @@ class MainApp:
 
         code_parser = PythonParser() if lang in ["py", "python"] else GoParser()
         source_files = source_file_iterator(self.args.root_dir, lang[:2])
-        graph = Graph(self.file_name, graph_conf)
+        graph = Graph(self.args.output, graph_conf)
         graph_drawer = GraphDrawer(graph)
         return DrawGraphUC(graph_drawer, code_parser, source_files, graph_conf)
+
+
+DEP_CHECK_FEATURES = {
+    "build": Feature(BUILD_PARSER, MainApp.create_build_use_case),
+    "check": Feature(CHECK_PARSER, MainApp.create_check_use_case),
+    "graph": Feature(GRAPH_PARSER, MainApp.create_graph_use_case),
+}
 
 
 def main() -> None:
