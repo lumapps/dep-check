@@ -126,9 +126,7 @@ class MainApp:
         try:
             self.args = DEP_CHECK_FEATURES[self.feature].parser.parse_args()
         except KeyError:
-            raise MissingOptionError(
-                "You have to write which feature you want to use among [build,check,graph]"
-            )
+            raise MissingOptionError()
 
     def main(self) -> int:
         code = ExitCode.OK
@@ -138,9 +136,7 @@ class MainApp:
             use_case.run()
 
         except KeyError:
-            raise MissingOptionError(
-                "You have to write which feature you want to use among [build,check,graph]"
-            )
+            raise MissingOptionError()
 
         return code.value
 
@@ -207,7 +203,13 @@ DEP_CHECK_FEATURES = {
 
 
 def main() -> None:
-    sys.exit(MainApp().main())
+    try:
+        sys.exit(MainApp().main())
+    except MissingOptionError:
+        logging.error(
+            "You have to write which feature you want to use among [build,check,graph]"
+        )
+        sys.exit(1)
 
 
 if __name__ == "__main__":
