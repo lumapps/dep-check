@@ -1,4 +1,5 @@
 import logging
+import os
 from ctypes import Structure, c_char_p, c_longlong, cdll
 
 from dep_check.dependency_finder import IParser
@@ -15,13 +16,34 @@ class GoParser(IParser):
     """
 
     def __init__(self):
+        self.lib_path = os.environ.get("GOLIB", f'{os.environ["HOME"]}/.dep-check')
+
         try:
-            self.lib = cdll.LoadLibrary("dep_check/lib/go_parse.so")
+            self.lib = cdll.LoadLibrary(f"{self.lib_path}/go_parse.so")
         except OSError:
-            logging.error(
-                "You have to build the go lib to parse go. Run 'make build-go'"
-            )
-            raise
+            logging.info("go_parse.so not found. Building...")
+            try:
+                os.system(f"go get -d github.com/lumapps/dep-check/dep_check/lib")
+                os.system(
+                    f"go build -o {self.lib_path}/go_parse.so -buildmode=c-shared "
+                    "$GOPATH/src/github.com/lumapps/dep-check/dep_check/lib/go_parse.go"
+                )
+                os.environ["GOLIB"] = self.lib_path
+                logging.info("GO lib go_parse.so built")
+            except OSError:
+                logging.error(
+                    "Unable to build the GO lib from "
+                    "github.com/lumapps/dep-check/dep_check/lib"
+                )
+                raise
+
+            try:
+                self.lib = cdll.LoadLibrary(f"{self.lib_path}/go_parse.so")
+                # After building the lib, we try to load it again
+            except OSError:
+                logging.error("Error while loading the library. Please try again")
+                raise
+
         self.lib.FindDependencies.argtypes = [GoString]
         self.lib.FindDependencies.restype = GoString
 
