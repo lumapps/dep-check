@@ -1,6 +1,7 @@
 import logging
-import os
 from ctypes import Structure, c_char_p, c_longlong, cdll
+from os import environ
+from subprocess import CalledProcessError, run
 
 from dep_check.dependency_finder import IParser
 from dep_check.models import Dependencies, Dependency, SourceFile
@@ -16,21 +17,23 @@ class GoParser(IParser):
     """
 
     def __init__(self):
-        self.lib_path = os.environ.get("GOLIB", f'{os.environ["HOME"]}/.dep-check')
+        self.lib_path = environ.get("GOLIB", f'{environ["HOME"]}/.dep-check')
 
         try:
             self.lib = cdll.LoadLibrary(f"{self.lib_path}/go_parse.so")
         except OSError:
             logging.info("go_parse.so not found. Building...")
             try:
-                os.system(f"go get -d github.com/lumapps/dep-check/dep_check/lib")
-                os.system(
+                run("go get -d github.com/lumapps/dep-check/dep_check/lib", check=True)
+                run(
                     f"go build -o {self.lib_path}/go_parse.so -buildmode=c-shared "
-                    "$GOPATH/src/github.com/lumapps/dep-check/dep_check/lib/go_parse.go"
+                    "$GOPATH/src/github.com/lumapps/dep-check/dep_check/lib/go_parse.go",
+                    check=True,
                 )
-                os.environ["GOLIB"] = self.lib_path
+                environ["GOLIB"] = self.lib_path
                 logging.info("GO lib go_parse.so built")
-            except OSError:
+
+            except CalledProcessError:
                 logging.error(
                     "Unable to build the GO lib from "
                     "github.com/lumapps/dep-check/dep_check/lib"
