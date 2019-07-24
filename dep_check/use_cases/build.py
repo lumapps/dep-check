@@ -33,12 +33,14 @@ class BuildConfigurationUC:
         printer: IConfigurationWriter,
         parser: IParser,
         source_files: Iterator[SourceFile],
+        lang: str,
     ) -> None:
         app_configuration = AppConfigurationSingleton.get_instance()
         self.std_lib_filter = app_configuration.std_lib_filter
         self.printer = printer
         self.parser = parser
         self.source_files = source_files
+        self.lang = lang
 
     def run(self) -> None:
         """
@@ -57,4 +59,4 @@ class BuildConfigurationUC:
                 ModuleWildcard(dependency.main_import) for dependency in dependencies
             ]
 
-        self.printer.write(Configuration(dependency_rules))
+        self.printer.write(Configuration(dependency_rules, self.lang))

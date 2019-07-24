@@ -47,21 +47,6 @@ def _get_python_project_root(root_dir: str) -> str:
     return project_root
 
 
-def _get_go_project_root(root_dir: str) -> str:
-    """
-    Returns the path to the 'src' directory, root of the project
-    """
-    project_root = Path(root_dir).name + "/"
-    if project_root == "src/":
-        return project_root
-
-    for directory in Path(root_dir).parents:
-        project_root = f"{directory.name}/{project_root}"
-        if directory.name == "src":
-            break
-    return project_root
-
-
 def source_file_iterator(root_dir: str, file_extension: str) -> Iterator[SourceFile]:
     """
     Iterator of all python source files in a directory.
@@ -70,7 +55,7 @@ def source_file_iterator(root_dir: str, file_extension: str) -> Iterator[SourceF
         project_root = _get_python_project_root(root_dir)
         separator = "."
     elif file_extension == "go":
-        project_root = _get_go_project_root(root_dir)
+        project_root = ""
         separator = "/"
 
     with _change_dir(root_dir):

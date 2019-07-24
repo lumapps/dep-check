@@ -32,7 +32,7 @@ jobs:
           name: Check dependencies
           command: |
             source venv/bin/activate && \
-            PYTHONPATH=. GOPATH=dep_check/lib python3.7 dep_check/main.py -c dependency_config.yaml dep_check
+            PYTHONPATH=. GOPATH=dep_check/lib python3.7 dep_check/main.py check dep_check
 
   # Run the unit tests
   tests:
