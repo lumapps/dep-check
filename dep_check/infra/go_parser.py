@@ -25,15 +25,19 @@ class GoParser(IParser):
             logging.info("go_parse.so not found. Building...")
             try:
                 run(
-                    "go get -d github.com/lumapps/dep-check/dep_check/lib",
+                    ["go", "get", "-d", "github.com/lumapps/dep-check/dep_check/lib"],
                     check=True,
-                    shell=True,
                 )
                 run(
-                    f"go build -o {self.lib_path}/go_parse.so -buildmode=c-shared "
-                    "$GOPATH/src/github.com/lumapps/dep-check/dep_check/lib/go_parse.go",
+                    [
+                        "go",
+                        "build",
+                        "-o",
+                        f"{self.lib_path}/go_parse.so",
+                        "-buildmode=c-shared",
+                        "$GOPATH/src/github.com/lumapps/dep-check/dep_check/lib/go_parse.go",
+                    ],
                     check=True,
-                    shell=True,
                 )
                 environ["GOLIB"] = self.lib_path
                 logging.info("GO lib go_parse.so built")
