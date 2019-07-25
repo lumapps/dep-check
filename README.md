@@ -36,8 +36,8 @@ First, you have to build your configuration file:
 
 Argument | Description | Optional | Default
 -------- | ----------- | -------- | -------
-ROOT_DIR | The root directory of your project, containing you source files | :x: | *N/A*
--o | The output file you want (yaml format) | :heavy_check_mark: | dependency_config.yaml
+ROOT_DIR | The root directory of your project, containing you source files |:x:| *N/A*
+-o | The output file you want (yaml format) |:heavy_check_mark:| dependency_config.yaml
 
 By default, the config will be written in *dependency_config.yaml*.
 
