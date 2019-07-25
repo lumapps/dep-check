@@ -1,28 +1,61 @@
 # User Manual
 
-## The configuration file
-
-Don't forget to check out the [configuration file example](../dependency_config.yaml)
-
 The supported languages are
 
 * [Python](https://www.python.org/)
 * [Golang](https://golang.org/)
 
-By default, the tool will assume it's Python.
+By default, the tool assumes it's Python.
+
+## The configuration file
 
 ### Auto-build your configuration file
 
-To build the configration file corresponding to your project, just run
+```shell
+dep_check build <ROOT_DIR> [-o config.yaml] [--lang LANG]
+```
 
-    dep_check build <ROOT_DIR> [-o config.yaml] [--lang LANG]
+Argument | Description | Optional | Default
+-------- | ----------- | -------- | -------
+ROOT_DIR | The root directory of your project, containing you source files | :x: | *N/A*
+-o / --output | The output file you want (yaml format) | :heavy_check_mark: | dependency_config.yaml
+--lang | The language your project is written in | :heavy_check_mark: | python
 
-The file provided will only be a list of all the dependencies within your source files.
-We recommend building your config file automatically, then editing it to match what you want.
+This command lists the imports of each module in a yaml file. Using this file, write some dependency rules on which module can import what, using wildcards.
+
+Here is an example:
+
+```yaml
+---
+
+dependency_rules:
+'*':
+    - dep_check.models
+    - dep_check.dependency_finder
+    - dep_check.checker
+
+dep_check.infra.io:
+    - dep_check.use_cases%
+    - jinja2
+    - yaml
+
+dep_check.infra.std_lib_filter:
+    - dep_check.use_cases.interfaces
+
+dep_check.use_cases%:
+    - dep_check.use_cases.app_configuration
+    - dep_check.use_cases.interfaces
+
+dep_check.main:
+    - '*'
+
+lang: python
+local_init: false
+```
 
 ### Writing your own configuration file
 
-You can build your own configuration file, using wildcards. Here are the characters supported by the application :
+You can build your own configuration file, using wildcards. Here are those supported by the application :
 
 * `*` corresponds to any string, including an empty one
 * `?` corresponds to any single character
@@ -30,21 +63,24 @@ You can build your own configuration file, using wildcards. Here are the charact
 * `[d-y]` corresponds to any character between 'd' and 'y'
 * `[!d-y]` corresponds to any character which is **not** between 'd' and 'y'
 * `[!abc]` corresponds to any character except 'a', 'b' or 'c'
-* `mymodule%` corresponds to `mymodule` and all of its submodules
+* Using the `%` character after a module name (e.g. `my_module%`) includes this module along with its sub-modules.
 
 ### Examples
 
-    mymodule:
-        - mymodule%
-        - amodule.submodule.*
-        - othermodul?_[0-9]
+```yaml
+mymodule:
+    - mymodule%
+    - amodule.submodule.*
+    - othermodul?_[0-9]
+```
 
-This will allow for `mymodule` to import:
+With those rules, we tell the tool that `mymodule` can import:
 
 * `mymodule`
 * `mymodule.anything.moduleagain`
 * `amodule.submodule.somemodule`
 * `othermodulo_9`
+* ...
 
 Though, `mymodule` won't be able to import:
 
@@ -55,92 +91,119 @@ Though, `mymodule` won't be able to import:
 
 *Note : if a `*` is alone on a line, it has to be between quotes :*
 
-    mymodule:
-        - '*'
+```yaml
+mymodule:
+    - '*'
+```
 
 ## Checking your configuration
 
-Once you've got your configuration file ready, simply run
+Once your config file is ready, run
 
-    dep_check check <ROOT_DIR> [-c config.yaml] [--lang LANG]
+```shell
+dep_check check <ROOT_DIR> [-c config.yaml] [--lang LANG]
+```
 
-If nothing is printed, then congratulations! Everything is working great.
+Argument | Description | Optional | Default
+-------- | ----------- | -------- | -------
+ROOT_DIR | The root directory of your project, containing you source files | :x: | *N/A*
+-c / --config | The input file in which you wrote the dependency rules (yaml format) | :heavy_check_mark: | dependency_config.yaml
+--lang | The language your project is written in | :heavy_check_mark: | python
 
-Otherwise, every error will be displayed as following:
+The command reads the configuration file, and parse every source file. It then verifies, for each file, that every `import` is authorized by the rules in the configuration file.
 
-    ERROR:root:module mymodule import othermodule but is not allowed to (rules: (set of rules for mymodule))
+Every error, if any, is displayed as following:
 
-Furthermore, every unused rule in your configuration file will be displayed as a warning:
+```shell
+ERROR:root:module mymodule import othermodule but is not allowed to (rules: (authorized imports for mymodule))
+```
 
-    WARNING:root:rule not used  mymodule: amodule.*
+Every unused rule in your configuration file is displayed as a warning:
+
+```shell
+WARNING:root:rule not used  mymodule: amodule.*
+```
 
 ## Drawing a dependency graph
 
-If you want to visualize your project dependencies as a graph, just run
+```shell
+# You need to have graphviz installed to run this
+dep_check graph <ROOT_DIR> [-o file.svg/dot] [-c config.yaml] [--lang LANG]
+```
 
-    # You need to have graphviz installed to run this
-    dep_check graph <ROOT_DIR> [-o file.svg/dot] [-c config.yaml] [--lang LANG]
+Argument | Description | Optional | Default
+-------- | ----------- | -------- | -------
+ROOT_DIR | The root directory of your project, containing you source files | :x: | *N/A*
+-o / --output | The output file you want (svg or dot format) | :heavy_check_mark: | dependency_graph.svg
+-c / --config | The graph configuration file, to write options that you want (yaml format) | :heavy_check_mark:| None
+--lang | The language your project is written in | :heavy_check_mark: | python
 
-*Note : if you generate a svg file, a dot file will be created in `/tmp/graph.dot`*
+*Note : if you generate a svg file, a dot file is created in `/tmp/graph.dot`*
 
 ![simple_graph](images/dependency_graph.svg)
 
 ### Adding options
 
-The graph you'll get may seem unreadable if your project is pretty big. If that's the case, you can add options to the graph you want to draw, using a conifg YAML file.
+The graph you'll get may seem unreadable if your project is pretty big. If that's the case, add options to the graph you want to draw, using a YAML config file.
 
 Here is a config example:
 
-    layers:
-        entities:
-            color: khaki1
-            modules:
-            - dep_check.models
-            - dep_check.dependency_finder
-            - dep_check.checker
+```yaml
+layers:
+    entities:
+        color: khaki1
+        modules:
+        - dep_check.models
+        - dep_check.dependency_finder
+        - dep_check.checker
 
-        use_cases:
-            color: red
-            modules:
-            - dep_check.use_cases
+    use_cases:
+        color: red
+        modules:
+        - dep_check.use_cases
 
-        external:
-            color: deepskyblue
-            modules:
-            - dep_check.infra
-            - dep_check.main
+    external:
+        color: deepskyblue
+        modules:
+        - dep_check.infra
+        - dep_check.main
 
-    bgcolor: lightgray
+bgcolor: lightgray
 
-    fold_modules:
-    - dep_check.infra
+fold_modules:
+- dep_check.infra
 
-    hide_modules:
-    - dep_check.models
+hide_modules:
+- dep_check.models
+```
 
-![graph_with_wonfig](images/graph.svg)
+![graph_with_config](images/graph.svg)
 
-Let's see each option in detail:
+Let's see each option in details:
 
 #### Fold a module
 
-You can chose to 'fold' one or more modules, which will bring together all of their submodules into the module(s), making the graph way more readable.
+You can chose to 'fold' one or more modules, which brings together all their sub-modules into the module(s), making the graph way more readable.
 
-To do so, you'll have to add a "fold_modules" in your graph config file:
+To do so, you'll have to add a "fold_modules" in your graph config file, e.g.:
 
-    fold_modules:
-        - google
+```yaml
+fold_modules:
+    - google
+```
 
 ![fold_example](images/fold_example.svg)
 
 #### Hide a module
 
-You can also chose to hide entirely a module, which will remove it from the dependency graph, along with its submodules.
+You can also chose to hide entirely a module, which removes it from the dependency graph, along with its sub-modules.
 
 To do so, you'll have to add a "hide_modules" in your graph config file:
 
-    hide_modules:
-        - root.amodule
+```yaml
+hide_modules:
+    - root.amodule
+```
 
 **Make sure the name of the module you want to fold/hide start at the root of your project** (e.g. 'root.amodule' and not 'amodule')
 
@@ -148,8 +211,10 @@ To do so, you'll have to add a "hide_modules" in your graph config file:
 
 You can change the nodes and/or background color of the graph, using 'node_color' and 'bgcolor' options: ([Here are the colors you can use](https://www.graphviz.org/doc/info/colors.html))
 
-    node_color: crimson
-    bgcolor: gold
+```yaml
+node_color: crimson
+bgcolor: gold
+```
 
 *Note: if not defined, the nodes are white and the background is transparent.*
 
@@ -157,19 +222,21 @@ You can change the nodes and/or background color of the graph, using 'node_color
 
 You can add layers to your graph, grouping modules as you want (e.g. according to Clean Architecture layers).
 
-To do so, you'll have to add a "layers" in your graph config file. Then for each layer you want, you have to inform the color of the nodes, and the list of modules in your layer.
+To do so, add a "layers" in your graph config file. Then for each layer you want, you have to inform the color of the nodes, and the list of modules in your layer.
 
-*Note: each module you'll write will include its submodules. If you write `root.module` in a layer's list of modules, all of its submodules will be added in the layer as well*
+*Note: each module you write here includes its sub-modules. If you write `root.module` in a layer's list of modules, all its sub-modules are added in the layer as well*
 
-    layers:
-        my_first_layer:
-            color: green
-            modules:
-                - root.module.submodule
-                - root.othermodule
-        my_second_layer:
-            color: blue
-            modules:
-                -root.amodule
+```yaml
+layers:
+    my_first_layer:
+        color: green
+        modules:
+            - root.module.submodule
+            - root.othermodule
+    my_second_layer:
+        color: blue
+        modules:
+            -root.amodule
+```
 
-All of the modules which are not in a layer will be displayed normally.
+The modules which are not in a layer are displayed normally.
