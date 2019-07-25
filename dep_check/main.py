@@ -29,6 +29,14 @@ from dep_check.use_cases.check import CheckDependenciesUC
 from dep_check.use_cases.draw_graph import DrawGraphUC
 from dep_check.use_cases.interfaces import ExitCode
 
+FEATURE_PARSER = argparse.ArgumentParser(description="Chose your feature")
+FEATURE_PARSER.add_argument(
+    "feature",
+    type=str,
+    help="The feature you want.",
+    choices=["build", "check", "graph"],
+)
+
 BUILD_PARSER = argparse.ArgumentParser(description="Build your dependency rules")
 BUILD_PARSER.add_argument(
     "build", type=str, help="The build feature.", choices=["build"]
@@ -116,13 +124,8 @@ class MainApp:
     """
 
     def __init__(self) -> None:
-        try:
-            self.feature = sys.argv[1]
-        except IndexError:
-            logging.error(
-                "You have to write which feature you want to use among [build,check,graph]"
-            )
-            raise
+        self.feature = FEATURE_PARSER.parse_args(sys.argv[1:2]).feature
+
         try:
             self.args = DEP_CHECK_FEATURES[self.feature].parser.parse_args()
         except KeyError:
