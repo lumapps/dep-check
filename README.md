@@ -35,7 +35,7 @@ First, you have to build your configuration file:
     dep_check build <ROOT_DIR> [-o config.yaml] [--lang LANG]
 
 Argument | Description | Optional | Default
--------- | ----------- | -------
+-------- | ----------- | -------- | -------
 ROOT_DIR | The root directory of your project, containing you source files | NO | *N/A*
 
 By default, the config will be written in *dependency_config.yaml*.
