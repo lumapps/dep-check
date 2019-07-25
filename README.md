@@ -4,7 +4,7 @@
 
 ## Version: Pre-alpha
 
-dep-check is a Python dependency checker. First write rules on which module can import what, then dep-check will parse each source file to verify that everything is in order. You can also draw a dependency graph for your project.
+dep-check is a Python dependency checker. First write rules on which module can import what, then **dep-check** will parse each source file to verify that everything is in order. You can also draw a dependency graph for your project.
 
 **Free software:** MIT license
 
@@ -17,14 +17,14 @@ By default, the tool will assume it's python.
 
 ## Installation
 
-To install dep-check, run this command in your terminal:
+To install **dep-check**, run this command in your terminal:
 
     pip install dep-check
 
-This is the preferred method to install dep-check, as it will always
+This is the preferred method to install **dep-check**, as it will always
 install the most recent stable release.
 
-If you don't have [pip](https://pip.pypa.io) installed, this [Python installation guide](http://docs.python-guide.org/en/latest/starting/installation/) can guide you through the process.
+If you don't have [pip](https://pip.pypa.io) installed, this [Python installation guide](http://docs.python-guide.org/en/latest/starting/installation/) can guide you through the process. You can also see [other installation methods](https://github.com/lumapps/dep-check/blob/master/doc/installation.md).
 
 ## Usage
 
@@ -34,9 +34,13 @@ First, you have to build your configuration file:
 
     dep_check build <ROOT_DIR> [-o config.yaml] [--lang LANG]
 
+Argument | Description | Optional | Default
+-------- | ----------- | -------
+ROOT_DIR | The root directory of your project, containing you source files | NO | *N/A*
+
 By default, the config will be written in *dependency_config.yaml*.
 
-This will only list the imports of each module, so we recommand you to edit it using different wildcards to write rules on wich module can import what:
+This will only list the imports of each module. we recommand you to edit it using different wildcards to write rules on wich module can import what:
 
     ---
 
