@@ -37,7 +37,7 @@ Argument | Description | Optional | Default
 -------- | ----------- | -------- | -------
 ROOT_DIR | The root directory of your project, containing you source files | :x: | *N/A*
 -o / --output | The output file you want (yaml format) | :heavy_check_mark: | dependency_config.yaml
---lang | The language your porject is wirted in | :heavy_check_mark: | python
+--lang | The language your porject is written in | :heavy_check_mark: | python
 
 This command will list the imports of each module in a yaml file. Using this, we recommand you to edit it using different wildcards to write rules on wich module can import what:
 
@@ -82,7 +82,7 @@ Argument | Description | Optional | Default
 -------- | ----------- | -------- | -------
 ROOT_DIR | The root directory of your project, containing you source files | :x: | *N/A*
 -c / --config | The input file in which you wrote the dependency rules (yaml format) | :heavy_check_mark: | dependency_config.yaml
---lang | The language your porject is wirted in | :heavy_check_mark: | python
+--lang | The language your porject is written in | :heavy_check_mark: | python
 
 If nothing is printed, then congratulations! Everything is working great.
 
@@ -106,7 +106,7 @@ Argument | Description | Optional | Default
 ROOT_DIR | The root directory of your project, containing you source files | :x: | *N/A*
 -o / --output | The output file you want (svg or dot format) | :heavy_check_mark: | dependency_graph.svg
 -c / --config | The graph configuration file, to write options that you want (yaml format) | :heavy_check_mark:| None
---lang | The language your porject is wirted in | :heavy_check_mark: | python
+--lang | The language your porject is written in | :heavy_check_mark: | python
 
 You can add a lot of options in a configuration file to customize your graph (hide some modules, add layers etc.). Check the [User Manual](https://github.com/lumapps/dep-check/blob/master/doc/usage.md#adding-options) for more informations.
 
