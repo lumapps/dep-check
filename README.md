@@ -17,31 +17,29 @@ By default, the tool will assume it's python.
 
 ## Installation
 
-To install **dep-check**, run this command in your terminal:
+To install **dep-check**, run this command:
 
     pip install dep-check
 
 This is the preferred method to install **dep-check**, as it will always
 install the most recent stable release.
 
-If you don't have [pip](https://pip.pypa.io) installed, this [Python installation guide](http://docs.python-guide.org/en/latest/starting/installation/) can guide you through the process. You can also see [other installation methods](https://github.com/lumapps/dep-check/blob/master/doc/installation.md).
+If you don't have [pip](https://pip.pypa.io) installed, this [Python installation guide](http://docs.python-guide.org/en/latest/starting/installation/) can guide you through the process.
+You can also see [other installation methods](https://github.com/lumapps/dep-check/blob/master/doc/installation.md).
 
 ## Usage
 
 ### Build your config file
 
-First, you have to build your configuration file:
-
     dep_check build <ROOT_DIR> [-o config.yaml] [--lang LANG]
 
 Argument | Description | Optional | Default
 -------- | ----------- | -------- | -------
-ROOT_DIR | The root directory of your project, containing you source files |:x:| *N/A*
--o | The output file you want (yaml format) |:heavy_check_mark:| dependency_config.yaml
+ROOT_DIR | The root directory of your project, containing you source files | :x: | *N/A*
+-o / --output | The output file you want (yaml format) | :heavy_check_mark: | dependency_config.yaml
+--lang | The language your porject is wirted in | :heavy_check_mark: | python
 
-By default, the config will be written in *dependency_config.yaml*.
-
-This will only list the imports of each module. we recommand you to edit it using different wildcards to write rules on wich module can import what:
+This command will list the imports of each module in a yaml file. Using this, we recommand you to edit it using different wildcards to write rules on wich module can import what:
 
     ---
 
@@ -76,11 +74,15 @@ This will only list the imports of each module. we recommand you to edit it usin
 
 ### Check your config
 
-Once your config file is ready, just run
+Once your config file is ready, run
 
     dep_check check <ROOT_DIR> [-c config.yaml] [--lang LANG]
 
-By default, the config will be read in *dependency_config.yaml*.
+Argument | Description | Optional | Default
+-------- | ----------- | -------- | -------
+ROOT_DIR | The root directory of your project, containing you source files | :x: | *N/A*
+-c / --config | The input file in which you wrote the dependency rules (yaml format) | :heavy_check_mark: | dependency_config.yaml
+--lang | The language your porject is wirted in | :heavy_check_mark: | python
 
 If nothing is printed, then congratulations! Everything is working great.
 
@@ -99,11 +101,18 @@ You can draw a dependency graph by running
     # You need to have graphviz installed to run this
     dep_check graph <ROOT_DIR> [-o file.svg/dot] [-c config.yaml] [--lang LANG]
 
-You can add a lot of options in a config file to customize your graph (hide some modules, add layers etc.). Go check the [User Manual](https://github.com/lumapps/dep-check/blob/master/doc/usage.md#adding-options)
+Argument | Description | Optional | Default
+-------- | ----------- | -------- | -------
+ROOT_DIR | The root directory of your project, containing you source files | :x: | *N/A*
+-o / --output | The output file you want (svg or dot format) | :heavy_check_mark: | dependency_graph.svg
+-c / --config | The graph configuration file, to write options that you want (yaml format) | :heavy_check_mark:| None
+--lang | The language your porject is wirted in | :heavy_check_mark: | python
+
+You can add a lot of options in a configuration file to customize your graph (hide some modules, add layers etc.). Check the [User Manual](https://github.com/lumapps/dep-check/blob/master/doc/usage.md#adding-options) for more informations.
 
 ## Contributing
 
-If you want to make a contribution, be sure to follow the [Contribution guide](https://github.com/lumapps/dep-check/blob/master/doc/contributing.md) for more informations and some examples.
+If you want to make a contribution, be sure to follow the [Contribution guide](https://github.com/lumapps/dep-check/blob/master/doc/contributing.md).
 
 ## Credits
 
@@ -112,4 +121,4 @@ This package was created with [Cookiecutter](https://github.com/audreyr/cookiecu
 
 ## Authors & contributors
 
-Check out all the [Authors and contributors](https://github.com/lumapps/dep-check/blob/master/doc/authors.md) of this project!
+Check out all the [Authors and contributors](https://github.com/lumapps/dep-check/blob/master/doc/authors.md) of this project.
