@@ -12,9 +12,9 @@ from typing import Callable
 from dep_check.infra.file_system import source_file_iterator
 from dep_check.infra.go_parser import GoParser
 from dep_check.infra.io import (
-    ErrorLogger,
     Graph,
     GraphDrawer,
+    ReportPrinter,
     YamlConfigurationIO,
     read_graph_config,
 )
@@ -172,10 +172,10 @@ class MainApp:
         code_parser = (
             PythonParser() if configuration.lang in ["py", "python"] else GoParser()
         )
-        error_printer = ErrorLogger()
+        report_printer = ReportPrinter()
         source_files = source_file_iterator(self.args.root_dir, configuration.lang[:2])
         return CheckDependenciesUC(
-            configuration, error_printer, code_parser, source_files
+            configuration, report_printer, code_parser, source_files
         )
 
     def create_graph_use_case(self) -> DrawGraphUC:
