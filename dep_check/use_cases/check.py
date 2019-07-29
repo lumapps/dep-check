@@ -40,7 +40,7 @@ class IReportPrinter(ABC):
     """
 
     @abstractmethod
-    def _error(self, errors: List[DependencyError]) -> None:
+    def _error(self, dep_errors: List[DependencyError]) -> None:
         """
         Display errors.
         """

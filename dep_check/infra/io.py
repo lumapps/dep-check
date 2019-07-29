@@ -23,7 +23,8 @@ class Format:
     WARNING = "\033[93m"
     FAIL = "\033[91m"
     ENDC = "\033[0m"
-    UNDERLINE = "\033[4m"
+    BOLD = "\033[1m"
+    INFO = "\033[94m"
 
 
 class YamlConfigurationIO(IConfigurationWriter):
@@ -57,40 +58,37 @@ class ReportPrinter(IReportPrinter):
     Print the report after checking the files
     """
 
-    def __init__(self):
-        self._report = dict()
-
-    def _error(self, errors: List[DependencyError]) -> None:
+    def _error(self, dep_errors: List[DependencyError]) -> None:
         """
         Log errors.
         """
-        for error in errors:
-            if error.module not in self._report:
-                self._report[error.module] = ""
-            self._report[error.module] += (
-                Format.FAIL
-                + "\nerror"
-                + Format.ENDC
-                + f"\t{error.dependency} is not authorized ; rules:\n"
-            )
+        module_errors = {
+            error.module: [e for e in dep_errors if e.module == error.module]
+            for error in dep_errors
+        }
 
-            for rule in error.rules:
-                self._report[error.module] += f"\t\t\t\t\t\t\t\t{rule}\n"
+        for module, errors in sorted(module_errors.items()):
+            print("\nModule " + Format.BOLD + module + Format.ENDC + ":")
+            print(" \u2022 " + Format.FAIL + "Unauthorized modules:" + Format.ENDC)
+
+            for error in errors:
+                print(f"\t- {error.dependency}")
+            print("\n \u2022 " + Format.INFO + "Rules:" + Format.ENDC)
+
+            for rule in errors[0].rules:
+                print(f"\t- {rule}")
 
     def _warning(self, unused_rules: Rules) -> None:
         """
         Log warnings
         """
-        for module, rule in unused_rules:
-            if module not in self._report:
-                self._report[module] = ""
-
-            self._report[module] += (
-                Format.WARNING
-                + "\nwarning"
-                + Format.ENDC
-                + f"\trule not used  {module}: {rule}\n"
-            )
+        previous_wildcard = ""
+        for wildcard, rule in sorted(unused_rules):
+            if wildcard != previous_wildcard:
+                print("\nWildcard " + Format.BOLD + wildcard + Format.ENDC + ":")
+                print(" \u2022 " + Format.WARNING + "Unused rules:" + Format.ENDC)
+                previous_wildcard = wildcard
+            print(f"\t- {wildcard}: {rule}")
 
     def print_report(
         self, errors: List[DependencyError], unused_rules: Rules, nb_files: int
@@ -98,17 +96,18 @@ class ReportPrinter(IReportPrinter):
         """
         Print report
         """
-        self._error(errors)
-        self._warning(unused_rules)
-        print("")
-        if self._report:
-            for module, report in self._report.items():
-                print(Format.UNDERLINE + module + Format.ENDC)
-                print(report)
-        else:
-            print(Format.OKGREEN + "Everything is in order! " + Format.ENDC)
+        if errors:
+            print("\n########## IMPORT ERRORS ##########\n")
+            self._error(errors)
+
+        if unused_rules:
+            print("\n########## UNUSED RULES ##########\n")
+            self._warning(unused_rules)
+
+        if not errors and not unused_rules:
+            print(Format.OKGREEN + "\nEverything is in order! " + Format.ENDC)
         print(
-            "\n\n * "
+            "\n * "
             + Format.FAIL
             + f"{len(errors)} errors"
             + Format.ENDC
