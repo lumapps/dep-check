@@ -97,11 +97,23 @@ class ReportPrinter(IReportPrinter):
         Print report
         """
         if errors:
-            print("\n########## IMPORT ERRORS ##########\n")
+            print(
+                "\n\n"
+                + Format.BOLD
+                + Format.FAIL
+                + "IMPORT ERRORS".center(30)
+                + Format.ENDC
+            )
             self._error(errors)
 
         if unused_rules:
-            print("\n########## UNUSED RULES ##########\n")
+            print(
+                "\n\n"
+                + Format.BOLD
+                + Format.WARNING
+                + "UNUSED RULES".center(30)
+                + Format.ENDC
+            )
             self._warning(unused_rules)
 
         if not errors and not unused_rules:
