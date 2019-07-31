@@ -34,21 +34,29 @@ class DependencyError:
     rules: Tuple[ModuleWildcard, ...]
 
 
-class IErrorPrinter(ABC):
+class IReportPrinter(ABC):
     """
     Errors printer interface.
     """
 
     @abstractmethod
-    def print(self, errors: List[DependencyError]) -> None:
+    def _error(self, dep_errors: List[DependencyError]) -> None:
         """
-        Print errors.
+        Display errors.
         """
 
     @abstractmethod
-    def warn(self, unused_rules: Rules) -> None:
+    def _warning(self, unused_rules: Rules) -> None:
         """
-        Print warnings.
+        Display warnings.
+        """
+
+    @abstractmethod
+    def print_report(
+        self, errors: List[DependencyError], unused_rules: Rules, nb_files: int
+    ) -> None:
+        """
+        Print report
         """
 
 
@@ -63,14 +71,14 @@ class CheckDependenciesUC:
     def __init__(
         self,
         configuration: Configuration,
-        error_printer: IErrorPrinter,
+        report_printer: IReportPrinter,
         parser: IParser,
         source_files: Iterator[SourceFile],
     ):
         app_configuration = AppConfigurationSingleton.get_instance()
         self.std_lib_filter = app_configuration.std_lib_filter
         self.configuration = configuration
-        self.error_printer = error_printer
+        self.report_printer = report_printer
         self.parser = parser
         self.source_files = source_files
         self.used_rules: Rules = set()
@@ -113,15 +121,15 @@ class CheckDependenciesUC:
                 )
 
     def run(self) -> ExitCode:
-        errors = [
-            error
-            for source_file in self.source_files
-            for error in self._iter_error(source_file)
-        ]
-        self.error_printer.print(errors)
+        errors = []
+        nb_files = 0
+
+        for source_file in self.source_files:
+            nb_files += 1
+            for error in self._iter_error(source_file):
+                errors.append(error)
 
         unused = self.all_rules.difference(self.used_rules)
-        if unused:
-            self.error_printer.warn(unused)
+        self.report_printer.print_report(errors, unused, nb_files)
 
         return ExitCode.OK if not errors else ExitCode.KO

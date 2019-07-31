@@ -20,15 +20,14 @@ def test_empty_rules(source_files) -> None:
     """
     # Given
     configuration = Configuration()
-    error_printer = Mock()
-    use_case = CheckDependenciesUC(configuration, error_printer, PARSER, source_files)
+    report_printer = Mock()
+    use_case = CheckDependenciesUC(configuration, report_printer, PARSER, source_files)
 
     # When
     use_case.run()
 
     # Then
-    error_printer.print.assert_called()  # type: ignore
-    assert set(error_printer.print.call_args[0][0]) == set(
+    assert set(report_printer.print_report.call_args[0][0]) == set(
         (
             DependencyError(SIMPLE_FILE.module, Module("module"), tuple()),
             DependencyError(
@@ -68,14 +67,14 @@ def test_passing_rules(source_files) -> None:
             ],
         }
     )
-    error_printer = Mock()
-    use_case = CheckDependenciesUC(configuration, error_printer, PARSER, source_files)
+    report_printer = Mock()
+    use_case = CheckDependenciesUC(configuration, report_printer, PARSER, source_files)
 
     # When
     use_case.run()
 
     # Then
-    error_printer.print.assert_called_with([])
+    report_printer.print_report.assert_called_with([], set(), 3)
 
 
 def test_not_passing_rules(source_files) -> None:
@@ -94,19 +93,18 @@ def test_not_passing_rules(source_files) -> None:
     }
 
     configuration = Configuration(dependency_rules=dep_rules)
-    error_printer = Mock()
-    use_case = CheckDependenciesUC(configuration, error_printer, PARSER, source_files)
+    report_printer = Mock()
+    use_case = CheckDependenciesUC(configuration, report_printer, PARSER, source_files)
 
     # When
     use_case.run()
 
     # Then
-    error_printer.print.assert_called()  # type: ignore
     simple = SIMPLE_FILE.module
     local = FILE_WITH_LOCAL_IMPORT.module
     std = FILE_WITH_STD_IMPORT.module
 
-    assert set(error_printer.print.call_args[0][0]) == set(
+    assert set(report_printer.print_report.call_args[0][0]) == set(
         (
             DependencyError(
                 simple, Module("module"), tuple(sorted(dep_rules["simple_module"]))
@@ -138,8 +136,8 @@ def test_get_rules_with_init_module():
     # Given
     module = Module("module.__init__")
     configuration = Configuration(local_init=True)
-    error_printer = Mock()
-    use_case = CheckDependenciesUC(configuration, error_printer, PARSER, iter([]))
+    report_printer = Mock()
+    use_case = CheckDependenciesUC(configuration, report_printer, PARSER, iter([]))
 
     # When
     rules = use_case._get_rules(module)  # pylint: disable=protected-access
@@ -159,16 +157,16 @@ def test_passing_rules_with_import_from() -> None:
         }
     )
     source_file = SourceFile("module", SourceCode("from amodule import submodule"))
-    error_printer = Mock()
+    report_printer = Mock()
     use_case = CheckDependenciesUC(
-        configuration, error_printer, PARSER, iter([source_file])
+        configuration, report_printer, PARSER, iter([source_file])
     )
 
     # When
     use_case.run()
 
     # Then
-    error_printer.print.assert_called_with([])
+    assert report_printer.print_report.call_args[0][0] == []
 
 
 def test_not_passing_rules_with_import_from() -> None:
@@ -183,17 +181,16 @@ def test_not_passing_rules_with_import_from() -> None:
     source_file = SourceFile(
         "module", SourceCode("from amodule import othermodule, submodule\n")
     )
-    error_printer = Mock()
+    report_printer = Mock()
     use_case = CheckDependenciesUC(
-        configuration, error_printer, PARSER, iter([source_file])
+        configuration, report_printer, PARSER, iter([source_file])
     )
 
     # When
     use_case.run()
 
     # Then
-    error_printer.print.assert_called()  # type: ignore
-    assert set(error_printer.print.call_args[0][0]) == set(
+    assert set(report_printer.print_report.call_args[0][0]) == set(
         (
             DependencyError(
                 "module",

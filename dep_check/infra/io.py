@@ -1,7 +1,6 @@
 """
 Implementations of IDependenciesPrinter
 """
-import logging
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from subprocess import check_output
@@ -13,9 +12,19 @@ from jinja2 import Template
 
 from dep_check.models import GlobalDependencies, Module, Rules, iter_all_modules
 from dep_check.use_cases.build import IConfigurationWriter
-from dep_check.use_cases.check import DependencyError, IErrorPrinter
+from dep_check.use_cases.check import DependencyError, IReportPrinter
 from dep_check.use_cases.draw_graph import IGraphDrawer
 from dep_check.use_cases.interfaces import Configuration
+
+
+@dataclass
+class Format:
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    INFO = "\033[94m"
 
 
 class YamlConfigurationIO(IConfigurationWriter):
@@ -44,31 +53,82 @@ class YamlConfigurationIO(IConfigurationWriter):
             return Configuration(**yaml.safe_load(stream))
 
 
-class ErrorLogger(IErrorPrinter):
+class ReportPrinter(IReportPrinter):
     """
-    Only log errors using logging.error.
+    Print the report after checking the files
     """
 
-    @staticmethod
-    def print(errors: List[DependencyError]) -> None:
+    def _error(self, dep_errors: List[DependencyError]) -> None:
         """
         Log errors.
         """
-        for error in errors:
-            logging.error(
-                "module %s import %s but is not allowed to (rules: %s)",
-                error.module,
-                error.dependency,
-                error.rules,
-            )
+        module_errors = {
+            error.module: [e for e in dep_errors if e.module == error.module]
+            for error in dep_errors
+        }
 
-    @staticmethod
-    def warn(unused_rules: Rules) -> None:
+        for module, errors in sorted(module_errors.items()):
+            print("\nModule " + Format.BOLD + module + Format.ENDC + ":")
+            print(" \u2022 " + Format.FAIL + "Unauthorized modules:" + Format.ENDC)
+
+            for error in errors:
+                print(f"\t- {error.dependency}")
+            print("\n \u2022 " + Format.INFO + "Rules:" + Format.ENDC)
+
+            for rule in errors[0].rules:
+                print(f"\t- {rule}")
+
+    def _warning(self, unused_rules: Rules) -> None:
         """
         Log warnings
         """
-        for module, rule in unused_rules:
-            logging.warning("rule not used  %s: %s", module, rule)
+        previous_wildcard = ""
+        for wildcard, rule in sorted(unused_rules):
+            if wildcard != previous_wildcard:
+                print("\nWildcard " + Format.BOLD + wildcard + Format.ENDC + ":")
+                print(" \u2022 " + Format.WARNING + "Unused rules:" + Format.ENDC)
+                previous_wildcard = wildcard
+            print(f"\t- {wildcard}: {rule}")
+
+    def print_report(
+        self, errors: List[DependencyError], unused_rules: Rules, nb_files: int
+    ) -> None:
+        """
+        Print report
+        """
+        if errors:
+            print(
+                "\n\n"
+                + Format.BOLD
+                + Format.FAIL
+                + "IMPORT ERRORS".center(30)
+                + Format.ENDC
+            )
+            self._error(errors)
+
+        if unused_rules:
+            print(
+                "\n\n"
+                + Format.BOLD
+                + Format.WARNING
+                + "UNUSED RULES".center(30)
+                + Format.ENDC
+            )
+            self._warning(unused_rules)
+
+        if not errors and not unused_rules:
+            print(Format.OKGREEN + "\nEverything is in order! " + Format.ENDC)
+        print(
+            "\n * "
+            + Format.FAIL
+            + f"{len(errors)} errors"
+            + Format.ENDC
+            + " and "
+            + Format.WARNING
+            + f"{len(unused_rules)} warnings"
+            + Format.ENDC
+            + f" in {nb_files} files."
+        )
 
 
 def read_graph_config(conf_path: str) -> Dict:
