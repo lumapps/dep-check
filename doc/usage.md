@@ -11,7 +11,7 @@ By default, the tool assumes it's Python.
 
 ### Auto-build your configuration file
 
-```shell
+```sh
 dep_check build <ROOT_DIR> [-o config.yaml] [--lang LANG]
 ```
 
@@ -53,7 +53,7 @@ lang: python
 local_init: false
 ```
 
-### Writing your own configuration file
+### Write your own configuration file
 
 You can build your own configuration file, using wildcards. Here are those supported by the application :
 
@@ -79,7 +79,7 @@ With those rules, we tell the tool that `mymodule` can import:
 * `mymodule`
 * `mymodule.anything.moduleagain`
 * `amodule.submodule.somemodule`
-* `othermodulo_9`
+* `othermodule_9`
 * ...
 
 Though, `mymodule` won't be able to import:
@@ -87,7 +87,7 @@ Though, `mymodule` won't be able to import:
 * `mymodule_07`
 * `amodule`
 * `amodule.submodule`
-* `othermodulo_9.module`
+* `othermodule_9.module`
 
 *Note : if a `*` is alone on a line, it has to be between quotes :*
 
@@ -96,11 +96,11 @@ mymodule:
     - '*'
 ```
 
-## Checking your configuration
+## Check your configuration
 
 Once your config file is ready, run
 
-```shell
+```sh
 dep_check check <ROOT_DIR> [-c config.yaml] [--lang LANG]
 ```
 
@@ -112,21 +112,13 @@ ROOT_DIR | The root directory of your project, containing you source files | :x:
 
 The command reads the configuration file, and parse every source file. It then verifies, for each file, that every `import` is authorized by the rules in the configuration file.
 
-Every error, if any, is displayed as following:
+When it's done, it writes a report on the console, listing import errors by module and unused rules:
 
-```shell
-ERROR:root:module mymodule import othermodule but is not allowed to (rules: (authorized imports for mymodule))
-```
+![report](images/report.png)
 
-Every unused rule in your configuration file is displayed as a warning:
+## Draw a dependency graph
 
-```shell
-WARNING:root:rule not used  mymodule: amodule.*
-```
-
-## Drawing a dependency graph
-
-```shell
+```sh
 # You need to have graphviz installed to run this
 dep_check graph <ROOT_DIR> [-o file.svg/dot] [-c config.yaml] [--lang LANG]
 ```
@@ -142,7 +134,7 @@ ROOT_DIR | The root directory of your project, containing you source files | :x:
 
 ![simple_graph](images/dependency_graph.svg)
 
-### Adding options
+### Add options
 
 The graph you'll get may seem unreadable if your project is pretty big. If that's the case, add options to the graph you want to draw, using a YAML config file.
 

@@ -99,17 +99,9 @@ ROOT_DIR | The root directory of your project, containing you source files | :x:
 
 The command reads the configuration file, and parse every source file. It then verifies, for each file, that every `import` is authorized by the rules in the configuration file.
 
-Every error, if any, is displayed as following:
+When it's done, it writes a report on the console, listing import errors by module and unused rules:
 
-```sh
-ERROR:root:module mymodule import othermodule but is not allowed to (rules: (authorized imports for mymodule))
-```
-
-Every unused rule in your configuration file is displayed as a warning:
-
-```sh
-WARNING:root:rule not used  mymodule: amodule.*
-```
+![report](doc/images/report.png)
 
 ### Draw a dependency graph
 
