@@ -2,6 +2,7 @@
 Implementations of IDependenciesPrinter
 """
 from dataclasses import asdict, dataclass
+from enum import Enum
 from pathlib import Path
 from subprocess import check_output
 from sys import stdin, stdout
@@ -17,9 +18,8 @@ from dep_check.use_cases.draw_graph import IGraphDrawer
 from dep_check.use_cases.interfaces import Configuration
 
 
-@dataclass
-class Format:
-    OKGREEN = "\033[92m"
+class Format(Enum):
+    SUCCESS = "\033[92m"
     WARNING = "\033[93m"
     FAIL = "\033[91m"
     ENDC = "\033[0m"
@@ -68,12 +68,17 @@ class ReportPrinter(IReportPrinter):
         }
 
         for module, errors in sorted(module_errors.items()):
-            print("\nModule " + Format.BOLD + module + Format.ENDC + ":")
-            print(" \u2022 " + Format.FAIL + "Unauthorized modules:" + Format.ENDC)
+            print("\nModule " + Format.BOLD.value + module + Format.ENDC.value + ":")
+            print(
+                " \u2022 "
+                + Format.FAIL.value
+                + "Unauthorized modules:"
+                + Format.ENDC.value
+            )
 
             for error in errors:
                 print(f"\t- {error.dependency}")
-            print("\n \u2022 " + Format.INFO + "Rules:" + Format.ENDC)
+            print("\n \u2022 " + Format.INFO.value + "Rules:" + Format.ENDC.value)
 
             for rule in errors[0].rules:
                 print(f"\t- {rule}")
@@ -85,8 +90,19 @@ class ReportPrinter(IReportPrinter):
         previous_wildcard = ""
         for wildcard, rule in sorted(unused_rules):
             if wildcard != previous_wildcard:
-                print("\nWildcard " + Format.BOLD + wildcard + Format.ENDC + ":")
-                print(" \u2022 " + Format.WARNING + "Unused rules:" + Format.ENDC)
+                print(
+                    "\nWildcard "
+                    + Format.BOLD.value
+                    + wildcard
+                    + Format.ENDC.value
+                    + ":"
+                )
+                print(
+                    " \u2022 "
+                    + Format.WARNING.value
+                    + "Unused rules:"
+                    + Format.ENDC.value
+                )
                 previous_wildcard = wildcard
             print(f"\t- {wildcard}: {rule}")
 
@@ -99,34 +115,36 @@ class ReportPrinter(IReportPrinter):
         if errors:
             print(
                 "\n\n"
-                + Format.BOLD
-                + Format.FAIL
+                + Format.BOLD.value
+                + Format.FAIL.value
                 + "IMPORT ERRORS".center(30)
-                + Format.ENDC
+                + Format.ENDC.value
             )
             self._error(errors)
 
         if unused_rules:
             print(
                 "\n\n"
-                + Format.BOLD
-                + Format.WARNING
+                + Format.BOLD.value
+                + Format.WARNING.value
                 + "UNUSED RULES".center(30)
-                + Format.ENDC
+                + Format.ENDC.value
             )
             self._warning(unused_rules)
 
         if not errors and not unused_rules:
-            print(Format.OKGREEN + "\nEverything is in order! " + Format.ENDC)
+            print(
+                Format.SUCCESS.value + "\nEverything is in order! " + Format.ENDC.value
+            )
         print(
             "\n * "
-            + Format.FAIL
+            + Format.FAIL.value
             + f"{len(errors)} errors"
-            + Format.ENDC
+            + Format.ENDC.value
             + " and "
-            + Format.WARNING
+            + Format.WARNING.value
             + f"{len(unused_rules)} warnings"
-            + Format.ENDC
+            + Format.ENDC.value
             + f" in {nb_files} files."
         )
 

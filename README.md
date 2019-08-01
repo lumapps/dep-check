@@ -4,7 +4,7 @@
 
 ## Version: Pre-alpha
 
-dep-check is a Python dependency checker. First write rules on which module can import what, then **dep-check** parse each source file to verify that everything is in order. You can also draw a dependency graph for your project.
+dep-check is a Python dependency checker. First write rules on which module can import what, then **dep-check** parses each source file to verify that everything is in order. You can also draw a dependency graph for your project.
 
 **Free software:** MIT license
 
@@ -13,7 +13,7 @@ dep-check is a Python dependency checker. First write rules on which module can 
 * [Python](https://www.python.org/)
 * [Go](https://golang.org/)
 
-By default, the tool assumes it's python.
+By default, the tool assumes it's operating on a Python project.
 
 ## Installation
 

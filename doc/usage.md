@@ -5,7 +5,7 @@ The supported languages are
 * [Python](https://www.python.org/)
 * [Golang](https://golang.org/)
 
-By default, the tool assumes it's Python.
+By default, the tool assumes it's operating on a Python project.
 
 ## The configuration file
 
