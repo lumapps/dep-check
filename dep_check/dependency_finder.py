@@ -1,12 +1,18 @@
 from abc import ABC, abstractmethod
 
-from dep_check.models import Dependencies, SourceFile
+from dep_check.models import Dependencies, ModuleWildcard, SourceFile
 
 
 class IParser(ABC):
     """
     Interface for the code parser
     """
+
+    @abstractmethod
+    def wildcard_to_regex(self, module: ModuleWildcard) -> str:
+        """
+        Return a regex expression for the Module from wildcard
+        """
 
     @abstractmethod
     def find_dependencies(self, source_file: SourceFile) -> Dependencies:

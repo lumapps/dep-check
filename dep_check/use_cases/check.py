@@ -10,14 +10,7 @@ from typing import Iterator, List, Tuple
 
 from dep_check.checker import NotAllowedDependencyException, check_dependency
 from dep_check.dependency_finder import IParser, get_import_from_dependencies
-from dep_check.models import (
-    Module,
-    ModuleWildcard,
-    Rules,
-    SourceFile,
-    get_parent,
-    wildcard_to_regex,
-)
+from dep_check.models import Module, ModuleWildcard, Rules, SourceFile, get_parent
 
 from .app_configuration import AppConfigurationSingleton
 from .interfaces import Configuration, ExitCode
@@ -83,7 +76,6 @@ class CheckDependenciesUC:
         self.source_files = source_files
         self.used_rules: Rules = set()
         self.all_rules: Rules = set()
-        self.lang = configuration.lang
 
     def _get_rules(self, module: Module) -> Rules:
         """
@@ -99,7 +91,7 @@ class CheckDependenciesUC:
         for module_wildcard, rules in self.configuration.dependency_rules.items():
             if re.match(
                 "{}$".format(
-                    wildcard_to_regex(ModuleWildcard(module_wildcard), self.lang)
+                    self.parser.wildcard_to_regex(ModuleWildcard(module_wildcard))
                 ),
                 module,
             ):
@@ -116,7 +108,7 @@ class CheckDependenciesUC:
         dependencies = self.std_lib_filter.filter(dependencies)
         for dependency in dependencies:
             try:
-                self.used_rules |= check_dependency(dependency, rules, self.lang)
+                self.used_rules |= check_dependency(self.parser, dependency, rules)
             except NotAllowedDependencyException as error:
                 yield DependencyError(
                     source_file.module,
