@@ -42,15 +42,20 @@ def get_parent(module: Module) -> Module:
     return Module(module.rpartition(".")[0])
 
 
-def wildcard_to_regex(module: ModuleWildcard) -> str:
+def wildcard_to_regex(module: ModuleWildcard, lang: str) -> str:
     """
     Return a regex expression for the Module from wildcard
     """
+    if lang[:2] == "go":
+        separator = "/"
+    else:
+        separator = "\\."
+
     module_regex = module.replace(".", "\\.").replace("*", ".*")
     module_regex = module_regex.replace("[!", "[^").replace("?", ".?")
 
     # Special char including a module along with all its sub-modules:
-    module_regex = module_regex.replace("%", r"(\..*)?$")
+    module_regex = module_regex.replace("%", f"({separator}.*)?$")
     return module_regex
 
 

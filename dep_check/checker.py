@@ -31,13 +31,15 @@ class NotAllowedDependencyException(Exception):
         self.authorized_modules = authorized_modules
 
 
-def check_dependency(dependency: Dependency, rules: Rules) -> Rules:
+def check_dependency(dependency: Dependency, rules: Rules, lang: str) -> Rules:
     """
     Check that dependencies match a given set of rules.
     """
     used_rule: Optional[Rule] = None
     for module, rule in rules:
-        if re.match("{}$".format(wildcard_to_regex(rule)), dependency.main_import):
+        if re.match(
+            "{}$".format(wildcard_to_regex(rule, lang)), dependency.main_import
+        ):
             used_rule = (module, rule)
             return set((used_rule,))
     if not dependency.sub_imports:
@@ -45,16 +47,18 @@ def check_dependency(dependency: Dependency, rules: Rules) -> Rules:
             dependency.main_import, [r for _, r in rules]
         )
 
-    return check_import_from_dependency(dependency, rules)
+    return check_import_from_dependency(dependency, rules, lang)
 
 
-def check_import_from_dependency(dependency: Dependency, rules: Rules) -> Rules:
+def check_import_from_dependency(
+    dependency: Dependency, rules: Rules, lang: str
+) -> Rules:
     used_rules: Rules = set()
     for import_module in dependency.sub_imports:
         used_rule = None
         for module, rule in rules:
             if re.match(
-                "{}$".format(wildcard_to_regex(rule)),
+                "{}$".format(wildcard_to_regex(rule, lang)),
                 f"{dependency.main_import}.{import_module}",
             ):
                 used_rule = (module, rule)

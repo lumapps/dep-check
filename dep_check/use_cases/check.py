@@ -83,6 +83,7 @@ class CheckDependenciesUC:
         self.source_files = source_files
         self.used_rules: Rules = set()
         self.all_rules: Rules = set()
+        self.lang = configuration.lang
 
     def _get_rules(self, module: Module) -> Rules:
         """
@@ -97,7 +98,10 @@ class CheckDependenciesUC:
         matching_rules: Rules = set()
         for module_wildcard, rules in self.configuration.dependency_rules.items():
             if re.match(
-                "{}$".format(wildcard_to_regex(ModuleWildcard(module_wildcard))), module
+                "{}$".format(
+                    wildcard_to_regex(ModuleWildcard(module_wildcard), self.lang)
+                ),
+                module,
             ):
                 matching_rules.update(
                     (ModuleWildcard(module_wildcard), r) for r in rules
@@ -112,7 +116,7 @@ class CheckDependenciesUC:
         dependencies = self.std_lib_filter.filter(dependencies)
         for dependency in dependencies:
             try:
-                self.used_rules |= check_dependency(dependency, rules)
+                self.used_rules |= check_dependency(dependency, rules, self.lang)
             except NotAllowedDependencyException as error:
                 yield DependencyError(
                     source_file.module,

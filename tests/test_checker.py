@@ -19,7 +19,7 @@ def test_empty() -> None:
 
     # When
     with raises(NotAllowedDependencyException) as error:
-        check_dependency(dependency, authorized_modules)
+        check_dependency(dependency, authorized_modules, "py")
 
     # Then
     assert error
@@ -41,7 +41,7 @@ def test_passing_case() -> None:
     # When
     error = None
     try:
-        check_dependency(dependency, rules)
+        check_dependency(dependency, rules, "py")
     except NotAllowedDependencyException as exception:
         error = exception
 
@@ -63,7 +63,7 @@ def test_not_passing_case() -> None:
 
     # When
     with raises(NotAllowedDependencyException) as error:
-        check_dependency(dependency, rules)
+        check_dependency(dependency, rules, "py")
 
     # Then
     assert error

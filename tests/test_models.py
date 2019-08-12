@@ -30,7 +30,7 @@ class TestRegexToWildcard:
         module = ModuleWildcard("")
 
         # When
-        regex = wildcard_to_regex(module)
+        regex = wildcard_to_regex(module, "py")
 
         # Then
         assert regex == ""
@@ -44,7 +44,7 @@ class TestRegexToWildcard:
         module = ModuleWildcard("toto")
 
         # When
-        regex = wildcard_to_regex(module)
+        regex = wildcard_to_regex(module, "py")
 
         # Then
         assert re.match(regex, "toto")
@@ -60,7 +60,7 @@ class TestRegexToWildcard:
         module = ModuleWildcard("toto.tata")
 
         # When
-        regex = wildcard_to_regex(module)
+        regex = wildcard_to_regex(module, "py")
 
         # Then
         assert re.match(regex, "toto.tata")
@@ -77,7 +77,7 @@ class TestRegexToWildcard:
         module = ModuleWildcard("t?to.?at?")
 
         # When
-        regex = wildcard_to_regex(module)
+        regex = wildcard_to_regex(module, "py")
 
         # Then
         assert re.match(regex, "toto.tata")
@@ -96,7 +96,7 @@ class TestRegexToWildcard:
         module = ModuleWildcard("toto*.*")
 
         # When
-        regex = wildcard_to_regex(module)
+        regex = wildcard_to_regex(module, "py")
 
         # Then
         assert re.match(regex, "toto.tata")
@@ -115,7 +115,7 @@ class TestRegexToWildcard:
         module = ModuleWildcard("toto.tata%")
 
         # When
-        regex = wildcard_to_regex(module)
+        regex = wildcard_to_regex(module, "py")
 
         # Then
         assert re.match(regex, "toto.tata")
