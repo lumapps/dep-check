@@ -6,7 +6,10 @@ from typing import List
 from pytest import raises
 
 from dep_check.checker import NotAllowedDependencyException, check_dependency
+from dep_check.infra.python_parser import PythonParser
 from dep_check.models import Dependency, Module, ModuleWildcard, Rules
+
+PARSER = PythonParser()
 
 
 def test_empty() -> None:
@@ -19,7 +22,7 @@ def test_empty() -> None:
 
     # When
     with raises(NotAllowedDependencyException) as error:
-        check_dependency(dependency, authorized_modules)
+        check_dependency(PARSER, dependency, authorized_modules)
 
     # Then
     assert error
@@ -41,7 +44,7 @@ def test_passing_case() -> None:
     # When
     error = None
     try:
-        check_dependency(dependency, rules)
+        check_dependency(PARSER, dependency, rules)
     except NotAllowedDependencyException as exception:
         error = exception
 
@@ -63,7 +66,7 @@ def test_not_passing_case() -> None:
 
     # When
     with raises(NotAllowedDependencyException) as error:
-        check_dependency(dependency, rules)
+        check_dependency(PARSER, dependency, rules)
 
     # Then
     assert error

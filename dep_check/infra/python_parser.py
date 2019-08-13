@@ -2,7 +2,13 @@ import ast
 from typing import Any, FrozenSet, List
 
 from dep_check.dependency_finder import IParser
-from dep_check.models import Dependencies, Dependency, Module, SourceFile
+from dep_check.models import (
+    Dependencies,
+    Dependency,
+    Module,
+    ModuleWildcard,
+    SourceFile,
+)
 
 
 class _ImportVisitor(ast.NodeVisitor):
@@ -76,6 +82,17 @@ class PythonParser(IParser):
     """
     Implementation of the interface, to parse python
     """
+
+    def wildcard_to_regex(self, module: ModuleWildcard) -> str:
+        """
+        Return a regex expression for the Module from wildcard
+        """
+        module_regex = module.replace(".", "\\.").replace("*", ".*")
+        module_regex = module_regex.replace("[!", "[^").replace("?", ".?")
+
+        # Special char including a module along with all its sub-modules:
+        module_regex = module_regex.replace("%", r"(\..*)?$")
+        return module_regex
 
     def find_dependencies(self, source_file: SourceFile) -> Dependencies:
         """

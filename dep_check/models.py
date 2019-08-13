@@ -42,18 +42,6 @@ def get_parent(module: Module) -> Module:
     return Module(module.rpartition(".")[0])
 
 
-def wildcard_to_regex(module: ModuleWildcard) -> str:
-    """
-    Return a regex expression for the Module from wildcard
-    """
-    module_regex = module.replace(".", "\\.").replace("*", ".*")
-    module_regex = module_regex.replace("[!", "[^").replace("?", ".?")
-
-    # Special char including a module along with all its sub-modules:
-    module_regex = module_regex.replace("%", r"(\..*)?$")
-    return module_regex
-
-
 def iter_all_modules(global_dep: GlobalDependencies) -> Iterator[Module]:
     def iter_(global_dep: GlobalDependencies) -> Iterator[Module]:
         for module, dependencies in global_dep.items():

@@ -4,7 +4,7 @@ from os import environ
 from subprocess import CalledProcessError, run
 
 from dep_check.dependency_finder import IParser
-from dep_check.models import Dependencies, Dependency, SourceFile
+from dep_check.models import Dependencies, Dependency, ModuleWildcard, SourceFile
 
 
 class GoString(Structure):  # pylint: disable=too-few-public-methods
@@ -58,6 +58,17 @@ class GoParser(IParser):
 
         self.lib.FindDependencies.argtypes = [GoString]
         self.lib.FindDependencies.restype = GoString
+
+    def wildcard_to_regex(self, module: ModuleWildcard) -> str:
+        """
+        Return a regex expression for the Module from wildcard
+        """
+        module_regex = module.replace(".", "\\.").replace("*", ".*")
+        module_regex = module_regex.replace("[!", "[^").replace("?", ".?")
+
+        # Special char including a module along with all its sub-modules:
+        module_regex = module_regex.replace("%", r"(/.*)?$")
+        return module_regex
 
     def find_dependencies(self, source_file: SourceFile) -> Dependencies:
         if source_file.code == "":

@@ -4,14 +4,8 @@ Check that dependencies follow a set of rules.
 import re
 from typing import List, Optional
 
-from dep_check.models import (
-    Dependency,
-    Module,
-    ModuleWildcard,
-    Rule,
-    Rules,
-    wildcard_to_regex,
-)
+from dep_check.dependency_finder import IParser
+from dep_check.models import Dependency, Module, ModuleWildcard, Rule, Rules
 
 
 class NotAllowedDependencyException(Exception):
@@ -31,13 +25,15 @@ class NotAllowedDependencyException(Exception):
         self.authorized_modules = authorized_modules
 
 
-def check_dependency(dependency: Dependency, rules: Rules) -> Rules:
+def check_dependency(parser: IParser, dependency: Dependency, rules: Rules) -> Rules:
     """
     Check that dependencies match a given set of rules.
     """
     used_rule: Optional[Rule] = None
     for module, rule in rules:
-        if re.match("{}$".format(wildcard_to_regex(rule)), dependency.main_import):
+        if re.match(
+            "{}$".format(parser.wildcard_to_regex(rule)), dependency.main_import
+        ):
             used_rule = (module, rule)
             return set((used_rule,))
     if not dependency.sub_imports:
@@ -45,16 +41,18 @@ def check_dependency(dependency: Dependency, rules: Rules) -> Rules:
             dependency.main_import, [r for _, r in rules]
         )
 
-    return check_import_from_dependency(dependency, rules)
+    return check_import_from_dependency(parser, dependency, rules)
 
 
-def check_import_from_dependency(dependency: Dependency, rules: Rules) -> Rules:
+def check_import_from_dependency(
+    parser: IParser, dependency: Dependency, rules: Rules
+) -> Rules:
     used_rules: Rules = set()
     for import_module in dependency.sub_imports:
         used_rule = None
         for module, rule in rules:
             if re.match(
-                "{}$".format(wildcard_to_regex(rule)),
+                "{}$".format(parser.wildcard_to_regex(rule)),
                 f"{dependency.main_import}.{import_module}",
             ):
                 used_rule = (module, rule)
