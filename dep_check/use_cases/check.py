@@ -10,7 +10,7 @@ from typing import Iterator, List, Tuple
 
 from dep_check.checker import NotAllowedDependencyException, check_dependency
 from dep_check.dependency_finder import IParser, get_import_from_dependencies
-from dep_check.models import Module, ModuleWildcard, Rules, SourceFile, get_parent
+from dep_check.models import Module, ModuleWildcard, Rules, SourceFile
 
 from .app_configuration import AppConfigurationSingleton
 from .interfaces import Configuration, ExitCode
@@ -81,12 +81,6 @@ class CheckDependenciesUC:
         """
         Return rules in configuration that match a given module.
         """
-        if self.configuration.local_init and module.endswith(".__init__"):
-            parent_module = get_parent(module)
-            return {
-                (ModuleWildcard(module), ModuleWildcard(r"{}%".format(parent_module)))
-            }
-
         matching_rules: Rules = set()
         for module_wildcard, rules in self.configuration.dependency_rules.items():
             if re.match(

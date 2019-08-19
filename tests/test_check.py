@@ -131,21 +131,6 @@ def test_not_passing_rules(source_files) -> None:
     )
 
 
-def test_get_rules_with_init_module():
-
-    # Given
-    module = Module("module.__init__")
-    configuration = Configuration(local_init=True)
-    report_printer = Mock()
-    use_case = CheckDependenciesUC(configuration, report_printer, PARSER, iter([]))
-
-    # When
-    rules = use_case._get_rules(module)  # pylint: disable=protected-access
-
-    # Then
-    assert rules == {(ModuleWildcard(module), ModuleWildcard("module%"))}
-
-
 def test_passing_rules_with_import_from() -> None:
     """
     Test result with a set rules that accept files.
