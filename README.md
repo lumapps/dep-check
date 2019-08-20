@@ -4,7 +4,7 @@
 
 ## Version: Pre-alpha
 
-dep-check is a Python dependency checker. First write rules on which module can import what, then **dep-check** parses each source file to verify that everything is in order. You can also draw a dependency graph for your project.
+**dep-check** is a Python dependency checker. It lets you write rules to define what each module can import, **dep-check** can then parse each source file in your project to verify everything is in order. You can also use it to draw a dependency graph for your project.
 
 **Free software:** MIT license
 
@@ -40,13 +40,13 @@ dep_check build <ROOT_DIR> [-o config.yaml] [--lang LANG]
 
 Argument | Description | Optional | Default
 -------- | ----------- | -------- | -------
-ROOT_DIR | The root directory of your project, containing you source files | :x: | *N/A*
--o / --output | The output file you want (yaml format) | :heavy_check_mark: | dependency_config.yaml
---lang | The language your project is written in | :heavy_check_mark: | python
+ROOT_DIR | The project root directory, containing the source files | :x: | *N/A*
+-o / --output | The output file (yaml format) | :heavy_check_mark: | dependency_config.yaml
+--lang | The language the project is written in | :heavy_check_mark: | python
 
-This command lists the imports of each module in a yaml file. Using this file, write some dependency rules on which module can import what, using wildcards.
+This command lists the imports of each module in a yaml file. Use this fileas as a starting point to write dependency rules on which module can import what, using wildcards.
 
-Here is an example:
+Here is an example of additional rules added to the initial yaml file:
 
 ```yaml
 ---
@@ -76,10 +76,10 @@ lang: python
 local_init: false
 ```
 
-* Write `*` to include any string, even an empty one
-* Using the `%` character after a module name (e.g. `my_module%`) includes this module along with its sub-modules.
+* Use `*` to include any string, even an empty one.
+* Use `%` after a module name (e.g. `my_module%`) to include this module along with its sub-modules.
 
-Here, for instance, we tell the tool that `dep_check.infra.io` can import `dep_check.use_cases`, but also `dep_check.use_cases.build`, `dep_check.use_cases.check` and so on.
+Here, for instance, the configuration file defines that `dep_check.infra.io` can import `dep_check.use_cases`, along with `dep_check.use_cases.build`, `dep_check.use_cases.check`, and so on.
 
 *To see all the supported wildcards, check the [User Manual](https://github.com/lumapps/dep-check/blob/master/doc/usage.md#writing-your-own-configuration-file).*
 
@@ -93,11 +93,11 @@ dep_check check <ROOT_DIR> [-c config.yaml] [--lang LANG]
 
 Argument | Description | Optional | Default
 -------- | ----------- | -------- | -------
-ROOT_DIR | The root directory of your project, containing you source files | :x: | *N/A*
--c / --config | The input file in which you wrote the dependency rules (yaml format) | :heavy_check_mark: | dependency_config.yaml
---lang | The language your project is written in | :heavy_check_mark: | python
+ROOT_DIR | The root directory of your project, containing the source files | :x: | *N/A*
+-c / --config | The yaml file in which you wrote the dependency rules | :heavy_check_mark: | dependency_config.yaml
+--lang | The language the project is written in | :heavy_check_mark: | python
 
-The command reads the configuration file, and parse every source file. It then verifies, for each file, that every `import` is authorized by the rules in the configuration file.
+The command reads the configuration file, and parses each source file. It then verifies, for each file, that every `import` is authorized by the rules defined in the configuration file.
 
 When it's done, it writes a report on the console, listing import errors by module and unused rules:
 
@@ -105,19 +105,20 @@ When it's done, it writes a report on the console, listing import errors by modu
 
 ### Draw a dependency graph
 
+**You need to have graphviz installed to run this command**
+
 ```sh
-# You need to have graphviz installed to run this
 dep_check graph <ROOT_DIR> [-o file.svg/dot] [-c config.yaml] [--lang LANG]
 ```
 
 Argument | Description | Optional | Default
 -------- | ----------- | -------- | -------
-ROOT_DIR | The root directory of your project, containing you source files | :x: | *N/A*
+ROOT_DIR | The project root directory of, containing your source files | :x: | *N/A*
 -o / --output | The output file you want (svg or dot format) | :heavy_check_mark: | dependency_graph.svg
--c / --config | The graph configuration file, to write options that you want (yaml format) | :heavy_check_mark:| None
---lang | The language your project is written in | :heavy_check_mark: | python
+-c / --config | The graph configuration file containing options (yaml format) | :heavy_check_mark:| None
+--lang | The language the project is written in | :heavy_check_mark: | python
 
-*Note : if you generate a svg file, a dot file is created in `/tmp/graph.dot`*
+*Note : if you generate a svg file, a dot file is also created in `/tmp/graph.dot`*
 
 A lot of options are available to customize your graph (hide some modules, add layers etc.). Check the [User Manual](https://github.com/lumapps/dep-check/blob/master/doc/usage.md#adding-options) for more information.
 
