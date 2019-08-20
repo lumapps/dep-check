@@ -17,13 +17,13 @@ dep_check build <ROOT_DIR> [-o config.yaml] [--lang LANG]
 
 Argument | Description | Optional | Default
 -------- | ----------- | -------- | -------
-ROOT_DIR | The root directory of your project, containing you source files | :x: | *N/A*
--o / --output | The output file you want (yaml format) | :heavy_check_mark: | dependency_config.yaml
---lang | The language your project is written in | :heavy_check_mark: | python
+ROOT_DIR | The project root directory, containing the source files | :x: | *N/A*
+-o / --output | The output file (yaml format) | :heavy_check_mark: | dependency_config.yaml
+--lang | The language the project is written in | :heavy_check_mark: | python
 
-This command lists the imports of each module in a yaml file. Using this file, write some dependency rules on which module can import what, using wildcards.
+This command lists the imports of each module in a yaml file. Use this file as a starting point to write dependency rules on which module can import what, using wildcards.
 
-Here is an example:
+Here is an example of additional rules added to the initial yaml file:
 
 ```yaml
 ---
@@ -63,7 +63,7 @@ You can build your own configuration file, using wildcards. Here are those suppo
 * `[d-y]` corresponds to any character between 'd' and 'y'
 * `[!d-y]` corresponds to any character which is **not** between 'd' and 'y'
 * `[!abc]` corresponds to any character except 'a', 'b' or 'c'
-* Using the `%` character after a module name (e.g. `my_module%`) includes this module along with its sub-modules.
+* Use `%` after a module name (e.g. `my_module%`) to include this module along with its sub-modules.
 
 ### Examples
 
@@ -74,7 +74,7 @@ mymodule:
     - othermodul?_[0-9]
 ```
 
-With those rules, we tell the tool that `mymodule` can import:
+Here, the rules define that `mymodule` can import:
 
 * `mymodule`
 * `mymodule.anything.moduleagain`
@@ -106,11 +106,11 @@ dep_check check <ROOT_DIR> [-c config.yaml] [--lang LANG]
 
 Argument | Description | Optional | Default
 -------- | ----------- | -------- | -------
-ROOT_DIR | The root directory of your project, containing you source files | :x: | *N/A*
--c / --config | The input file in which you wrote the dependency rules (yaml format) | :heavy_check_mark: | dependency_config.yaml
---lang | The language your project is written in | :heavy_check_mark: | python
+ROOT_DIR | The project root directory, containing the source files | :x: | *N/A*
+-c / --config | The yaml file in which you wrote the dependency rules | :heavy_check_mark: | dependency_config.yaml
+--lang | The language the project is written in | :heavy_check_mark: | python
 
-The command reads the configuration file, and parse every source file. It then verifies, for each file, that every `import` is authorized by the rules in the configuration file.
+The command reads the configuration file, and parses each source file. It then verifies, for each file, that every `import` is authorized by the rules defined in the configuration file.
 
 When it's done, it writes a report on the console, listing import errors by module and unused rules:
 
@@ -118,17 +118,18 @@ When it's done, it writes a report on the console, listing import errors by modu
 
 ## Draw a dependency graph
 
+**You need to have graphviz installed to run this command**
+
 ```sh
-# You need to have graphviz installed to run this
 dep_check graph <ROOT_DIR> [-o file.svg/dot] [-c config.yaml] [--lang LANG]
 ```
 
 Argument | Description | Optional | Default
 -------- | ----------- | -------- | -------
-ROOT_DIR | The root directory of your project, containing you source files | :x: | *N/A*
+ROOT_DIR | The project root directory, containing the source files | :x: | *N/A*
 -o / --output | The output file you want (svg or dot format) | :heavy_check_mark: | dependency_graph.svg
--c / --config | The graph configuration file, to write options that you want (yaml format) | :heavy_check_mark:| None
---lang | The language your project is written in | :heavy_check_mark: | python
+-c / --config | The graph configuration file containing options (yaml format) | :heavy_check_mark:| None
+--lang | The language the project is written in | :heavy_check_mark: | python
 
 *Note : if you generate a svg file, a dot file is created in `/tmp/graph.dot`*
 
@@ -136,7 +137,7 @@ ROOT_DIR | The root directory of your project, containing you source files | :x:
 
 ### Add options
 
-The graph you'll get may seem unreadable if your project is pretty big. If that's the case, add options to the graph you want to draw, using a YAML config file.
+The graph you'll get may seem unreadable if your project is pretty big. If that's the case, add options to the graph you want to draw, using a YAML configuration file.
 
 Here is a config example:
 
