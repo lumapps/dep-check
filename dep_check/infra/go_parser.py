@@ -6,6 +6,8 @@ from subprocess import CalledProcessError, run
 from dep_check.dependency_finder import IParser
 from dep_check.models import Dependencies, Dependency, ModuleWildcard, SourceFile
 
+GOPATH = environ["GOPATH"]
+
 
 class GoString(Structure):  # pylint: disable=too-few-public-methods
     _fields_ = [("data", c_char_p), ("n", c_longlong)]
@@ -35,7 +37,7 @@ class GoParser(IParser):
                         "-o",
                         f"{self.lib_path}/go_parse.so",
                         "-buildmode=c-shared",
-                        "$GOPATH/src/github.com/lumapps/dep-check/dep_check/lib/go_parse.go",
+                        f"{GOPATH}/src/github.com/lumapps/dep-check/dep_check/lib/go_parse.go",
                     ],
                     check=True,
                 )
