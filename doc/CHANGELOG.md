@@ -1,4 +1,16 @@
-# History
+# CHANGELOG
+
+## 1.0.0 (2019-08-20)
+
+### Modified
+
+- The tool now writes a full report, displaying the number of errors, warnings and files.
+- The commands have been simplified, to avoid too long command lines
+
+### Added
+
+- The tool now supports Go language
+- Better documentation
 
 ## 0.2.0 (2019-07-16)
 

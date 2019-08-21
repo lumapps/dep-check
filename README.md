@@ -32,7 +32,7 @@ You can also see [other installation methods](https://github.com/lumapps/dep-che
 
 ## Usage
 
-### Build your config file
+### Build your configuration file
 
 ```sh
 dep_check build <ROOT_DIR> [-o config.yaml] [--lang LANG]
@@ -44,7 +44,7 @@ ROOT_DIR | The project root directory, containing the source files | :x: | *N/A*
 -o / --output | The output file (yaml format) | :heavy_check_mark: | dependency_config.yaml
 --lang | The language the project is written in | :heavy_check_mark: | python
 
-This command lists the imports of each module in a yaml file. Use this fileas as a starting point to write dependency rules on which module can import what, using wildcards.
+This command lists the imports of each module in a yaml file. Use this file as a starting point to write dependency rules on which module can import what, using wildcards.
 
 Here is an example of additional rules added to the initial yaml file:
 
@@ -81,9 +81,9 @@ local_init: false
 
 Here, for instance, the configuration file defines that `dep_check.infra.io` can import `dep_check.use_cases`, along with `dep_check.use_cases.build`, `dep_check.use_cases.check`, and so on.
 
-*To see all the supported wildcards, check the [User Manual](https://github.com/lumapps/dep-check/blob/master/doc/usage.md#writing-your-own-configuration-file).*
+*To see all the supported wildcards, check the [User Manual](https://github.com/lumapps/dep-check/blob/master/doc/usage.md#write-your-own-configuration-file).*
 
-### Check your config
+### Check your configuration
 
 Once your config file is ready, run
 
@@ -93,7 +93,7 @@ dep_check check <ROOT_DIR> [-c config.yaml] [--lang LANG]
 
 Argument | Description | Optional | Default
 -------- | ----------- | -------- | -------
-ROOT_DIR | The root directory of your project, containing the source files | :x: | *N/A*
+ROOT_DIR | The project root directory, containing the source files | :x: | *N/A*
 -c / --config | The yaml file in which you wrote the dependency rules | :heavy_check_mark: | dependency_config.yaml
 --lang | The language the project is written in | :heavy_check_mark: | python
 
@@ -113,14 +113,14 @@ dep_check graph <ROOT_DIR> [-o file.svg/dot] [-c config.yaml] [--lang LANG]
 
 Argument | Description | Optional | Default
 -------- | ----------- | -------- | -------
-ROOT_DIR | The project root directory of, containing your source files | :x: | *N/A*
+ROOT_DIR | The project root directory, containing the source files | :x: | *N/A*
 -o / --output | The output file you want (svg or dot format) | :heavy_check_mark: | dependency_graph.svg
 -c / --config | The graph configuration file containing options (yaml format) | :heavy_check_mark:| None
 --lang | The language the project is written in | :heavy_check_mark: | python
 
 *Note : if you generate a svg file, a dot file is also created in `/tmp/graph.dot`*
 
-A lot of options are available to customize your graph (hide some modules, add layers etc.). Check the [User Manual](https://github.com/lumapps/dep-check/blob/master/doc/usage.md#adding-options) for more information.
+A lot of options are available to customize your graph (hide some modules, add layers etc.). Check the [User Manual](https://github.com/lumapps/dep-check/blob/master/doc/usage.md#add-options) for more information.
 
 ## Contributing
 
