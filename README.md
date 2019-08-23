@@ -2,9 +2,9 @@
 
 [![image](https://img.shields.io/pypi/v/dep-check.svg)](https://pypi.python.org/pypi/dep-check) [![CircleCI](https://circleci.com/gh/lumapps/dep-check/tree/master.svg?style=svg)](https://circleci.com/gh/lumapps/dep-check/tree/master)
 
-## Version: Pre-alpha
-
 **dep-check** is a Python dependency checker. It lets you write rules to define what each module can import, **dep-check** can then parse each source file in your project to verify everything is in order. You can also use it to draw a dependency graph for your project.
+
+![graph_example](https://raw.githubusercontent.com/lumapps/dep-check/master/doc/images/graph.svg?sanitize=true)
 
 **Free software:** MIT license
 
