@@ -4,4 +4,4 @@
 
 __author__ = """LumApps"""
 __email__ = "core-devs@lumapps.com"
-__version__ = "1.0.1"
+__version__ = "1.0.2"
