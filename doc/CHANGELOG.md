@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.0.1(2019-08-23)
+
+### BUGFIX
+
+- The tool now works correctly with Go.
+
 ## 1.0.0 (2019-08-20)
 
 ### Modified
