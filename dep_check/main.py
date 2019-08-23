@@ -136,8 +136,7 @@ class MainApp:
         self.create_app_configuration()
         try:
             use_case = DEP_CHECK_FEATURES[self.feature].use_case_factory(self)
-            use_case.run()
-
+            code = use_case.run()
         except KeyError:
             raise MissingOptionError()
 
