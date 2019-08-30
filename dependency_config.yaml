@@ -23,5 +23,3 @@ dependency_rules:
 
   dep_check.main:
     - '*'
-
-local_init: false

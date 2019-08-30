@@ -73,7 +73,6 @@ dep_check.main:
     - '*'
 
 lang: python
-local_init: false
 ```
 
 * Use `*` to include any string, even an empty one.

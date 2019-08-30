@@ -50,7 +50,6 @@ dep_check.main:
     - '*'
 
 lang: python
-local_init: false
 ```
 
 ### Write your own configuration file

@@ -43,7 +43,6 @@ def test_nominal(source_files) -> None:
     # Then
     dependencies_writer.write.assert_called()  # type: ignore
     configuration = dependencies_writer.write.call_args[0][0]
-    assert not configuration.local_init
     dependency_rules = {
         module_regex: set(rules)
         for module_regex, rules in configuration.dependency_rules.items()

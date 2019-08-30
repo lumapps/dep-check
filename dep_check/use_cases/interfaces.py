@@ -16,7 +16,6 @@ class Configuration:
 
     dependency_rules: DependencyRules = field(default_factory=dict)
     lang: str = "python"
-    local_init: bool = False
 
 
 class IStdLibFilter(ABC):
