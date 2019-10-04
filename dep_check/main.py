@@ -209,7 +209,7 @@ def main() -> None:
         logging.error(
             "You have to write which feature you want to use among [build,check,graph]"
         )
-        sys.exit(1)
+        sys.exit(2)
 
 
 if __name__ == "__main__":
