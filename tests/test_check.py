@@ -4,6 +4,8 @@ Test check use case.
 
 from unittest.mock import Mock
 
+import pytest
+
 from dep_check.infra.python_parser import PythonParser
 from dep_check.models import Module, ModuleWildcard, SourceCode, SourceFile
 from dep_check.use_cases.check import (
@@ -16,8 +18,6 @@ from dep_check.use_cases.interfaces import Configuration
 from .fakefile import FILE_WITH_LOCAL_IMPORT, FILE_WITH_STD_IMPORT, SIMPLE_FILE
 
 PARSER = PythonParser()
-
-import pytest
 
 
 def test_empty_rules(source_files) -> None:
