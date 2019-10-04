@@ -25,9 +25,8 @@ from dep_check.use_cases.app_configuration import (
     AppConfigurationSingleton,
 )
 from dep_check.use_cases.build import BuildConfigurationUC
-from dep_check.use_cases.check import CheckDependenciesUC
+from dep_check.use_cases.check import CheckDependenciesUC, ForbiddenDepencyError
 from dep_check.use_cases.draw_graph import DrawGraphUC
-from dep_check.use_cases.interfaces import ExitCode
 
 FEATURE_PARSER = argparse.ArgumentParser(description="Chose your feature")
 FEATURE_PARSER.add_argument(
@@ -131,16 +130,13 @@ class MainApp:
         except KeyError:
             raise MissingOptionError()
 
-    def main(self) -> int:
-        code = ExitCode.OK
+    def main(self) -> None:
         self.create_app_configuration()
         try:
             use_case = DEP_CHECK_FEATURES[self.feature].use_case_factory(self)
-            code = use_case.run()
+            use_case.run()
         except KeyError:
             raise MissingOptionError()
-
-        return code.value
 
     @staticmethod
     def create_app_configuration() -> None:
@@ -206,7 +202,9 @@ DEP_CHECK_FEATURES = {
 
 def main() -> None:
     try:
-        sys.exit(MainApp().main())
+        MainApp().main()
+    except ForbiddenDepencyError:
+        sys.exit(1)
     except MissingOptionError:
         logging.error(
             "You have to write which feature you want to use among [build,check,graph]"

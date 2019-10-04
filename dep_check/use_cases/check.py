@@ -13,7 +13,11 @@ from dep_check.dependency_finder import IParser, get_import_from_dependencies
 from dep_check.models import Module, ModuleWildcard, Rules, SourceFile
 
 from .app_configuration import AppConfigurationSingleton
-from .interfaces import Configuration, ExitCode
+from .interfaces import Configuration
+
+
+class ForbiddenDepencyError(Exception):
+    pass
 
 
 @dataclass(frozen=True)
@@ -110,7 +114,7 @@ class CheckDependenciesUC:
                     tuple(sorted(error.authorized_modules)),
                 )
 
-    def run(self) -> ExitCode:
+    def run(self) -> None:
         errors = []
         nb_files = 0
 
@@ -122,4 +126,5 @@ class CheckDependenciesUC:
         unused = self.all_rules.difference(self.used_rules)
         self.report_printer.print_report(errors, unused, nb_files)
 
-        return ExitCode.OK if not errors else ExitCode.KO
+        if errors:
+            raise ForbiddenDepencyError

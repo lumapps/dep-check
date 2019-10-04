@@ -6,12 +6,18 @@ from unittest.mock import Mock
 
 from dep_check.infra.python_parser import PythonParser
 from dep_check.models import Module, ModuleWildcard, SourceCode, SourceFile
-from dep_check.use_cases.check import CheckDependenciesUC, DependencyError
+from dep_check.use_cases.check import (
+    CheckDependenciesUC,
+    DependencyError,
+    ForbiddenDepencyError,
+)
 from dep_check.use_cases.interfaces import Configuration
 
 from .fakefile import FILE_WITH_LOCAL_IMPORT, FILE_WITH_STD_IMPORT, SIMPLE_FILE
 
 PARSER = PythonParser()
+
+import pytest
 
 
 def test_empty_rules(source_files) -> None:
@@ -24,7 +30,8 @@ def test_empty_rules(source_files) -> None:
     use_case = CheckDependenciesUC(configuration, report_printer, PARSER, source_files)
 
     # When
-    use_case.run()
+    with pytest.raises(ForbiddenDepencyError):
+        use_case.run()
 
     # Then
     assert set(report_printer.print_report.call_args[0][0]) == set(
@@ -97,7 +104,8 @@ def test_not_passing_rules(source_files) -> None:
     use_case = CheckDependenciesUC(configuration, report_printer, PARSER, source_files)
 
     # When
-    use_case.run()
+    with pytest.raises(ForbiddenDepencyError):
+        use_case.run()
 
     # Then
     simple = SIMPLE_FILE.module
@@ -172,7 +180,8 @@ def test_not_passing_rules_with_import_from() -> None:
     )
 
     # When
-    use_case.run()
+    with pytest.raises(ForbiddenDepencyError):
+        use_case.run()
 
     # Then
     assert set(report_printer.print_report.call_args[0][0]) == set(
