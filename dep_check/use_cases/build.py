@@ -8,7 +8,7 @@ from dep_check.dependency_finder import IParser, get_dependencies
 from dep_check.models import Dependencies, Module, ModuleWildcard, SourceFile
 
 from .app_configuration import AppConfigurationSingleton
-from .interfaces import Configuration
+from .interfaces import Configuration, ExitCode
 
 
 class IConfigurationWriter(ABC):
@@ -42,7 +42,7 @@ class BuildConfigurationUC:
         self.source_files = source_files
         self.lang = lang
 
-    def run(self) -> None:
+    def run(self) -> ExitCode:
         """
         Build configuration from existing source files.
         """
@@ -60,3 +60,5 @@ class BuildConfigurationUC:
             ]
 
         self.printer.write(Configuration(dependency_rules, self.lang))
+
+        return ExitCode.OK
