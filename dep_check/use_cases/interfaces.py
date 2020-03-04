@@ -3,7 +3,6 @@ Common use cases interfaces.
 """
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from enum import Enum
 
 from dep_check.models import Dependencies, DependencyRules
 
@@ -29,12 +28,3 @@ class IStdLibFilter(ABC):
         """
         Remove dependencies that are part of stdlib.
         """
-
-
-class ExitCode(Enum):
-    """
-    Describe possible exit codes
-    """
-
-    OK = 0
-    KO = 1
