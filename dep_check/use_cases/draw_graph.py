@@ -15,7 +15,6 @@ from dep_check.models import (
 )
 
 from .app_configuration import AppConfigurationSingleton
-from .interfaces import ExitCode
 
 
 class IGraphDrawer(ABC):
@@ -81,7 +80,7 @@ class DrawGraphUC:
 
         return filtered_global_dep
 
-    def run(self) -> ExitCode:
+    def run(self) -> None:
         global_dependencies: GlobalDependencies = {}
         for source_file in self.source_files:
             module = Module(source_file.module.replace(".__init__", ""))
@@ -102,5 +101,3 @@ class DrawGraphUC:
                 global_dependencies.pop(module, None)
 
         self.drawer.write(global_dependencies)
-
-        return ExitCode.OK
