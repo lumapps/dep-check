@@ -1,20 +1,19 @@
 import logging
-from os import chdir, environ, getcwd, path
+from os import chdir, getcwd, path
 from subprocess import CalledProcessError, run
 
 from dep_check.dependency_finder import IParser
 from dep_check.models import Dependencies, Dependency, ModuleWildcard, SourceFile
 
 try:
-    from .lib import goparse
+    from dep_check.infra.lib import goparse
 except ImportError:
     CURRENT_WD = getcwd()
 
     chdir("{}/lib".format(path.dirname(path.realpath(__file__))))
     try:
-        environ["CGO_ENABLED"] = "1"
-        run(["go", "build", "-buildmode=c-shared", "-o", "goparse.so"], check=True)
-        from .lib import goparse  # pylint: disable=no-name-in-module
+        run(["python3", "setup.py", "build_ext", "-i"], check=True)
+        from lib import goparse  # pylint: disable=no-name-in-module
     except (CalledProcessError, FileNotFoundError):
         logging.warning(
             "Couldn't load GO library, you won't be able to use dep-check on GO projects."
@@ -53,3 +52,9 @@ class GoParser(IParser):
 
     def find_import_from_dependencies(self, source_file: SourceFile) -> Dependencies:
         return self.find_dependencies(source_file)
+
+
+if __name__ == "__main__":
+    print(goparse)
+    print(goparse.find_dependencies)
+    print(goparse.find_dependencies('package main\nimport ("fmt";"toto";"toto/tata")'))
