@@ -1,4 +1,3 @@
-#define Py_LIMITED_API
 #include <Python.h>
 
 PyObject * find_dependencies(PyObject *, PyObject *);
@@ -8,6 +7,13 @@ PyObject * find_dependencies(PyObject *, PyObject *);
 int PyArg_ParseTuple_str(PyObject * args, char ** src) {
     return PyArg_ParseTuple(args, "s", src);
 }
+
+// Fix SystemError: built-in function gen_nums returned NULL without setting an error
+// see https://stackoverflow.com/a/40688635
+PyObject *Py_return_None() {
+        Py_RETURN_NONE;
+}
+
 
 static PyMethodDef GoParseMethods[] = {
     {"find_dependencies", find_dependencies, METH_VARARGS, "Parses a file and returns its dependencies."},

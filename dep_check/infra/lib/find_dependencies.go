@@ -1,10 +1,8 @@
 package main
 
-// #cgo pkg-config: python3
-// #define Py_LIMITED_API
+// #include <stdlib.h>
 // #include <Python.h>
-// int PyArg_ParseTuple_str(PyObject *, char **);
-// PyObject * Py_BuildValue_str(PyObject * args, char * src);
+// #include "goparse.h"
 import "C"
 
 import (
@@ -17,7 +15,7 @@ import (
 func find_dependencies(self, args *C.PyObject) *C.PyObject {
 	var src *C.char
 	if C.PyArg_ParseTuple_str(args, &src) == 0 {
-		return nil
+		return C.Py_return_None()
 	}
 
 	fset := token.NewFileSet() // positions are relative to fset
@@ -26,7 +24,7 @@ func find_dependencies(self, args *C.PyObject) *C.PyObject {
 	f, err := parser.ParseFile(fset, "", C.GoString(src), parser.ImportsOnly)
 	if err != nil {
 		fmt.Println(err)
-		return nil
+		return C.Py_return_None()
 	}
 
 	// Print the imports from the file's AST.
