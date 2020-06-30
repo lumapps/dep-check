@@ -1,5 +1,5 @@
 import logging
-from os import chdir, environ, getcwd, path
+from os import chdir, getcwd, path
 from subprocess import CalledProcessError, run
 
 from dep_check.dependency_finder import IParser
@@ -12,8 +12,7 @@ except ImportError:
 
     chdir("{}/lib".format(path.dirname(path.realpath(__file__))))
     try:
-        environ["CGO_ENABLED"] = "1"
-        run(["go", "build", "-buildmode=c-shared", "-o", "goparse.so"], check=True)
+        run(["python3", "setup.py", "build_ext", "-i"], check=True)
         from .lib import goparse  # pylint: disable=no-name-in-module
     except (CalledProcessError, FileNotFoundError):
         logging.warning(
