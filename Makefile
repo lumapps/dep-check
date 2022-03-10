@@ -1,7 +1,8 @@
-.PHONY: clean clean-test clean-pyc clean-build doc help
+.PHONY: clean clean-test clean-pyc clean-build doc help test tests_go
 .DEFAULT_GOAL := help
 SHELL=/bin/bash
-
+PYTHON_EXEC=venv/bin/python
+SYSTEM_PYTHON_EXEC=python3.9
 
 include dev.mk
 include help.mk
@@ -58,9 +59,8 @@ coverage: ## check code coverage quickly with the default Python
 	xdg-open htmlcov/index.html
 
 install: clean ## install the package to the active Python's site-packages
-	python3.7 setup.py install
+	${SYSTEM_PYTHON_EXEC} setup.py install
 
 dist: clean ## builds source and wheel package
-	source venv/bin/activate && \
-	python3.7 setup.py sdist && \
-	python3.7 setup.py bdist_wheel
+	${PYTHON_EXEC} setup.py sdist
+	${PYTHON_EXEC} setup.py bdist_wheel

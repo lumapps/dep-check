@@ -7,7 +7,7 @@ init: venv requirements.txt dev-requirements.txt
 
 # Make sure the virtualenv exists
 venv:
-	python3.7 -m venv venv
+	${SYSTEM_PYTHON_EXEC} -m venv venv
 	source venv/bin/activate && \
 	pip install --quiet --upgrade pip
 	source venv/bin/activate && \
@@ -30,6 +30,7 @@ update_requirements:
 		--quiet \
 		--generate-hashes \
 		--output-file dev-requirements.txt \
+		setup.cfg \
 		dev-requirements.in
 	# Install all the requirements in the virtualenv
 	$(MAKE) init
