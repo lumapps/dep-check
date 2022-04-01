@@ -43,6 +43,8 @@ ROOT_DIR | The project root directory, containing the source files | :x: | *N/A*
 -o / --output | The output file (yaml format) | :heavy_check_mark: | dependency_config.yaml
 --lang | The language the project is written in | :heavy_check_mark: | python
 
+By default, any import is forbidden (denylist). The configuration is an allowlist.
+
 This command lists the imports of each module in a yaml file. Use this file as a starting point to write dependency rules on which module can import what, using wildcards.
 
 Here is an example of additional rules added to the initial yaml file:
