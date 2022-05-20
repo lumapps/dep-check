@@ -2,14 +2,14 @@
 Implementations of IDependenciesPrinter
 """
 from dataclasses import asdict, dataclass
-
-import yaml
 from enum import Enum
-from jinja2 import Template
 from pathlib import Path
 from subprocess import check_output
 from sys import stdin, stdout
 from typing import Dict, Iterable, Iterator, List, Optional, Tuple
+
+import yaml
+from jinja2 import Template
 
 from dep_check.models import GlobalDependencies, Module, Rules, iter_all_modules
 from dep_check.use_cases.build import IConfigurationWriter

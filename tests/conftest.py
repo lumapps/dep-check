@@ -1,5 +1,6 @@
-import pytest
 from typing import Iterable
+
+import pytest
 
 from dep_check.infra.std_lib_filter import StdLibSimpleFilter
 from dep_check.models import SourceFile

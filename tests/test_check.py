@@ -2,8 +2,9 @@
 Test check use case.
 """
 
-import pytest
 from unittest.mock import Mock
+
+import pytest
 
 from dep_check.infra.python_parser import PythonParser
 from dep_check.models import Module, ModuleWildcard, SourceCode, SourceFile

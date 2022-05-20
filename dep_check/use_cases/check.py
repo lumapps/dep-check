@@ -3,10 +3,9 @@ Check all given source files dependencies use case.
 """
 
 
-from dataclasses import dataclass
-
 import re
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Iterator, List, Tuple
 
 from dep_check.checker import NotAllowedDependencyException, check_dependency

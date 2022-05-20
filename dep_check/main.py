@@ -3,11 +3,10 @@
 Check dependencies of the project
 """
 
-from dataclasses import dataclass
-
 import argparse
 import logging
 import sys
+from dataclasses import dataclass
 from typing import Callable
 
 from dep_check.infra.file_system import source_file_iterator
