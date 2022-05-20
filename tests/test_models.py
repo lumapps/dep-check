@@ -103,7 +103,7 @@ class TestIterAllModules:
         result_iter = iter_all_modules(global_deps)
 
         # Then
-        all_modules = list()
+        all_modules = []
         for module in result_iter:
             all_modules.append(module)
 

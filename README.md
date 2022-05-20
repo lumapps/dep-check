@@ -11,7 +11,6 @@
 ## Supported languages
 
 * [Python](https://www.python.org/)
-* [Go](https://golang.org/)
 
 By default, the tool assumes it's operating on a Python project.
 

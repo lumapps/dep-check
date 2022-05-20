@@ -61,17 +61,15 @@ def test_dot() -> None:
     use_case.run()
 
     # Then
-    with open("/tmp/graph.dot") as dot:
+    with open("/tmp/graph.dot", encoding="utf-8") as dot:
         lines = sorted(dot.readlines())
 
     assert lines == sorted(
         [
             "digraph G {\n",
             "splines=true;\n",
-            "node[shape=box fontname=Arial style=filled fillcolor={}];\n".format(
-                drawer.graph.node_color
-            ),
-            "bgcolor={}\n".format(drawer.graph.background_color),
+            f"node[shape=box fontname=Arial style=filled fillcolor={drawer.graph.node_color}];\n",
+            f"bgcolor={drawer.graph.background_color}\n",
             "\n",
             '"simple_module" -> "module"\n',
             '"simple_module" -> "module.inside.module"\n',
@@ -216,7 +214,7 @@ def test_hide_empty_dict(mock_method) -> None:
     use_case.run()
 
     # Then
-    mock_method.assert_called_with(dict())
+    mock_method.assert_called_with({})
 
 
 def test_hide_nominal(source_files) -> None:

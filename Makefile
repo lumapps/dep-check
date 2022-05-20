@@ -1,6 +1,7 @@
 .PHONY: clean clean-test clean-pyc clean-build doc help
 .DEFAULT_GOAL := help
 SHELL=/bin/bash
+PYTHON_EXEC:=python3.10
 
 
 include dev.mk
@@ -32,20 +33,14 @@ lint: ## check style with pylint
 	pre-commit run --all-files && \
 	black --check dep_check && \
 	black --check tests && \
-	black --check tests_go && \
-	isort --check-only -rc dep_check && \
-	isort --check-only -rc tests && \
-	isort --check-only -rc tests_go && \
+	isort --check-only dep_check && \
+	isort --check-only tests && \
 	mypy dep_check && \
-	pylint dep_check tests tests_go
+	pylint dep_check tests
 
 test: ## run tests quickly with the default Python
 	source venv/bin/activate && \
 	pytest -v tests
-
-test-go: ## run tests regarding go
-	source venv/bin/activate && \
-	pytest -v tests_go
 
 test-all: ## run tests on every Python version with tox
 	source venv/bin/activate && \
@@ -58,9 +53,9 @@ coverage: ## check code coverage quickly with the default Python
 	xdg-open htmlcov/index.html
 
 install: clean ## install the package to the active Python's site-packages
-	python3.7 setup.py install
+	$(PYTHON_EXEC) setup.py install
 
 dist: clean ## builds source and wheel package
 	source venv/bin/activate && \
-	python3.7 setup.py sdist && \
-	python3.7 setup.py bdist_wheel
+	$(PYTHON_EXEC) setup.py sdist && \
+	$(PYTHON_EXEC) setup.py bdist_wheel

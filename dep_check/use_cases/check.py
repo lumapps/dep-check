@@ -88,9 +88,7 @@ class CheckDependenciesUC:
         matching_rules: Rules = set()
         for module_wildcard, rules in self.configuration.dependency_rules.items():
             if re.match(
-                "{}$".format(
-                    self.parser.wildcard_to_regex(ModuleWildcard(module_wildcard))
-                ),
+                f"{self.parser.wildcard_to_regex(ModuleWildcard(module_wildcard))}$",
                 module,
             ):
                 matching_rules.update(

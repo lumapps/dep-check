@@ -10,7 +10,6 @@ from dataclasses import dataclass
 from typing import Callable
 
 from dep_check.infra.file_system import source_file_iterator
-from dep_check.infra.go_parser import GoParser
 from dep_check.infra.io import (
     Graph,
     GraphDrawer,
@@ -127,16 +126,16 @@ class MainApp:
 
         try:
             self.args = DEP_CHECK_FEATURES[self.feature].parser.parse_args()
-        except KeyError:
-            raise MissingOptionError()
+        except KeyError as error:
+            raise MissingOptionError() from error
 
     def main(self) -> None:
         self.create_app_configuration()
         try:
             use_case = DEP_CHECK_FEATURES[self.feature].use_case_factory(self)
             use_case.run()
-        except KeyError:
-            raise MissingOptionError()
+        except KeyError as error:
+            raise MissingOptionError() from error
 
     @staticmethod
     def create_app_configuration() -> None:
@@ -151,9 +150,7 @@ class MainApp:
         Plumbing to make build use case working.
         """
         configuration_io = YamlConfigurationIO(self.args.output)
-        code_parser = (
-            PythonParser() if self.args.lang in ["py", "python"] else GoParser()
-        )
+        code_parser = PythonParser()
         source_files = source_file_iterator(self.args.root_dir, self.args.lang[:2])
         return BuildConfigurationUC(
             configuration_io, code_parser, source_files, self.args.lang
@@ -164,9 +161,7 @@ class MainApp:
         Plumbing to make check use case working.
         """
         configuration = YamlConfigurationIO(self.args.config).read()
-        code_parser = (
-            PythonParser() if configuration.lang in ["py", "python"] else GoParser()
-        )
+        code_parser = PythonParser()
         report_printer = ReportPrinter()
         source_files = source_file_iterator(self.args.root_dir, configuration.lang[:2])
         return CheckDependenciesUC(
@@ -186,7 +181,7 @@ class MainApp:
         else:
             lang = "python"
 
-        code_parser = PythonParser() if lang in ["py", "python"] else GoParser()
+        code_parser = PythonParser()
         source_files = source_file_iterator(self.args.root_dir, lang[:2])
         graph = Graph(self.args.output, graph_conf)
         graph_drawer = GraphDrawer(graph)
