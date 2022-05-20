@@ -3,14 +3,14 @@
 Check dependencies of the project
 """
 
+from dataclasses import dataclass
+
 import argparse
 import logging
 import sys
-from dataclasses import dataclass
 from typing import Callable
 
 from dep_check.infra.file_system import source_file_iterator
-from dep_check.infra.go_parser import GoParser
 from dep_check.infra.io import (
     Graph,
     GraphDrawer,
@@ -151,9 +151,7 @@ class MainApp:
         Plumbing to make build use case working.
         """
         configuration_io = YamlConfigurationIO(self.args.output)
-        code_parser = (
-            PythonParser() if self.args.lang in ["py", "python"] else GoParser()
-        )
+        code_parser = PythonParser()
         source_files = source_file_iterator(self.args.root_dir, self.args.lang[:2])
         return BuildConfigurationUC(
             configuration_io, code_parser, source_files, self.args.lang
@@ -164,9 +162,7 @@ class MainApp:
         Plumbing to make check use case working.
         """
         configuration = YamlConfigurationIO(self.args.config).read()
-        code_parser = (
-            PythonParser() if configuration.lang in ["py", "python"] else GoParser()
-        )
+        code_parser = PythonParser()
         report_printer = ReportPrinter()
         source_files = source_file_iterator(self.args.root_dir, configuration.lang[:2])
         return CheckDependenciesUC(
@@ -186,7 +182,7 @@ class MainApp:
         else:
             lang = "python"
 
-        code_parser = PythonParser() if lang in ["py", "python"] else GoParser()
+        code_parser = PythonParser()
         source_files = source_file_iterator(self.args.root_dir, lang[:2])
         graph = Graph(self.args.output, graph_conf)
         graph_drawer = GraphDrawer(graph)

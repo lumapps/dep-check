@@ -32,20 +32,14 @@ lint: ## check style with pylint
 	pre-commit run --all-files && \
 	black --check dep_check && \
 	black --check tests && \
-	black --check tests_go && \
-	isort --check-only -rc dep_check && \
-	isort --check-only -rc tests && \
-	isort --check-only -rc tests_go && \
+	isort --check-only dep_check && \
+	isort --check-only tests && \
 	mypy dep_check && \
-	pylint dep_check tests tests_go
+	pylint dep_check tests
 
 test: ## run tests quickly with the default Python
 	source venv/bin/activate && \
 	pytest -v tests
-
-test-go: ## run tests regarding go
-	source venv/bin/activate && \
-	pytest -v tests_go
 
 test-all: ## run tests on every Python version with tox
 	source venv/bin/activate && \
