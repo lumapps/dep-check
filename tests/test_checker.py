@@ -1,9 +1,8 @@
 """
 Test check use case.
 """
-from typing import List
-
 from pytest import raises
+from typing import List
 
 from dep_check.checker import NotAllowedDependencyException, check_dependency
 from dep_check.infra.python_parser import PythonParser

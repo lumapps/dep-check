@@ -17,9 +17,6 @@ dependency_rules:
   dep_check.infra.lib*:
     - setuptools*
 
-  dep_check.infra.go_parser:
-    - dep_check.infra.lib.goparse
-
   dep_check.use_cases%:
     - dep_check.use_cases.app_configuration
     - dep_check.use_cases.interfaces

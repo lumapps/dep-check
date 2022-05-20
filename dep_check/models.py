@@ -3,6 +3,7 @@ Define all the business models of the application.
 """
 
 from dataclasses import dataclass, field
+
 from typing import Dict, FrozenSet, Iterator, List, NewType, Set, Tuple
 
 Module = NewType("Module", str)

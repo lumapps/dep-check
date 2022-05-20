@@ -60,7 +60,7 @@ def source_file_iterator(root_dir: str, file_extension: str) -> Iterator[SourceF
 
     with _change_dir(root_dir):
         for file_path in Path(".").rglob(f"*.{file_extension}"):
-            with open(str(file_path), "r") as stream:
+            with open(str(file_path), "r", encoding="utf-8") as stream:
                 content = stream.read()
             yield SourceFile(
                 Module(project_root + _get_module_from_file_path(file_path, separator)),

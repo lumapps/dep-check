@@ -1,8 +1,8 @@
-tox==3.5.2
-coverage==4.5.1
+tox
+coverage
 
-pytest==3.8.2
-pytest-runner==4.2
+pytest
+pytest-runner
 black
 pylint
 mypy
@@ -10,3 +10,4 @@ pyenchant
 pre-commit
 twine
 wheel
+types-PyYAML

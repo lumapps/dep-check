@@ -17,9 +17,7 @@ class NotAllowedDependencyException(Exception):
         self, dependency: Module, authorized_modules: List[ModuleWildcard]
     ) -> None:
         super().__init__(
-            "try to import {} but only allowed to import {}".format(
-                dependency, authorized_modules
-            )
+            f"try to import {dependency} but only allowed to import {authorized_modules}"
         )
         self.dependency = dependency
         self.authorized_modules = authorized_modules
@@ -31,9 +29,7 @@ def check_dependency(parser: IParser, dependency: Dependency, rules: Rules) -> R
     """
     used_rule: Optional[Rule] = None
     for module, rule in rules:
-        if re.match(
-            "{}$".format(parser.wildcard_to_regex(rule)), dependency.main_import
-        ):
+        if re.match(f"{parser.wildcard_to_regex(rule)}$", dependency.main_import):
             used_rule = (module, rule)
             return set((used_rule,))
     if not dependency.sub_imports:
@@ -52,7 +48,7 @@ def check_import_from_dependency(
         used_rule = None
         for module, rule in rules:
             if re.match(
-                "{}$".format(parser.wildcard_to_regex(rule)),
+                f"{parser.wildcard_to_regex(rule)}$",
                 f"{dependency.main_import}.{import_module}",
             ):
                 used_rule = (module, rule)

@@ -1,8 +1,9 @@
 """
 Common use cases interfaces.
 """
-from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+
+from abc import ABC, abstractmethod
 
 from dep_check.models import Dependencies, DependencyRules
 

@@ -2,14 +2,14 @@
 Implementations of IDependenciesPrinter
 """
 from dataclasses import asdict, dataclass
+
+import yaml
 from enum import Enum
+from jinja2 import Template
 from pathlib import Path
 from subprocess import check_output
 from sys import stdin, stdout
 from typing import Dict, Iterable, Iterator, List, Optional, Tuple
-
-import yaml
-from jinja2 import Template
 
 from dep_check.models import GlobalDependencies, Module, Rules, iter_all_modules
 from dep_check.use_cases.build import IConfigurationWriter
@@ -41,7 +41,7 @@ class YamlConfigurationIO(IConfigurationWriter):
             stream.write("---\n\n")
             yaml.safe_dump(asdict(configuration), stream)
         else:
-            with open(self.config_path, "w") as stream:
+            with open(self.config_path, "w", encoding="utf-8") as stream:
                 stream.write("---\n\n")
                 yaml.safe_dump(asdict(configuration), stream)
 
@@ -49,7 +49,7 @@ class YamlConfigurationIO(IConfigurationWriter):
         if self.config_path == "-":
             return Configuration(**yaml.safe_load(stdin))
 
-        with open(self.config_path) as stream:
+        with open(self.config_path, encoding="utf-8") as stream:
             return Configuration(**yaml.safe_load(stream))
 
 
@@ -153,7 +153,7 @@ def read_graph_config(conf_path: str) -> Dict:
     """
     Used to read the graph configuration file, and make it a Dictionary
     """
-    with open(conf_path) as stream:
+    with open(conf_path, encoding="utf8") as stream:
         return yaml.safe_load(stream)
 
 
@@ -223,9 +223,9 @@ class GraphDrawer(IGraphDrawer):
 
         for module, deps in global_dep.items():
             for dep in deps:
-                self.body += '"{}" -> "{}"\n'.format(module, dep.main_import)
+                self.body += f'"{module}" -> "{dep.main_import}"\n'
 
-        with open(self.graph.dot_file_name, "w") as out:
+        with open(self.graph.dot_file_name, "w", encoding="utf-8") as out:
             out.write(self.header)
             out.write(self.body)
             out.write(self.footer)
@@ -237,7 +237,7 @@ class GraphDrawer(IGraphDrawer):
         if self.graph.svg_file_name == "-":
             stdout.write(svg_string)
         else:
-            with open(self.graph.svg_file_name, "w") as stream:
+            with open(self.graph.svg_file_name, "w", encoding="utf-8") as stream:
                 stream.write(svg_string)
 
     def write(self, global_dep: GlobalDependencies):

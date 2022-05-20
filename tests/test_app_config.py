@@ -1,6 +1,5 @@
-from unittest.mock import Mock
-
 from pytest import raises
+from unittest.mock import Mock
 
 from dep_check.use_cases.app_configuration import (
     AppConfigurationAlreadySetException,
