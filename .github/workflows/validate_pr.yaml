@@ -1,0 +1,32 @@
+name: "Validate Pull Request"
+
+on:
+  pull_request:
+
+env:
+    python-version: 3.10.4
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.head_ref }}
+    cancel-in-progress: true
+
+jobs:
+  commits-messages:
+    timeout-minutes: 30
+    name: "Commits Messages"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the code out
+        uses: actions/checkout@v2
+
+      - name: Check the commits message
+        uses: lumapps/commit-message-validator@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  github-actions-validator:
+    name: "Github-actions-validator"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: lumapps/github-actions-validator@master
