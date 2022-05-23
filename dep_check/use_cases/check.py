@@ -16,7 +16,15 @@ from .app_configuration import AppConfigurationSingleton
 from .interfaces import Configuration
 
 
-class ForbiddenDepencyError(Exception):
+class ForbiddenError(Exception):
+    pass
+
+
+class ForbiddenUnusedRuleError(ForbiddenError):
+    pass
+
+
+class ForbiddenDepencyError(ForbiddenError):
     pass
 
 
@@ -123,6 +131,9 @@ class CheckDependenciesUC:
 
         unused = self.all_rules.difference(self.used_rules)
         self.report_printer.print_report(errors, unused, nb_files)
+
+        if self.configuration.error_on_unused and unused:
+            raise ForbiddenUnusedRuleError
 
         if errors:
             raise ForbiddenDepencyError
