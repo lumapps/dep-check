@@ -25,3 +25,4 @@ dependency_rules:
     - '*'
 
 local_init: false
+error_on_unused: true

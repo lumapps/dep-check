@@ -24,7 +24,7 @@ from dep_check.use_cases.app_configuration import (
     AppConfigurationSingleton,
 )
 from dep_check.use_cases.build import BuildConfigurationUC
-from dep_check.use_cases.check import CheckDependenciesUC, ForbiddenDepencyError
+from dep_check.use_cases.check import CheckDependenciesUC, ForbiddenError
 from dep_check.use_cases.draw_graph import DrawGraphUC
 
 FEATURE_PARSER = argparse.ArgumentParser(description="Chose your feature")
@@ -72,7 +72,6 @@ CHECK_PARSER.add_argument(
     help="The name of the yaml file you want",
     default="dependency_config.yaml",
 )
-
 
 GRAPH_PARSER = argparse.ArgumentParser(description="Draw a dependency graph")
 GRAPH_PARSER.add_argument(
@@ -198,7 +197,7 @@ DEP_CHECK_FEATURES = {
 def main() -> None:
     try:
         MainApp().main()
-    except ForbiddenDepencyError:
+    except ForbiddenError:
         sys.exit(1)
     except MissingOptionError:
         logging.error(

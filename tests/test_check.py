@@ -12,6 +12,7 @@ from dep_check.use_cases.check import (
     CheckDependenciesUC,
     DependencyError,
     ForbiddenDepencyError,
+    ForbiddenUnusedRuleError,
 )
 from dep_check.use_cases.interfaces import Configuration
 
@@ -71,6 +72,7 @@ def test_passing_rules(source_files) -> None:
                 ModuleWildcard("module"),
                 ModuleWildcard("module.inside.*"),
                 ModuleWildcard("amodule%"),
+                ModuleWildcard("unused%"),
             ],
         }
     )
@@ -81,7 +83,39 @@ def test_passing_rules(source_files) -> None:
     use_case.run()
 
     # Then
-    report_printer.print_report.assert_called_with([], set(), 3)
+    report_printer.print_report.assert_called_with(
+        [], set(((ModuleWildcard("amodule.*"), ModuleWildcard("unused%")),)), 3
+    )
+
+
+def test_error_on_unused(source_files) -> None:
+    """
+    Test result with a set rules that accept files.
+    """
+    # Given
+    configuration = Configuration(
+        dependency_rules={
+            SIMPLE_FILE.module: [ModuleWildcard("module%"), ModuleWildcard("amodule")],
+            "amodule.*": [
+                ModuleWildcard("module"),
+                ModuleWildcard("module.inside.*"),
+                ModuleWildcard("amodule%"),
+                ModuleWildcard("unused%"),
+            ],
+        },
+        error_on_unused=True,
+    )
+    report_printer = Mock()
+    use_case = CheckDependenciesUC(configuration, report_printer, PARSER, source_files)
+
+    # When
+    with pytest.raises(ForbiddenUnusedRuleError):
+        use_case.run()
+
+    # Then
+    report_printer.print_report.assert_called_with(
+        [], set(((ModuleWildcard("amodule.*"), ModuleWildcard("unused%")),)), 3
+    )
 
 
 def test_not_passing_rules(source_files) -> None:
