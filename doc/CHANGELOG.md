@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2.0.1(2022-06-02)
+
+### MAJOR
+
+- Drop go compatibility.
+- Update python support, tested on 3.8, 3.9, 3.10.
+- Add `error_on_unused` option to raise an error when unused rules are detected.
+
 ## 1.0.3(2019-08-26)
 
 ### BUGFIX
