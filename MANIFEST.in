@@ -1,8 +1,5 @@
 include LICENSE
 include README.md
-include dep_check/infra/lib/find_dependencies.go
-include dep_check/infra/lib/goparse.c
-include dep_check/infra/lib/goparse.h
 include dep_check/infra/lib/setup.py
 
 recursive-include tests *
