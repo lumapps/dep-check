@@ -49,13 +49,6 @@ BUILD_PARSER.add_argument(
     help="The name of the yaml file you want",
     default="dependency_config.yaml",
 )
-BUILD_PARSER.add_argument(
-    "--lang",
-    type=str,
-    help="The language of your project",
-    default="python",
-    choices=["py", "python", "go", "golang"],
-)
 
 
 CHECK_PARSER = argparse.ArgumentParser(description="Check the dependencies")
@@ -89,12 +82,6 @@ GRAPH_PARSER.add_argument(
 )
 GRAPH_PARSER.add_argument(
     "-c", "--config", type=str, help="The yaml file representing the graph options."
-)
-GRAPH_PARSER.add_argument(
-    "--lang",
-    type=str,
-    help="The language of your project",
-    choices=["py", "python", "go", "golang"],
 )
 
 
@@ -150,10 +137,8 @@ class MainApp:
         """
         configuration_io = YamlConfigurationIO(self.args.output)
         code_parser = PythonParser()
-        source_files = source_file_iterator(self.args.root_dir, self.args.lang[:2])
-        return BuildConfigurationUC(
-            configuration_io, code_parser, source_files, self.args.lang
-        )
+        source_files = source_file_iterator(self.args.root_dir)
+        return BuildConfigurationUC(configuration_io, code_parser, source_files)
 
     def create_check_use_case(self) -> CheckDependenciesUC:
         """
@@ -162,7 +147,7 @@ class MainApp:
         configuration = YamlConfigurationIO(self.args.config).read()
         code_parser = PythonParser()
         report_printer = ReportPrinter()
-        source_files = source_file_iterator(self.args.root_dir, configuration.lang[:2])
+        source_files = source_file_iterator(self.args.root_dir)
         return CheckDependenciesUC(
             configuration, report_printer, code_parser, source_files
         )
@@ -173,15 +158,8 @@ class MainApp:
         """
         graph_conf = read_graph_config(self.args.config) if self.args.config else None
 
-        if self.args.lang:
-            lang = self.args.lang
-        elif graph_conf and "lang" in graph_conf:
-            lang = graph_conf["lang"]
-        else:
-            lang = "python"
-
         code_parser = PythonParser()
-        source_files = source_file_iterator(self.args.root_dir, lang[:2])
+        source_files = source_file_iterator(self.args.root_dir)
         graph = Graph(self.args.output, graph_conf)
         graph_drawer = GraphDrawer(graph)
         return DrawGraphUC(graph_drawer, code_parser, source_files, graph_conf)
