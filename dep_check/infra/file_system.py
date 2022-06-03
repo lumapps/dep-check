@@ -47,19 +47,15 @@ def _get_python_project_root(root_dir: str) -> str:
     return project_root
 
 
-def source_file_iterator(root_dir: str, file_extension: str) -> Iterator[SourceFile]:
+def source_file_iterator(root_dir: str) -> Iterator[SourceFile]:
     """
     Iterator of all python source files in a directory.
     """
-    if file_extension == "py":
-        project_root = _get_python_project_root(root_dir)
-        separator = "."
-    elif file_extension == "go":
-        project_root = ""
-        separator = "/"
+    project_root = _get_python_project_root(root_dir)
+    separator = "."
 
     with _change_dir(root_dir):
-        for file_path in Path(".").rglob(f"*.{file_extension}"):
+        for file_path in Path(".").rglob("*.py"):
             with open(str(file_path), "r", encoding="utf-8") as stream:
                 content = stream.read()
             yield SourceFile(

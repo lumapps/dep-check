@@ -20,7 +20,7 @@ def test_empty() -> None:
     # Given
     source_files: Iterator[SourceFile] = iter([])
     dependencies_writer = Mock()
-    use_case = BuildConfigurationUC(dependencies_writer, PARSER, source_files, "python")
+    use_case = BuildConfigurationUC(dependencies_writer, PARSER, source_files)
 
     # When
     use_case.run()
@@ -35,7 +35,7 @@ def test_nominal(source_files) -> None:
     """
     # Given
     dependencies_writer = Mock()
-    use_case = BuildConfigurationUC(dependencies_writer, PARSER, source_files, "python")
+    use_case = BuildConfigurationUC(dependencies_writer, PARSER, source_files)
 
     # When
     use_case.run()
