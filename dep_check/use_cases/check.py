@@ -87,7 +87,6 @@ class CheckDependenciesUC:
         self.parser = parser
         self.source_files = source_files
         self.used_rules: Rules = set()
-        self.all_rules: Rules = set()
 
     def _get_rules(self, module: Module) -> Rules:
         """
@@ -107,7 +106,6 @@ class CheckDependenciesUC:
 
     def _iter_error(self, source_file: SourceFile) -> Iterator[DependencyError]:
         rules = self._get_rules(source_file.module)
-        self.all_rules.update(set(rules))
         dependencies = get_import_from_dependencies(source_file, self.parser)
         dependencies = self.std_lib_filter.filter(dependencies)
         for dependency in dependencies:
@@ -129,7 +127,12 @@ class CheckDependenciesUC:
             for error in self._iter_error(source_file):
                 errors.append(error)
 
-        unused = self.all_rules.difference(self.used_rules)
+        all_rules: Rules = set(
+            (ModuleWildcard(wildcard), rule)
+            for wildcard, rules in self.configuration.dependency_rules.items()
+            for rule in rules
+        )
+        unused = all_rules.difference(self.used_rules)
         self.report_printer.print_report(errors, unused, nb_files)
 
         if self.configuration.error_on_unused and unused:
