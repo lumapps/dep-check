@@ -74,6 +74,7 @@ def test_passing_rules(source_files) -> None:
                 ModuleWildcard("amodule%"),
                 ModuleWildcard("unused%"),
             ],
+            "unused_wildcard.*": [ModuleWildcard("unused%")],
         }
     )
     report_printer = Mock()
@@ -84,7 +85,12 @@ def test_passing_rules(source_files) -> None:
 
     # Then
     report_printer.print_report.assert_called_with(
-        [], set(((ModuleWildcard("amodule.*"), ModuleWildcard("unused%")),)), 3
+        [],
+        {
+            (ModuleWildcard("amodule.*"), ModuleWildcard("unused%")),
+            (ModuleWildcard("unused_wildcard.*"), ModuleWildcard("unused%")),
+        },
+        3,
     )
 
 
@@ -102,6 +108,7 @@ def test_error_on_unused(source_files) -> None:
                 ModuleWildcard("amodule%"),
                 ModuleWildcard("unused%"),
             ],
+            "unused_wildcard.*": [ModuleWildcard("unused%")],
         },
         error_on_unused=True,
     )
@@ -114,7 +121,12 @@ def test_error_on_unused(source_files) -> None:
 
     # Then
     report_printer.print_report.assert_called_with(
-        [], set(((ModuleWildcard("amodule.*"), ModuleWildcard("unused%")),)), 3
+        [],
+        {
+            (ModuleWildcard("amodule.*"), ModuleWildcard("unused%")),
+            (ModuleWildcard("unused_wildcard.*"), ModuleWildcard("unused%")),
+        },
+        3,
     )
 
 
@@ -183,7 +195,9 @@ def test_passing_rules_with_import_from() -> None:
             "module": [ModuleWildcard("module%"), ModuleWildcard("amodule.submodule")]
         }
     )
-    source_file = SourceFile("module", SourceCode("from amodule import submodule"))
+    source_file = SourceFile(
+        Module("module"), SourceCode("from amodule import submodule")
+    )
     report_printer = Mock()
     use_case = CheckDependenciesUC(
         configuration, report_printer, PARSER, iter([source_file])
@@ -206,7 +220,7 @@ def test_not_passing_rules_with_import_from() -> None:
     }
     configuration = Configuration(dep_rules)
     source_file = SourceFile(
-        "module", SourceCode("from amodule import othermodule, submodule\n")
+        Module("module"), SourceCode("from amodule import othermodule, submodule\n")
     )
     report_printer = Mock()
     use_case = CheckDependenciesUC(
@@ -221,7 +235,7 @@ def test_not_passing_rules_with_import_from() -> None:
     assert set(report_printer.print_report.call_args[0][0]) == set(
         (
             DependencyError(
-                "module",
+                Module("module"),
                 Module("amodule.othermodule"),
                 tuple(sorted(dep_rules["module"])),
             ),
