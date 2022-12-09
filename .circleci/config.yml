@@ -11,51 +11,6 @@ version: 2.1
 
 jobs:
 
-  # Check the source code quality with various static analysis tools
-  static_analysis:
-    docker:
-      - image: circleci/python:3.10
-    steps:
-      - checkout
-      - run:
-          name: Install CircleCI-specific dependencies
-          command: |
-            sudo apt update
-            sudo apt install -y libenchant-2-2
-      - run:
-          name: Install the project dependencies
-          command: make init
-      - run:
-          name: Run all the linters
-          command: make lint
-      - run:
-          name: Check dependencies
-          command: |
-            source venv/bin/activate && \
-            PYTHONPATH=. python3.10 dep_check/main.py check dep_check
-
-  # Run the unit tests
-  tests:
-    docker:
-      - image: circleci/python:3.10
-    steps:
-      - checkout
-      - run:
-          name: Install CircleCI-specific dependencies
-          command: |
-            sudo apt update
-            sudo apt install -y libenchant-2-2 graphviz
-      - run:
-          name: Install the project dependencies
-          command: make init
-      - run:
-          name: Run the unit tests
-          command: |
-            source venv/bin/activate && \
-            make test
-      - store_test_results:
-          path: test-results
-
   deploy:
     docker:
       - image: circleci/python:3.10
@@ -87,18 +42,7 @@ workflows:
   version: 2.1
   build_and_deploy:
     jobs:
-      - static_analysis:
-          filters:
-            tags:
-              only: /.*/
-      - tests:
-          filters:
-            tags:
-              only: /.*/
       - deploy:
-          requires:
-            - static_analysis
-            - tests
           filters:
             tags:
               only: /[0-9]+(\.[0-9]+)*/

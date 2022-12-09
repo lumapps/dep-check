@@ -4,7 +4,7 @@ on:
   pull_request:
 
 env:
-    python-version: 3.10.4
+    python-version: 3.10.6
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.head_ref }}
@@ -30,3 +30,51 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: lumapps/github-actions-validator@master
+
+  static-analysis:
+    name: "Static analysis"
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the code out
+        uses: actions/checkout@v2
+
+      - name: Install Python ${{ env.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ env.python-version }}
+
+      - name: Install the project dependencies
+        run: make init
+
+      - name: Run all the linters
+        run: make lint
+
+      - name: Check dependencies
+        run: |
+            source venv/bin/activate && \
+            PYTHONPATH=. python3.10 dep_check/main.py check dep_check
+
+  tests:
+    name: "Tests"
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the code out
+        uses: actions/checkout@v2
+
+      - name: Install Python ${{ env.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ env.python-version }}
+
+      - name: Install system dependencies
+        run: |
+          sudo apt update
+          sudo apt install --no-install-recommends -y graphviz
+
+      - name: Install the project dependencies
+        run: make init
+
+      - name: Run the unit tests
+        run: make test
