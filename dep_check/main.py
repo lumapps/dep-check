@@ -7,6 +7,7 @@ import argparse
 import logging
 import sys
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Callable
 
 from dep_check.infra.file_system import source_file_iterator
@@ -40,7 +41,7 @@ BUILD_PARSER.add_argument(
     "build", type=str, help="The build feature.", choices=["build"]
 )
 BUILD_PARSER.add_argument(
-    "root_dir", type=str, help="The source root dir for search and check."
+    "modules", nargs="+", type=Path, help="The source dirs or files."
 )
 BUILD_PARSER.add_argument(
     "-o",
@@ -56,7 +57,7 @@ CHECK_PARSER.add_argument(
     "check", type=str, help="The check feature.", choices=["check"]
 )
 CHECK_PARSER.add_argument(
-    "root_dir", type=str, help="The source root dir for search and check."
+    "modules", nargs="+", type=Path, help="The source dirs or files."
 )
 CHECK_PARSER.add_argument(
     "-c",
@@ -71,7 +72,7 @@ GRAPH_PARSER.add_argument(
     "graph", type=str, help="The graph feature.", choices=["graph"]
 )
 GRAPH_PARSER.add_argument(
-    "root_dir", type=str, help="The source root dir for search and check."
+    "modules", nargs="+", type=Path, help="The source dirs or files."
 )
 GRAPH_PARSER.add_argument(
     "-o",
@@ -137,7 +138,7 @@ class MainApp:
         """
         configuration_io = YamlConfigurationIO(self.args.output)
         code_parser = PythonParser()
-        source_files = source_file_iterator(self.args.root_dir)
+        source_files = source_file_iterator(self.args.modules)
         return BuildConfigurationUC(configuration_io, code_parser, source_files)
 
     def create_check_use_case(self) -> CheckDependenciesUC:
@@ -147,7 +148,7 @@ class MainApp:
         configuration = YamlConfigurationIO(self.args.config).read()
         code_parser = PythonParser()
         report_printer = ReportPrinter()
-        source_files = source_file_iterator(self.args.root_dir)
+        source_files = source_file_iterator(self.args.modules)
         return CheckDependenciesUC(
             configuration, report_printer, code_parser, source_files
         )
@@ -159,7 +160,7 @@ class MainApp:
         graph_conf = read_graph_config(self.args.config) if self.args.config else None
 
         code_parser = PythonParser()
-        source_files = source_file_iterator(self.args.root_dir)
+        source_files = source_file_iterator(self.args.modules)
         graph = Graph(self.args.output, graph_conf)
         graph_drawer = GraphDrawer(graph)
         return DrawGraphUC(graph_drawer, code_parser, source_files, graph_conf)

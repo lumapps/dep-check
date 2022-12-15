@@ -9,56 +9,42 @@ from typing import Iterator
 from dep_check.models import Module, SourceCode, SourceFile
 
 
-def _get_module_from_file_path(path: Path, separator: str) -> Module:
+def _get_python_module(path: Path) -> Module:
     """
-    Transform a filename into a corresponding python module.
+    Returns the full module "path" to the given path
     """
-    path_without_extention = path.parents[0] / path.stem
-    return Module(separator.join(path_without_extention.parts))
+    module = []
 
+    if path.is_file():
+        module.append(path.stem)
 
-@contextmanager
-def _change_dir(directory: str) -> Iterator[None]:
-    """
-    Locally change current working directory
-    """
-    saved_dir = os.getcwd()
-    try:
-        os.chdir(directory)
-        yield
-    finally:
-        os.chdir(saved_dir)
+    if path.is_dir() and "__init__.py" in os.listdir(path):
+        module.append(path.name)
 
-
-def _get_python_project_root(root_dir: str) -> str:
-    """
-    Returns the project root to make sure every module name begins with it
-    """
-    project_root = ""
-
-    if "__init__.py" in os.listdir(Path(root_dir)):
-        project_root = Path(root_dir).name + "."
-
-    for directory in Path(root_dir).parents:
+    for directory in path.parents:
         if "__init__.py" in os.listdir(directory):
-            project_root = f"{directory.name}.{project_root}"
+            module.append(directory.name)
         else:
             break
-    return project_root
+    return Module(".".join(reversed(module)))
 
 
-def source_file_iterator(root_dir: str) -> Iterator[SourceFile]:
+def _read_file(module_path: Path) -> SourceFile:
+    with open(str(module_path), "r", encoding="utf-8") as stream:
+        content = stream.read()
+    return SourceFile(
+        Module(_get_python_module(module_path)),
+        SourceCode(content),
+    )
+
+
+def source_file_iterator(modules_path: list[Path]) -> Iterator[SourceFile]:
     """
     Iterator of all python source files in a directory.
     """
-    project_root = _get_python_project_root(root_dir)
-    separator = "."
-
-    with _change_dir(root_dir):
-        for file_path in Path(".").rglob("*.py"):
-            with open(str(file_path), "r", encoding="utf-8") as stream:
-                content = stream.read()
-            yield SourceFile(
-                Module(project_root + _get_module_from_file_path(file_path, separator)),
-                SourceCode(content),
-            )
+    for module_path in modules_path:
+        if module_path.is_file():
+            yield _read_file(module_path)
+            continue
+        for submodule_path in module_path.rglob("*.py"):
+            yield _read_file(submodule_path)
