@@ -241,3 +241,106 @@ def test_not_passing_rules_with_import_from() -> None:
             ),
         )
     )
+
+
+def test_passing_dynamic_rule() -> None:
+    # Given
+    dep_rules = {
+        "module_(<name>*)": [
+            ModuleWildcard("module.{name}%"),
+            ModuleWildcard("{name}.submodule"),
+        ]
+    }
+    configuration = Configuration(dep_rules)
+    source_file_toto = SourceFile(
+        Module("module_toto"),
+        SourceCode(
+            "from toto import submodule\nfrom module.toto import what_ever, other\n"
+        ),
+    )
+    source_file_tata = SourceFile(
+        Module("module_tata"),
+        SourceCode(
+            "from tata import submodule\nfrom module.tata import what_ever, other\n"
+        ),
+    )
+    report_printer = Mock()
+    use_case = CheckDependenciesUC(
+        configuration,
+        report_printer,
+        PARSER,
+        iter([source_file_toto, source_file_tata]),
+    )
+
+    # When
+    use_case.run()
+
+    # Then
+    assert report_printer.print_report.call_args[0][0] == []
+
+
+def test_not_passing_dynamic_rule() -> None:
+    # Given
+    dep_rules = {
+        "module_(<name>*)": [
+            ModuleWildcard("module.{name}%"),
+            ModuleWildcard("{name}.submodule"),
+        ]
+    }
+    configuration = Configuration(dep_rules)
+    source_file_toto = SourceFile(
+        Module("module_toto"),
+        SourceCode("from tata import submodule\n"),
+    )
+    report_printer = Mock()
+    use_case = CheckDependenciesUC(
+        configuration,
+        report_printer,
+        PARSER,
+        iter([source_file_toto]),
+    )
+
+    # When
+    with pytest.raises(ForbiddenDepencyError):
+        use_case.run()
+
+    # Then
+    assert set(report_printer.print_report.call_args[0][0]) == set(
+        (
+            DependencyError(
+                Module("module_toto"),
+                Module("tata.submodule"),
+                (ModuleWildcard("module.toto%"), ModuleWildcard("toto.submodule")),
+            ),
+        )
+    )
+
+
+def test_not_used_dynamic_rule() -> None:
+    # Given
+    dep_rules = {
+        "module_(<name>*)": [
+            ModuleWildcard("module%"),
+            ModuleWildcard("{name}.submodule"),
+        ]
+    }
+    configuration = Configuration(dep_rules)
+    source_file_toto = SourceFile(
+        Module("module_toto"),
+        SourceCode(
+            "from toto import submodule\nfrom module.toto import what_ever, other\n"
+        ),
+    )
+    report_printer = Mock()
+    use_case = CheckDependenciesUC(
+        configuration,
+        report_printer,
+        PARSER,
+        iter([source_file_toto]),
+    )
+
+    # When
+    use_case.run()
+
+    # Then
+    assert report_printer.print_report.call_args[0][0] == []

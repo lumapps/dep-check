@@ -10,7 +10,14 @@ from typing import Iterator, List, Tuple
 
 from dep_check.checker import NotAllowedDependencyException, check_dependency
 from dep_check.dependency_finder import IParser, get_import_from_dependencies
-from dep_check.models import Module, ModuleWildcard, Rules, SourceFile
+from dep_check.models import (
+    MatchingRule,
+    MatchingRules,
+    Module,
+    ModuleWildcard,
+    Rules,
+    SourceFile,
+)
 
 from .app_configuration import AppConfigurationSingleton
 from .interfaces import Configuration
@@ -88,29 +95,40 @@ class CheckDependenciesUC:
         self.source_files = source_files
         self.used_rules: Rules = set()
 
-    def _get_rules(self, module: Module) -> Rules:
+    def _get_rules(self, module: Module) -> MatchingRules:
         """
         Return rules in configuration that match a given module.
         """
-        matching_rules: Rules = set()
+        matching_rules: MatchingRules = set()
         for module_wildcard, rules in self.configuration.dependency_rules.items():
-            if re.match(
+            match = re.match(
                 f"{self.parser.wildcard_to_regex(ModuleWildcard(module_wildcard))}$",
                 module,
-            ):
+            )
+            if match:
                 matching_rules.update(
-                    (ModuleWildcard(module_wildcard), r) for r in rules
+                    MatchingRule(
+                        module_wildcard=ModuleWildcard(module_wildcard),
+                        original_rule_wildcard=r,
+                        specific_rule_wildcard=ModuleWildcard(
+                            r.format_map(match.groupdict())
+                        ),
+                    )
+                    for r in rules
                 )
 
         return matching_rules
 
     def _iter_error(self, source_file: SourceFile) -> Iterator[DependencyError]:
-        rules = self._get_rules(source_file.module)
+        matching_rules = self._get_rules(source_file.module)
         dependencies = get_import_from_dependencies(source_file, self.parser)
         dependencies = self.std_lib_filter.filter(dependencies)
         for dependency in dependencies:
             try:
-                self.used_rules |= check_dependency(self.parser, dependency, rules)
+                self.used_rules |= {
+                    r.original_rule
+                    for r in check_dependency(self.parser, dependency, matching_rules)
+                }
             except NotAllowedDependencyException as error:
                 yield DependencyError(
                     source_file.module,
