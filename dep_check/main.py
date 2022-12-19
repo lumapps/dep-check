@@ -66,6 +66,11 @@ CHECK_PARSER.add_argument(
     help="The name of the yaml file you want",
     default="dependency_config.yaml",
 )
+CHECK_PARSER.add_argument(
+    "--no-unused",
+    action="store_true",
+    help="Disable unused warning/error.",
+)
 
 GRAPH_PARSER = argparse.ArgumentParser(description="Draw a dependency graph")
 GRAPH_PARSER.add_argument(
@@ -146,8 +151,10 @@ class MainApp:
         Plumbing to make check use case working.
         """
         configuration = YamlConfigurationIO(self.args.config).read()
+        if self.args.no_unused:
+            configuration.check_unused = False
         code_parser = PythonParser()
-        report_printer = ReportPrinter()
+        report_printer = ReportPrinter(configuration)
         source_files = source_file_iterator(self.args.modules)
         return CheckDependenciesUC(
             configuration, report_printer, code_parser, source_files

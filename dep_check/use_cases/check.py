@@ -153,7 +153,11 @@ class CheckDependenciesUC:
         unused = all_rules.difference(self.used_rules)
         self.report_printer.print_report(errors, unused, nb_files)
 
-        if self.configuration.error_on_unused and unused:
+        if (
+            self.configuration.check_unused
+            and self.configuration.error_on_unused
+            and unused
+        ):
             raise ForbiddenUnusedRuleError
 
         if errors:

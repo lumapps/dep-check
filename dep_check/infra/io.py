@@ -58,6 +58,9 @@ class ReportPrinter(IReportPrinter):
     Print the report after checking the files
     """
 
+    def __init__(self, configuration: Configuration) -> None:
+        self.configuration = configuration
+
     def _error(self, dep_errors: List[DependencyError]) -> None:
         """
         Log errors.
@@ -122,7 +125,8 @@ class ReportPrinter(IReportPrinter):
             )
             self._error(errors)
 
-        if unused_rules:
+        warning_summary = ""
+        if self.configuration.check_unused and unused_rules:
             print(
                 "\n\n"
                 + Format.BOLD.value
@@ -131,6 +135,12 @@ class ReportPrinter(IReportPrinter):
                 + Format.ENDC.value
             )
             self._warning(unused_rules)
+            warning_summary = (
+                " and "
+                + Format.WARNING.value
+                + f"{len(unused_rules)} warnings"
+                + Format.ENDC.value
+            )
 
         if not errors and not unused_rules:
             print(
@@ -141,10 +151,7 @@ class ReportPrinter(IReportPrinter):
             + Format.FAIL.value
             + f"{len(errors)} errors"
             + Format.ENDC.value
-            + " and "
-            + Format.WARNING.value
-            + f"{len(unused_rules)} warnings"
-            + Format.ENDC.value
+            + warning_summary
             + f" in {nb_files} files."
         )
 
