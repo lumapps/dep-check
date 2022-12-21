@@ -67,8 +67,9 @@ CHECK_PARSER.add_argument(
     default="dependency_config.yaml",
 )
 CHECK_PARSER.add_argument(
-    "--no-unused",
-    action="store_true",
+    "--unused",
+    type=str,
+    choices=tuple(l.value for l in UnusedLevel),
     help="Disable unused warning/error.",
 )
 
@@ -151,8 +152,8 @@ class MainApp:
         Plumbing to make check use case working.
         """
         configuration = YamlConfigurationIO(self.args.config).read()
-        if self.args.no_unused:
-            configuration.check_unused = False
+        if self.args.unused:
+            configuration.unused_level = self.args.unused
         code_parser = PythonParser()
         report_printer = ReportPrinter(configuration)
         source_files = source_file_iterator(self.args.modules)
