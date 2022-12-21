@@ -1,7 +1,7 @@
 """
 Implementation of configuration reader and writer
 """
-import os
+import inspect
 from pathlib import Path
 from typing import Iterator
 
@@ -12,20 +12,21 @@ def _get_python_module(path: Path) -> Module:
     """
     Returns the full module "path" to the given path
     """
-    module = []
-
+    name = None
     if path.is_file():
-        module.append(path.stem)
+        name = inspect.getmodulename(str(path))
+    elif path.is_dir():
+        name = path.name
+    if not name:
+        raise ModuleNotFoundError("Cannot find module name", path=str(path))
 
-    if path.is_dir() and "__init__.py" in os.listdir(path):
-        module.append(path.name)
+    full_path = list(p.name for p in path.parents[:-1])
+    full_path.reverse()
+    full_path.append(name)
 
-    for directory in path.parents:
-        if "__init__.py" in os.listdir(directory):
-            module.append(directory.name)
-        else:
-            break
-    return Module(".".join(reversed(module)))
+    module = ".".join(full_path)
+
+    return Module(module)
 
 
 def _read_file(module_path: Path) -> SourceFile:
@@ -37,11 +38,14 @@ def _read_file(module_path: Path) -> SourceFile:
     )
 
 
-def source_file_iterator(modules_path: list[Path]) -> Iterator[SourceFile]:
+def source_file_iterator(
+    files_path: list[Path], root_path: Path
+) -> Iterator[SourceFile]:
     """
     Iterator of all python source files in a directory.
     """
-    for module_path in modules_path:
+    for file_path in files_path:
+        module_path = file_path.absolute().relative_to(root_path)
         if module_path.is_file():
             yield _read_file(module_path)
             continue
