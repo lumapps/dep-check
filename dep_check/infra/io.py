@@ -61,7 +61,8 @@ class ReportPrinter(IReportPrinter):
     def __init__(self, configuration: Configuration) -> None:
         self.configuration = configuration
 
-    def _log_dep_errors(self, dep_errors: List[DependencyError]) -> None:
+    @staticmethod
+    def _log_dep_errors(dep_errors: List[DependencyError]) -> None:
         """
         Log dependency errors.
         """
@@ -96,7 +97,8 @@ class ReportPrinter(IReportPrinter):
             for rule in errors[0].rules:
                 print(f"\t- {rule}")
 
-    def _log_unused(self, unused_rules: Rules, level: Format) -> None:
+    @staticmethod
+    def _log_unused(unused_rules: Rules, level: Format) -> None:
         """
         Log warnings
         """
