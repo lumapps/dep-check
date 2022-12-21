@@ -15,7 +15,7 @@ from dep_check.models import GlobalDependencies, Module, Rules, iter_all_modules
 from dep_check.use_cases.build import IConfigurationWriter
 from dep_check.use_cases.check import DependencyError, IReportPrinter
 from dep_check.use_cases.draw_graph import IGraphDrawer
-from dep_check.use_cases.interfaces import Configuration
+from dep_check.use_cases.interfaces import Configuration, UnusedLevel
 
 
 class Format(Enum):
@@ -58,15 +58,29 @@ class ReportPrinter(IReportPrinter):
     Print the report after checking the files
     """
 
-    def _error(self, dep_errors: List[DependencyError]) -> None:
+    def __init__(self, configuration: Configuration) -> None:
+        self.configuration = configuration
+
+    @staticmethod
+    def _log_dep_errors(dep_errors: List[DependencyError]) -> None:
         """
-        Log errors.
+        Log dependency errors.
         """
+        if not dep_errors:
+            return
+
+        print(
+            "\n\n"
+            + Format.BOLD.value
+            + Format.FAIL.value
+            + "IMPORT ERRORS".center(30)
+            + Format.ENDC.value
+        )
+
         module_errors = {
             error.module: [e for e in dep_errors if e.module == error.module]
             for error in dep_errors
         }
-
         for module, errors in sorted(module_errors.items()):
             print("\nModule " + Format.BOLD.value + module + Format.ENDC.value + ":")
             print(
@@ -83,10 +97,21 @@ class ReportPrinter(IReportPrinter):
             for rule in errors[0].rules:
                 print(f"\t- {rule}")
 
-    def _warning(self, unused_rules: Rules) -> None:
+    @staticmethod
+    def _log_unused(unused_rules: Rules, level: Format) -> None:
         """
         Log warnings
         """
+        if not unused_rules:
+            return
+
+        print(
+            "\n\n"
+            + Format.BOLD.value
+            + level.value
+            + "UNUSED RULES".center(30)
+            + Format.ENDC.value
+        )
         previous_wildcard = ""
         for wildcard, rule in sorted(unused_rules):
             if wildcard != previous_wildcard:
@@ -97,12 +122,7 @@ class ReportPrinter(IReportPrinter):
                     + Format.ENDC.value
                     + ":"
                 )
-                print(
-                    " \u2022 "
-                    + Format.WARNING.value
-                    + "Unused rules:"
-                    + Format.ENDC.value
-                )
+                print(" \u2022 " + level.value + "Unused rules:" + Format.ENDC.value)
                 previous_wildcard = wildcard
             print(f"\t- {wildcard}: {rule}")
 
@@ -112,38 +132,30 @@ class ReportPrinter(IReportPrinter):
         """
         Print report
         """
-        if errors:
-            print(
-                "\n\n"
-                + Format.BOLD.value
-                + Format.FAIL.value
-                + "IMPORT ERRORS".center(30)
-                + Format.ENDC.value
-            )
-            self._error(errors)
+        nb_errors = 0
+        nb_warnings = 0
+        self._log_dep_errors(errors)
+        nb_errors += len(errors)
 
-        if unused_rules:
-            print(
-                "\n\n"
-                + Format.BOLD.value
-                + Format.WARNING.value
-                + "UNUSED RULES".center(30)
-                + Format.ENDC.value
-            )
-            self._warning(unused_rules)
+        if self.configuration.unused_level == UnusedLevel.ERROR.value:
+            self._log_unused(unused_rules, Format.FAIL)
+            nb_errors += len(unused_rules)
+        elif self.configuration.unused_level == UnusedLevel.WARNING.value:
+            self._log_unused(unused_rules, Format.WARNING)
+            nb_warnings += len(unused_rules)
 
-        if not errors and not unused_rules:
+        if nb_errors == 0 and nb_warnings == 0:
             print(
                 Format.SUCCESS.value + "\nEverything is in order! " + Format.ENDC.value
             )
         print(
             "\n * "
             + Format.FAIL.value
-            + f"{len(errors)} errors"
+            + f"{nb_errors} errors"
             + Format.ENDC.value
             + " and "
             + Format.WARNING.value
-            + f"{len(unused_rules)} warnings"
+            + f"{nb_warnings} warnings"
             + Format.ENDC.value
             + f" in {nb_files} files."
         )

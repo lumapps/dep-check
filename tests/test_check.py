@@ -14,7 +14,7 @@ from dep_check.use_cases.check import (
     ForbiddenDepencyError,
     ForbiddenUnusedRuleError,
 )
-from dep_check.use_cases.interfaces import Configuration
+from dep_check.use_cases.interfaces import Configuration, UnusedLevel
 
 from .fakefile import FILE_WITH_LOCAL_IMPORT, FILE_WITH_STD_IMPORT, SIMPLE_FILE
 
@@ -110,7 +110,7 @@ def test_error_on_unused(source_files) -> None:
             ],
             "unused_wildcard.*": [ModuleWildcard("unused%")],
         },
-        error_on_unused=True,
+        unused_level=UnusedLevel.ERROR.value,
     )
     report_printer = Mock()
     use_case = CheckDependenciesUC(configuration, report_printer, PARSER, source_files)

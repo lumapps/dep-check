@@ -5,9 +5,11 @@ Check dependencies of the project
 
 import argparse
 import logging
+import os
 import sys
 from dataclasses import dataclass
-from typing import Callable
+from pathlib import Path
+from typing import Any, Callable
 
 from dep_check.infra.file_system import source_file_iterator
 from dep_check.infra.io import (
@@ -26,6 +28,14 @@ from dep_check.use_cases.app_configuration import (
 from dep_check.use_cases.build import BuildConfigurationUC
 from dep_check.use_cases.check import CheckDependenciesUC, ForbiddenError
 from dep_check.use_cases.draw_graph import DrawGraphUC
+from dep_check.use_cases.interfaces import UnusedLevel
+
+ROOT_PATH_FLAGS = ("-r", "--root")
+ROOT_PATH_ARGUMENTS: dict[str, Any] = {
+    "type": Path,
+    "default": Path(os.getcwd()),
+    "help": "The path of project root module (default: current working directory)",
+}
 
 FEATURE_PARSER = argparse.ArgumentParser(description="Chose your feature")
 FEATURE_PARSER.add_argument(
@@ -40,7 +50,7 @@ BUILD_PARSER.add_argument(
     "build", type=str, help="The build feature.", choices=["build"]
 )
 BUILD_PARSER.add_argument(
-    "root_dir", type=str, help="The source root dir for search and check."
+    "modules", nargs="+", type=Path, help="The source dirs or files."
 )
 BUILD_PARSER.add_argument(
     "-o",
@@ -49,6 +59,7 @@ BUILD_PARSER.add_argument(
     help="The name of the yaml file you want",
     default="dependency_config.yaml",
 )
+BUILD_PARSER.add_argument(*ROOT_PATH_FLAGS, **ROOT_PATH_ARGUMENTS)
 
 
 CHECK_PARSER = argparse.ArgumentParser(description="Check the dependencies")
@@ -56,7 +67,7 @@ CHECK_PARSER.add_argument(
     "check", type=str, help="The check feature.", choices=["check"]
 )
 CHECK_PARSER.add_argument(
-    "root_dir", type=str, help="The source root dir for search and check."
+    "modules", nargs="+", type=Path, help="The source dirs or files."
 )
 CHECK_PARSER.add_argument(
     "-c",
@@ -65,13 +76,20 @@ CHECK_PARSER.add_argument(
     help="The name of the yaml file you want",
     default="dependency_config.yaml",
 )
+CHECK_PARSER.add_argument(
+    "--unused",
+    type=str,
+    choices=tuple(l.value for l in UnusedLevel),
+    help="Disable unused warning/error.",
+)
+CHECK_PARSER.add_argument(*ROOT_PATH_FLAGS, **ROOT_PATH_ARGUMENTS)
 
 GRAPH_PARSER = argparse.ArgumentParser(description="Draw a dependency graph")
 GRAPH_PARSER.add_argument(
     "graph", type=str, help="The graph feature.", choices=["graph"]
 )
 GRAPH_PARSER.add_argument(
-    "root_dir", type=str, help="The source root dir for search and check."
+    "modules", nargs="+", type=Path, help="The source dirs or files."
 )
 GRAPH_PARSER.add_argument(
     "-o",
@@ -83,6 +101,7 @@ GRAPH_PARSER.add_argument(
 GRAPH_PARSER.add_argument(
     "-c", "--config", type=str, help="The yaml file representing the graph options."
 )
+GRAPH_PARSER.add_argument(*ROOT_PATH_FLAGS, **ROOT_PATH_ARGUMENTS)
 
 
 class MissingOptionError(Exception):
@@ -137,7 +156,7 @@ class MainApp:
         """
         configuration_io = YamlConfigurationIO(self.args.output)
         code_parser = PythonParser()
-        source_files = source_file_iterator(self.args.root_dir)
+        source_files = source_file_iterator(self.args.modules, self.args.root)
         return BuildConfigurationUC(configuration_io, code_parser, source_files)
 
     def create_check_use_case(self) -> CheckDependenciesUC:
@@ -145,9 +164,11 @@ class MainApp:
         Plumbing to make check use case working.
         """
         configuration = YamlConfigurationIO(self.args.config).read()
+        if self.args.unused:
+            configuration.unused_level = self.args.unused
         code_parser = PythonParser()
-        report_printer = ReportPrinter()
-        source_files = source_file_iterator(self.args.root_dir)
+        report_printer = ReportPrinter(configuration)
+        source_files = source_file_iterator(self.args.modules, self.args.root)
         return CheckDependenciesUC(
             configuration, report_printer, code_parser, source_files
         )
@@ -159,7 +180,7 @@ class MainApp:
         graph_conf = read_graph_config(self.args.config) if self.args.config else None
 
         code_parser = PythonParser()
-        source_files = source_file_iterator(self.args.root_dir)
+        source_files = source_file_iterator(self.args.modules, self.args.root)
         graph = Graph(self.args.output, graph_conf)
         graph_drawer = GraphDrawer(graph)
         return DrawGraphUC(graph_drawer, code_parser, source_files, graph_conf)

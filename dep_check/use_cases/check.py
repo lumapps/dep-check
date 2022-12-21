@@ -20,7 +20,7 @@ from dep_check.models import (
 )
 
 from .app_configuration import AppConfigurationSingleton
-from .interfaces import Configuration
+from .interfaces import Configuration, UnusedLevel
 
 
 class ForbiddenError(Exception):
@@ -50,18 +50,6 @@ class IReportPrinter(ABC):
     """
     Errors printer interface.
     """
-
-    @abstractmethod
-    def _error(self, dep_errors: List[DependencyError]) -> None:
-        """
-        Display errors.
-        """
-
-    @abstractmethod
-    def _warning(self, unused_rules: Rules) -> None:
-        """
-        Display warnings.
-        """
 
     @abstractmethod
     def print_report(
@@ -150,11 +138,14 @@ class CheckDependenciesUC:
             for wildcard, rules in self.configuration.dependency_rules.items()
             for rule in rules
         )
-        unused = all_rules.difference(self.used_rules)
-        self.report_printer.print_report(errors, unused, nb_files)
 
-        if self.configuration.error_on_unused and unused:
-            raise ForbiddenUnusedRuleError
+        unused = set()
+        if self.configuration.unused_level != UnusedLevel.IGNORE.value:
+            unused = all_rules.difference(self.used_rules)
+        self.report_printer.print_report(errors, unused, nb_files)
 
         if errors:
             raise ForbiddenDepencyError
+
+        if self.configuration.unused_level == UnusedLevel.ERROR.value and unused:
+            raise ForbiddenUnusedRuleError
