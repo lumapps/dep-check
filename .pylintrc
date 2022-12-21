@@ -1,6 +1,5 @@
 [MESSAGES CONTROL]
-disable=bad-continuation,           # Delegate format to black
-        duplicate-bases,            # typing.Generic can be used multiple time as base (see. https://github.com/PyCQA/pylint/issues/2717)
+disable=duplicate-bases,            # typing.Generic can be used multiple time as base (see. https://github.com/PyCQA/pylint/issues/2717)
         duplicate-code,             # The entry-points are exepcted to be very similar
         too-many-ancestors,         # Incompatible with type hints
         unsubscriptable-object,     # Incompatible with type hints
