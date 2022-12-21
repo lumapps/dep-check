@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 3.0.0(2022-12-21)
+
+### MAJOR
+
+- Update python support, tested on 3.9, 3.10, 3.11.
+- Add support of dynamic rules (see doc)
+- Support multiple files and directories in parameters.
+- Drop `error_on_unused` option (replaced by `unused_level`).
+- Add `unused_level` option to choose the raise an error when unused rules are detected.
+
 ## 2.0.1(2022-06-02)
 
 ### MAJOR
