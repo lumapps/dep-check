@@ -35,6 +35,20 @@ DependencyRules = Dict[str, List[ModuleWildcard]]
 GlobalDependencies = Dict[Module, Dependencies]
 
 
+@dataclass(frozen=True)
+class MatchingRule:
+    module_wildcard: ModuleWildcard
+    original_rule_wildcard: ModuleWildcard
+    specific_rule_wildcard: ModuleWildcard
+
+    @property
+    def original_rule(self) -> Rule:
+        return (self.module_wildcard, self.original_rule_wildcard)
+
+
+MatchingRules = Set[MatchingRule]
+
+
 def get_parent(module: Module) -> Module:
     """
     Get the parent module of a given one.

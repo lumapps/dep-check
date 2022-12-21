@@ -96,6 +96,21 @@ mymodule:
     - '*'
 ```
 
+### Advance usage
+
+You can make dynamic rules using following syntax:
+
+* `(<bind_name>any_wildcard)` to get a part of the module reusable in rules
+* `module.<bind_name>.any_wildcard` to reuse the part in rule
+
+```yaml
+mymodule.(<submodule>%).module:
+    - mymodule%
+    - amodule.{submodule}.*
+    - othermodul?_[0-9]
+```
+
+
 ## Check your configuration
 
 Once your config file is ready, run

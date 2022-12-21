@@ -89,6 +89,7 @@ class PythonParser(IParser):
         """
         module_regex = module.replace(".", "\\.").replace("*", ".*")
         module_regex = module_regex.replace("[!", "[^").replace("?", ".?")
+        module_regex = module_regex.replace("(<", "(?P<")
 
         # Special char including a module along with all its sub-modules:
         module_regex = module_regex.replace("%", r"(\..*)?$")
