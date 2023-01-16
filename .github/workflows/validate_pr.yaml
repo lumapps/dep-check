@@ -4,7 +4,7 @@ on:
   pull_request:
 
 env:
-    python-version: 3.10.4
+    python-version: 3.10.6
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.head_ref }}
@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check the code out
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Check the commits message
         uses: lumapps/commit-message-validator@master
@@ -28,5 +28,39 @@ jobs:
     name: "Github-actions-validator"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: lumapps/github-actions-validator@master
+
+
+  test-and-lint:
+    name: "Test and Lint Pull Request"
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - name: Install Python ${{ env.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.python-version }}
+
+      - name: Install CircleCI-specific dependencies
+        run: |
+              sudo apt update
+              sudo apt install -y libenchant-2-2 graphviz
+
+      - name: Install the project dependencies
+        run: make init
+
+      - name: Run the unit tests
+        run: |
+              source venv/bin/activate
+              make test
+
+      - name: Lint
+        run: make lint
+
+      - name: Check dependencies
+        run: |
+              source venv/bin/activate
+              PYTHONPATH=. python3 dep_check/main.py check dep_check
