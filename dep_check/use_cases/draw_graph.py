@@ -5,6 +5,8 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import Dict, Iterator, Optional
 
+from ordered_set import OrderedSet
+
 from dep_check.dependency_finder import IParser, get_dependencies
 from dep_check.models import (
     Dependencies,
@@ -32,13 +34,12 @@ class IGraphDrawer(ABC):
 def _fold_dep(
     global_dep: GlobalDependencies, fold_module: Module
 ) -> GlobalDependencies:
-
     fold_global_dep: GlobalDependencies = defaultdict(set)
     for module, deps in global_dep.items():
-        new_deps: Dependencies = set()
+        new_deps: Dependencies = OrderedSet()
         if module.startswith(tuple((f"{fold_module}.", f"{fold_module}/"))):
             module = fold_module
-        fold_dep = set(
+        fold_dep = OrderedSet(
             Dependency(fold_module) if dep.main_import.startswith(fold_module) else dep
             for dep in deps
         )
@@ -71,8 +72,7 @@ class DrawGraphUC:
         filtered_global_dep = {}
         for module, dependencies in global_dep.items():
             if not module.startswith(hide_modules):
-
-                filtered_global_dep[module] = set(
+                filtered_global_dep[module] = OrderedSet(
                     dependency
                     for dependency in dependencies
                     if not dependency.main_import.startswith(hide_modules)

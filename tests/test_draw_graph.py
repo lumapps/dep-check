@@ -4,6 +4,8 @@ Test graph use case
 from typing import Iterator
 from unittest.mock import Mock, patch
 
+from ordered_set import OrderedSet
+
 from dep_check.infra.io import Graph, GraphDrawer
 from dep_check.infra.python_parser import PythonParser
 from dep_check.models import Dependency, Module, SourceFile
@@ -139,14 +141,14 @@ def test_fold_dep() -> None:
 
     # Then
     assert global_dep == {
-        "simple_module": set(
+        "simple_module": OrderedSet(
             (
                 Dependency(Module("module")),
                 Dependency(Module("module.inside.module")),
                 Dependency(Module("amodule")),
             )
         ),
-        "amodule": set(
+        "amodule": OrderedSet(
             (
                 Dependency(Module("module")),
                 Dependency(Module("module.inside.module")),
@@ -173,14 +175,14 @@ def test_fold_module(source_files) -> None:
     global_dep = drawer.write.call_args[0][0]
 
     assert global_dep == {
-        "simple_module": set(
+        "simple_module": OrderedSet(
             (
                 Dependency(Module("module")),
                 Dependency(Module("module.inside.module")),
                 Dependency(Module("amodule")),
             )
         ),
-        "amodule": set(
+        "amodule": OrderedSet(
             (Dependency(Module("module")), Dependency(Module("module.inside.module")))
         ),
     }
@@ -231,7 +233,7 @@ def test_hide_nominal(source_files) -> None:
     global_dep = drawer.write.call_args[0][0]
 
     assert global_dep == {
-        "simple_module": set(
+        "simple_module": OrderedSet(
             (Dependency(Module("module")), Dependency(Module("module.inside.module")))
         )
     }
@@ -249,8 +251,8 @@ def test_pop_empty_module_from_dependencies(source_files) -> None:
     # Then
     drawer.write.assert_called_with(
         {
-            "simple_module": set((Dependency(Module("amodule")),)),
-            "amodule.local_module": set(
+            "simple_module": OrderedSet((Dependency(Module("amodule")),)),
+            "amodule.local_module": OrderedSet(
                 (Dependency(Module("amodule")), Dependency(Module("amodule.inside")))
             ),
         }

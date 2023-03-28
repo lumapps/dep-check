@@ -5,6 +5,8 @@ Test build configuration use case.
 from typing import Iterator
 from unittest.mock import Mock
 
+from ordered_set import OrderedSet
+
 from dep_check.infra.python_parser import PythonParser
 from dep_check.models import ModuleWildcard, SourceFile
 from dep_check.use_cases.build import BuildConfigurationUC
@@ -45,18 +47,18 @@ def test_nominal(source_files) -> None:
     configuration = dependencies_writer.write.call_args[0][0]
     assert not configuration.local_init
     dependency_rules = {
-        module_regex: set(rules)
+        module_regex: OrderedSet(rules)
         for module_regex, rules in configuration.dependency_rules.items()
     }
     assert dependency_rules == {
-        "simple_module": set(
+        "simple_module": OrderedSet(
             (
                 ModuleWildcard("module"),
                 ModuleWildcard("module.inside.module"),
                 ModuleWildcard("amodule"),
             )
         ),
-        "amodule.local_module": set(
+        "amodule.local_module": OrderedSet(
             (
                 ModuleWildcard("module"),
                 ModuleWildcard("module.inside.module"),
@@ -64,7 +66,7 @@ def test_nominal(source_files) -> None:
                 ModuleWildcard("amodule.inside"),
             )
         ),
-        "amodule.std_module": set(
+        "amodule.std_module": OrderedSet(
             (ModuleWildcard("module"), ModuleWildcard("module.inside.module"))
         ),
     }

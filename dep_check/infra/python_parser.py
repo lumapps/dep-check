@@ -1,6 +1,8 @@
 import ast
 from typing import Any, FrozenSet, List
 
+from ordered_set import OrderedSet
+
 from dep_check.dependency_finder import IParser
 from dep_check.models import (
     Dependencies,
@@ -17,7 +19,7 @@ class _ImportVisitor(ast.NodeVisitor):
     """
 
     def __init__(self, current_module: str) -> None:
-        self._dependencies: Dependencies = set()
+        self._dependencies: Dependencies = OrderedSet()
         self.current_module_parts: List[str] = current_module.split(".")
 
     @property
@@ -48,7 +50,7 @@ class _ImportVisitor(ast.NodeVisitor):
 
 class _ImportFromVisitor(ast.NodeVisitor):
     def __init__(self, current_module: str) -> None:
-        self._dependencies: Dependencies = set()
+        self._dependencies: Dependencies = OrderedSet()
         self.current_module_parts: List[str] = current_module.split(".")
 
     @property

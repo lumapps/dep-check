@@ -4,6 +4,8 @@ Check that dependencies follow a set of rules.
 import re
 from typing import List, Optional
 
+from ordered_set import OrderedSet
+
 from dep_check.dependency_finder import IParser
 from dep_check.models import (
     Dependency,
@@ -42,7 +44,7 @@ def check_dependency(
             dependency.main_import,
         ):
             used_rule = matching_rule
-            return set((used_rule,))
+            return OrderedSet((used_rule,))
     if not dependency.sub_imports:
         raise NotAllowedDependencyException(
             dependency.main_import, [r.specific_rule_wildcard for r in matching_rules]
@@ -54,7 +56,7 @@ def check_dependency(
 def check_import_from_dependency(
     parser: IParser, dependency: Dependency, matching_rules: MatchingRules
 ) -> MatchingRules:
-    used_rules: MatchingRules = set()
+    used_rules: MatchingRules = OrderedSet()
     for import_module in dependency.sub_imports:
         used_rule = None
         for matching_rule in matching_rules:
