@@ -3,7 +3,7 @@ Define all the business models of the application.
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, FrozenSet, Iterator, List, NewType, Set, Tuple
+from typing import Dict, FrozenSet, Iterator, List, NewType, Tuple
 
 from ordered_set import OrderedSet
 
@@ -23,14 +23,14 @@ class Dependency:
     sub_imports: FrozenSet[Module] = field(default_factory=frozenset)
 
 
-Dependencies = Set[Dependency]
+Dependencies = OrderedSet[Dependency]
 
 SourceCode = NewType("SourceCode", str)
 
 ModuleWildcard = NewType("ModuleWildcard", str)
 
 Rule = Tuple[ModuleWildcard, ModuleWildcard]
-Rules = Set[Rule]
+Rules = OrderedSet[Rule]
 
 DependencyRules = Dict[str, List[ModuleWildcard]]
 
@@ -48,7 +48,7 @@ class MatchingRule:
         return (self.module_wildcard, self.original_rule_wildcard)
 
 
-MatchingRules = Set[MatchingRule]
+MatchingRules = OrderedSet[MatchingRule]
 
 
 def get_parent(module: Module) -> Module:

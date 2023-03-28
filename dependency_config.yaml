@@ -5,6 +5,7 @@ dependency_rules:
     - dep_check.models
     - dep_check.dependency_finder
     - dep_check.checker
+    - ordered_set%
 
   dep_check.infra.io:
     - dep_check.use_cases%

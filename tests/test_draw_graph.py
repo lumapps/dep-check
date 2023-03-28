@@ -190,7 +190,6 @@ def test_fold_module(source_files) -> None:
 
 @patch.object(DrawGraphUC, "_hide")
 def test_hide_empty_config(mock_method, source_files) -> None:
-
     # Given
     drawer = Mock()
     config = {"fold_modules": ["module"]}
@@ -205,7 +204,6 @@ def test_hide_empty_config(mock_method, source_files) -> None:
 
 @patch.object(DrawGraphUC, "_hide")
 def test_hide_empty_dict(mock_method) -> None:
-
     # Given
     source_files: Iterator[SourceFile] = iter([])
     drawer = Mock()

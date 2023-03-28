@@ -1,6 +1,8 @@
 """
 Implementations of IStdLibFilter
 """
+from ordered_set import OrderedSet
+
 from dep_check.models import Dependencies
 from dep_check.use_cases.interfaces import IStdLibFilter
 
@@ -332,8 +334,11 @@ class StdLibSimpleFilter(IStdLibFilter):
     """
 
     def filter(self, dependencies: Dependencies) -> Dependencies:
-        return dependencies - {
-            dep
-            for dep in dependencies
-            if dep.main_import.startswith(tuple(_KNOWN_STANDARD_LIBRARIES))
-        }
+        return OrderedSet(
+            dependencies
+            - {
+                dep
+                for dep in dependencies
+                if dep.main_import.startswith(tuple(_KNOWN_STANDARD_LIBRARIES))
+            }
+        )

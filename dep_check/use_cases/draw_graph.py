@@ -34,7 +34,7 @@ class IGraphDrawer(ABC):
 def _fold_dep(
     global_dep: GlobalDependencies, fold_module: Module
 ) -> GlobalDependencies:
-    fold_global_dep: GlobalDependencies = defaultdict(set)
+    fold_global_dep: GlobalDependencies = defaultdict(OrderedSet)
     for module, deps in global_dep.items():
         new_deps: Dependencies = OrderedSet()
         if module.startswith(tuple((f"{fold_module}.", f"{fold_module}/"))):

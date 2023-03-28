@@ -213,7 +213,6 @@ class GraphDrawer(IGraphDrawer):
     def _iter_layer_modules(
         self, global_dep: GlobalDependencies
     ) -> Iterator[Tuple[str, Iterable[Module]]]:
-
         for layer in self.graph.layers:
             yield layer, [
                 m
@@ -226,7 +225,6 @@ class GraphDrawer(IGraphDrawer):
             return False
 
         for layer, modules in self._iter_layer_modules(global_dep):
-
             self.body += self.subgraph.render(
                 subgraph_name=layer,
                 color=self.graph.layers[layer].get("color", self.graph.node_color),
