@@ -5,6 +5,8 @@ Define all the business models of the application.
 from dataclasses import dataclass, field
 from typing import Dict, FrozenSet, Iterator, List, NewType, Set, Tuple
 
+from ordered_set import OrderedSet
+
 Module = NewType("Module", str)
 
 
@@ -62,7 +64,7 @@ def iter_all_modules(global_dep: GlobalDependencies) -> Iterator[Module]:
             yield module
             yield from (d.main_import for d in dependencies)
 
-    return iter(set(iter_(global_dep)))
+    return iter(OrderedSet(iter_(global_dep)))
 
 
 @dataclass

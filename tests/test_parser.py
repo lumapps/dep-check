@@ -3,6 +3,8 @@ Tests about get_dependencies function.
 """
 import re
 
+from ordered_set import OrderedSet
+
 from dep_check.dependency_finder import get_dependencies, get_import_from_dependencies
 from dep_check.infra.python_parser import PythonParser
 from dep_check.models import Dependency, Module, ModuleWildcard, SourceCode, SourceFile
@@ -32,14 +34,14 @@ import simple
 from . import aclass
 from .inside.module import aclass
 """
-_LOCAL_RESULT = set(
+_LOCAL_RESULT = OrderedSet(
     (
         Dependency(Module("simple")),
         Dependency(Module("module")),
         Dependency(Module("module.inside.module")),
     )
 )
-_LOCAL_RESULT_IMPORT_FROM = set(
+_LOCAL_RESULT_IMPORT_FROM = OrderedSet(
     (
         Dependency(Module("simple")),
         Dependency(Module("module"), frozenset((Module("aclass"),))),
@@ -158,7 +160,7 @@ class TestGetImportFromDependencies:
         dependencies = get_import_from_dependencies(source_file, PARSER)
 
         # Then
-        assert dependencies == set(
+        assert dependencies == OrderedSet(
             (
                 Dependency(
                     Module("module"),

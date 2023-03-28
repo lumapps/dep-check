@@ -8,6 +8,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Iterator, List, Tuple
 
+from ordered_set import OrderedSet
+
 from dep_check.checker import NotAllowedDependencyException, check_dependency
 from dep_check.dependency_finder import IParser, get_import_from_dependencies
 from dep_check.models import (
@@ -81,13 +83,13 @@ class CheckDependenciesUC:
         self.report_printer = report_printer
         self.parser = parser
         self.source_files = source_files
-        self.used_rules: Rules = set()
+        self.used_rules: Rules = OrderedSet()
 
     def _get_rules(self, module: Module) -> MatchingRules:
         """
         Return rules in configuration that match a given module.
         """
-        matching_rules: MatchingRules = set()
+        matching_rules: MatchingRules = OrderedSet()
         for module_wildcard, rules in self.configuration.dependency_rules.items():
             match = re.match(
                 f"{self.parser.wildcard_to_regex(ModuleWildcard(module_wildcard))}$",
@@ -133,13 +135,13 @@ class CheckDependenciesUC:
             for error in self._iter_error(source_file):
                 errors.append(error)
 
-        all_rules: Rules = set(
+        all_rules: Rules = OrderedSet(
             (ModuleWildcard(wildcard), rule)
             for wildcard, rules in self.configuration.dependency_rules.items()
             for rule in rules
         )
 
-        unused = set()
+        unused = OrderedSet()
         if self.configuration.unused_level != UnusedLevel.IGNORE.value:
             unused = all_rules.difference(self.used_rules)
         self.report_printer.print_report(errors, unused, nb_files)

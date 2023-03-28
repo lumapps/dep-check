@@ -1,3 +1,5 @@
+from ordered_set import OrderedSet
+
 from dep_check.models import Dependency, Module, SourceCode, SourceFile
 
 SIMPLE_FILE = SourceFile(
@@ -34,14 +36,14 @@ from abc import ABC
 )
 
 GLOBAL_DEPENDENCIES = {
-    "simple_module": set(
+    "simple_module": OrderedSet(
         (
             Dependency(Module("module")),
             Dependency(Module("module.inside.module")),
             Dependency(Module("amodule")),
         )
     ),
-    "amodule.local_module": set(
+    "amodule.local_module": OrderedSet(
         (
             Dependency(Module("module")),
             Dependency(Module("module.inside.module")),
@@ -49,7 +51,7 @@ GLOBAL_DEPENDENCIES = {
             Dependency(Module("amodule.inside")),
         )
     ),
-    "amodule.std_module": set(
+    "amodule.std_module": OrderedSet(
         (Dependency(Module("module")), Dependency(Module("module.inside.module")))
     ),
 }

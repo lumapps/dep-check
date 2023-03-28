@@ -5,6 +5,7 @@ Test check use case.
 from unittest.mock import Mock
 
 import pytest
+from ordered_set import OrderedSet
 
 from dep_check.infra.python_parser import PythonParser
 from dep_check.models import Module, ModuleWildcard, SourceCode, SourceFile
@@ -35,7 +36,7 @@ def test_empty_rules(source_files) -> None:
         use_case.run()
 
     # Then
-    assert set(report_printer.print_report.call_args[0][0]) == set(
+    assert OrderedSet(report_printer.print_report.call_args[0][0]) == OrderedSet(
         (
             DependencyError(SIMPLE_FILE.module, Module("module"), tuple()),
             DependencyError(
@@ -158,7 +159,7 @@ def test_not_passing_rules(source_files) -> None:
     local = FILE_WITH_LOCAL_IMPORT.module
     std = FILE_WITH_STD_IMPORT.module
 
-    assert set(report_printer.print_report.call_args[0][0]) == set(
+    assert OrderedSet(report_printer.print_report.call_args[0][0]) == OrderedSet(
         (
             DependencyError(
                 simple, Module("module"), tuple(sorted(dep_rules["simple_module"]))
@@ -232,7 +233,7 @@ def test_not_passing_rules_with_import_from() -> None:
         use_case.run()
 
     # Then
-    assert set(report_printer.print_report.call_args[0][0]) == set(
+    assert OrderedSet(report_printer.print_report.call_args[0][0]) == OrderedSet(
         (
             DependencyError(
                 Module("module"),
@@ -305,7 +306,7 @@ def test_not_passing_dynamic_rule() -> None:
         use_case.run()
 
     # Then
-    assert set(report_printer.print_report.call_args[0][0]) == set(
+    assert OrderedSet(report_printer.print_report.call_args[0][0]) == OrderedSet(
         (
             DependencyError(
                 Module("module_toto"),
