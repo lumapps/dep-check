@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 3.0.1(2023-03-28)
+
+### BUGFIX
+
+- Use OrderedSet instead of set, in order to have a deterministic runs
+
 ## 3.0.0(2022-12-21)
 
 ### MAJOR
