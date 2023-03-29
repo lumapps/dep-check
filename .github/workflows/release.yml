@@ -30,8 +30,8 @@ jobs:
       - name: Initialize .pypirc
         run: |
               echo -e "[pypi]" >> ~/.pypirc
-              echo -e "username = lumapps" >> ~/.pypirc
-              echo -e "password = $pypi_password" >> ~/.pypirc
+              echo -e "username = __token__" >> ~/.pypirc
+              echo -e "password = ${{ secrets.PYPI_TOKEN }}" >> ~/.pypirc
 
       - name: Install CircleCI-specific dependencies
         run: |
