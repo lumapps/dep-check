@@ -97,14 +97,16 @@ class CheckDependenciesUC:
             )
             if match:
                 matching_rules.update(
-                    MatchingRule(
-                        module_wildcard=ModuleWildcard(module_wildcard),
-                        original_rule_wildcard=r,
-                        specific_rule_wildcard=ModuleWildcard(
-                            r.format_map(match.groupdict())
-                        ),
-                    )
-                    for r in rules
+                    [
+                        MatchingRule(
+                            module_wildcard=ModuleWildcard(module_wildcard),
+                            original_rule_wildcard=r,
+                            specific_rule_wildcard=ModuleWildcard(
+                                r.format_map(match.groupdict())
+                            ),
+                        )
+                        for r in rules
+                    ]
                 )
 
         return matching_rules
@@ -141,7 +143,7 @@ class CheckDependenciesUC:
             for rule in rules
         )
 
-        unused = OrderedSet()
+        unused: Rules = OrderedSet()
         if self.configuration.unused_level != UnusedLevel.IGNORE.value:
             unused = all_rules.difference(self.used_rules)
         self.report_printer.print_report(errors, unused, nb_files)
