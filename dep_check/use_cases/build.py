@@ -1,6 +1,7 @@
 """
 Build rules more restrictive rules from existing source use case.
 """
+
 from abc import ABC, abstractmethod
 from typing import Dict, Iterator
 

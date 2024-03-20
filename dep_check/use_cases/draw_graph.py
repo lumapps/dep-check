@@ -1,6 +1,7 @@
 """
 Draws a graph of the dependencies between modules
 """
+
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import Dict, Iterator, Optional

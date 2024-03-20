@@ -1,6 +1,7 @@
 """
 Tests about get_dependencies function.
 """
+
 import re
 
 from ordered_set import OrderedSet
