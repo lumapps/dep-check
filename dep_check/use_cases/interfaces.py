@@ -1,6 +1,7 @@
 """
 Common use cases interfaces.
 """
+
 import enum
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field

@@ -1,6 +1,7 @@
 """
 Check that dependencies follow a set of rules.
 """
+
 import re
 from typing import List, Optional
 

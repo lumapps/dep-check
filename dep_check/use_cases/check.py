@@ -2,7 +2,6 @@
 Check all given source files dependencies use case.
 """
 
-
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass

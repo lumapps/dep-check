@@ -1,6 +1,7 @@
 """
 Implementations of IDependenciesPrinter
 """
+
 from dataclasses import asdict, dataclass
 from enum import Enum
 from pathlib import Path

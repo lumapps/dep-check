@@ -1,6 +1,7 @@
 """
 Test check use case.
 """
+
 from typing import List
 
 from pytest import raises

@@ -1,6 +1,7 @@
 """
 Implementation of configuration reader and writer
 """
+
 import inspect
 from pathlib import Path
 from typing import Iterator

@@ -1,6 +1,7 @@
 """
 Application global configuration.
 """
+
 from dataclasses import dataclass
 
 from .interfaces import IStdLibFilter

@@ -1,6 +1,7 @@
 """
 Test graph use case
 """
+
 from typing import Iterator
 from unittest.mock import Mock, patch
 
