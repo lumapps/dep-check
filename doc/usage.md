@@ -64,6 +64,7 @@ You can build your own configuration file, using wildcards. Here are those suppo
 * `[!d-y]` corresponds to any character which is **not** between 'd' and 'y'
 * `[!abc]` corresponds to any character except 'a', 'b' or 'c'
 * Use `%` after a module name (e.g. `my_module%`) to include this module along with its sub-modules.
+* Use `~` before a module name (e.g. `~my_module`) to forbid this module.
 
 ### Examples
 
