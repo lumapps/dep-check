@@ -75,3 +75,9 @@ class SourceFile:
 
     module: Module
     code: SourceCode
+
+
+@dataclass(frozen=True)
+class RegexRule:
+    regex: str
+    raise_if_found: bool = False

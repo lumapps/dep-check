@@ -191,10 +191,11 @@ class TestRegexToWildcard:
         module = ModuleWildcard("")
 
         # When
-        regex = PARSER.wildcard_to_regex(module)
+        regex_rule = PARSER.wildcard_to_regex(module)
 
         # Then
-        assert regex == ""
+        assert regex_rule.regex == ""
+        assert not regex_rule.raise_if_found
 
     @staticmethod
     def test_simple_module() -> None:
@@ -205,12 +206,13 @@ class TestRegexToWildcard:
         module = ModuleWildcard("toto")
 
         # When
-        regex = PARSER.wildcard_to_regex(module)
+        regex_rule = PARSER.wildcard_to_regex(module)
 
         # Then
-        assert re.match(regex, "toto")
-        assert not re.match(regex, "tata")
-        assert not re.match(regex, "titi.toto")
+        assert re.match(regex_rule.regex, "toto")
+        assert not re.match(regex_rule.regex, "tata")
+        assert not re.match(regex_rule.regex, "titi.toto")
+        assert not regex_rule.raise_if_found
 
     @staticmethod
     def test_nested_module() -> None:
@@ -221,13 +223,14 @@ class TestRegexToWildcard:
         module = ModuleWildcard("toto.tata")
 
         # When
-        regex = PARSER.wildcard_to_regex(module)
+        regex_rule = PARSER.wildcard_to_regex(module)
 
         # Then
-        assert re.match(regex, "toto.tata")
-        assert not re.match(regex, "toto")
-        assert not re.match(regex, "tata")
-        assert not re.match(regex, "titi.toto")
+        assert re.match(regex_rule.regex, "toto.tata")
+        assert not re.match(regex_rule.regex, "toto")
+        assert not re.match(regex_rule.regex, "tata")
+        assert not re.match(regex_rule.regex, "titi.toto")
+        assert not regex_rule.raise_if_found
 
     @staticmethod
     def test_quesiton_mark() -> None:
@@ -238,15 +241,16 @@ class TestRegexToWildcard:
         module = ModuleWildcard("t?to.?at?")
 
         # When
-        regex = PARSER.wildcard_to_regex(module)
+        regex_rule = PARSER.wildcard_to_regex(module)
 
         # Then
-        assert re.match(regex, "toto.tata")
-        assert re.match(regex, "t2to.bato")
-        assert re.match(regex, "t#to.!at&")
-        assert not re.match(regex, "toto")
-        assert not re.match(regex, "tata")
-        assert not re.match(regex, "toti.toto")
+        assert re.match(regex_rule.regex, "toto.tata")
+        assert re.match(regex_rule.regex, "t2to.bato")
+        assert re.match(regex_rule.regex, "t#to.!at&")
+        assert not re.match(regex_rule.regex, "toto")
+        assert not re.match(regex_rule.regex, "tata")
+        assert not re.match(regex_rule.regex, "toti.toto")
+        assert not regex_rule.raise_if_found
 
     @staticmethod
     def test_asterisk() -> None:
@@ -257,15 +261,16 @@ class TestRegexToWildcard:
         module = ModuleWildcard("toto*.*")
 
         # When
-        regex = PARSER.wildcard_to_regex(module)
+        regex_rule = PARSER.wildcard_to_regex(module)
 
         # Then
-        assert re.match(regex, "toto.tata")
-        assert re.match(regex, "toto_2351.titi")
-        assert re.match(regex, "toto_azerty.titi.toto.tata")
-        assert not re.match(regex, "toto")
-        assert not re.match(regex, "tototata")
-        assert not re.match(regex, "toti.toto")
+        assert re.match(regex_rule.regex, "toto.tata")
+        assert re.match(regex_rule.regex, "toto_2351.titi")
+        assert re.match(regex_rule.regex, "toto_azerty.titi.toto.tata")
+        assert not re.match(regex_rule.regex, "toto")
+        assert not re.match(regex_rule.regex, "tototata")
+        assert not re.match(regex_rule.regex, "toti.toto")
+        assert not regex_rule.raise_if_found
 
     @staticmethod
     def test_percentage() -> None:
@@ -276,11 +281,28 @@ class TestRegexToWildcard:
         module = ModuleWildcard("toto.tata%")
 
         # When
-        regex = PARSER.wildcard_to_regex(module)
+        regex_rule = PARSER.wildcard_to_regex(module)
 
         # Then
-        assert re.match(regex, "toto.tata")
-        assert re.match(regex, "toto.tata.titi")
-        assert re.match(regex, "toto.tata.titi.tutu.tototata.tititutu")
-        assert not re.match(regex, "toto")
-        assert not re.match(regex, "toto.tata_123")
+        assert re.match(regex_rule.regex, "toto.tata")
+        assert re.match(regex_rule.regex, "toto.tata.titi")
+        assert re.match(regex_rule.regex, "toto.tata.titi.tutu.tototata.tititutu")
+        assert not re.match(regex_rule.regex, "toto")
+        assert not re.match(regex_rule.regex, "toto.tata_123")
+        assert not regex_rule.raise_if_found
+
+    @staticmethod
+    def test_not() -> None:
+        """
+        Test not case
+        """
+        # Given
+        module = ModuleWildcard("~foo")
+
+        # When
+        regex_rule = PARSER.wildcard_to_regex(module)
+
+        # Then
+        assert re.match(regex_rule.regex, "foo")
+        assert not re.match(regex_rule.regex, "bar")
+        assert regex_rule.raise_if_found

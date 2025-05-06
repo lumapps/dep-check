@@ -3,18 +3,12 @@ Check that dependencies follow a set of rules.
 """
 
 import re
-from typing import List, Optional
+from typing import List
 
 from ordered_set import OrderedSet
 
 from dep_check.dependency_finder import IParser
-from dep_check.models import (
-    Dependency,
-    MatchingRule,
-    MatchingRules,
-    Module,
-    ModuleWildcard,
-)
+from dep_check.models import Dependency, MatchingRules, Module, ModuleWildcard
 
 
 class NotAllowedDependencyException(Exception):
@@ -32,20 +26,33 @@ class NotAllowedDependencyException(Exception):
         self.authorized_modules = authorized_modules
 
 
+def _find_matching_rules(
+    parser: IParser, matching_rules: MatchingRules, dotted_import: Module
+) -> MatchingRules:
+    used_rules: MatchingRules = OrderedSet()
+
+    for matching_rule in matching_rules:
+        regex_rule = parser.wildcard_to_regex(matching_rule.specific_rule_wildcard)
+        if regex_rule.raise_if_found:
+            # Don't want to handle if here, it should have been done earlier in the flow
+            continue
+        if re.match(f"{regex_rule.regex}$", dotted_import):
+            used_rules.add(matching_rule)
+
+    return used_rules
+
+
 def check_dependency(
     parser: IParser, dependency: Dependency, matching_rules: MatchingRules
 ) -> MatchingRules:
     """
     Check that dependencies match a given set of rules.
     """
-    used_rule: Optional[MatchingRule] = None
-    for matching_rule in matching_rules:
-        if re.match(
-            f"{parser.wildcard_to_regex(matching_rule.specific_rule_wildcard)}$",
-            dependency.main_import,
-        ):
-            used_rule = matching_rule
-            return OrderedSet((used_rule,))
+
+    used_rules = _find_matching_rules(parser, matching_rules, dependency.main_import)
+    if used_rules:
+        return used_rules
+
     if not dependency.sub_imports:
         raise NotAllowedDependencyException(
             dependency.main_import, [r.specific_rule_wildcard for r in matching_rules]
@@ -59,17 +66,11 @@ def check_import_from_dependency(
 ) -> MatchingRules:
     used_rules: MatchingRules = OrderedSet()
     for import_module in dependency.sub_imports:
-        used_rule = None
-        for matching_rule in matching_rules:
-            if re.match(
-                f"{parser.wildcard_to_regex(matching_rule.specific_rule_wildcard)}$",
-                f"{dependency.main_import}.{import_module}",
-            ):
-                used_rule = matching_rule
-                used_rules.add(used_rule)
-        if not used_rule:
+        module = Module(f"{dependency.main_import}.{import_module}")
+        matched_rules = _find_matching_rules(parser, matching_rules, module)
+        used_rules.update(matched_rules)
+        if not matched_rules:
             raise NotAllowedDependencyException(
-                Module(f"{dependency.main_import}.{import_module}"),
-                [r.specific_rule_wildcard for r in matching_rules],
+                module, [r.specific_rule_wildcard for r in matching_rules]
             )
     return used_rules

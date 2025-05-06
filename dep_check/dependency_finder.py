@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from dep_check.models import Dependencies, ModuleWildcard, SourceFile
+from dep_check.models import Dependencies, ModuleWildcard, RegexRule, SourceFile
 
 
 class IParser(ABC):
@@ -9,7 +9,7 @@ class IParser(ABC):
     """
 
     @abstractmethod
-    def wildcard_to_regex(self, module: ModuleWildcard) -> str:
+    def wildcard_to_regex(self, module: ModuleWildcard) -> RegexRule:
         """
         Return a regex expression for the Module from wildcard
         """

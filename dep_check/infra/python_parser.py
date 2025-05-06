@@ -9,6 +9,7 @@ from dep_check.models import (
     Dependency,
     Module,
     ModuleWildcard,
+    RegexRule,
     SourceFile,
 )
 
@@ -85,17 +86,24 @@ class PythonParser(IParser):
     Implementation of the interface, to parse python
     """
 
-    def wildcard_to_regex(self, module: ModuleWildcard) -> str:
+    def wildcard_to_regex(self, module: ModuleWildcard) -> RegexRule:
         """
         Return a regex expression for the Module from wildcard
         """
+        raise_if_found = False
         module_regex = module.replace(".", "\\.").replace("*", ".*")
         module_regex = module_regex.replace("[!", "[^").replace("?", ".?")
         module_regex = module_regex.replace("(<", "(?P<")
 
         # Special char including a module along with all its sub-modules:
         module_regex = module_regex.replace("%", r"(\..*)?$")
-        return module_regex
+
+        # Special char to forbid a module
+        if module_regex.startswith("~"):
+            module_regex = module_regex[1:]
+            raise_if_found = True
+
+        return RegexRule(regex=module_regex, raise_if_found=raise_if_found)
 
     def find_dependencies(self, source_file: SourceFile) -> Dependencies:
         """
