@@ -96,7 +96,7 @@ mymodule:
     - '*'
 ```
 
-### Advance usage
+### Advanced usage
 
 You can make dynamic rules using following syntax:
 
@@ -109,7 +109,6 @@ mymodule.(<submodule>%).module:
     - amodule.{submodule}.*
     - othermodul?_[0-9]
 ```
-
 
 ## Check your configuration
 
