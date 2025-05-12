@@ -345,3 +345,93 @@ def test_not_used_dynamic_rule() -> None:
 
     # Then
     assert report_printer.print_report.call_args[0][0] == []
+
+
+def test_passing_inverted_rule() -> None:
+    # Given
+    dep_rules = {
+        "foo": [
+            ModuleWildcard("bar%"),
+            ModuleWildcard("~bar.baz"),
+        ]
+    }
+    configuration = Configuration(dep_rules)
+    source_file = SourceFile(
+        Module("foo"),
+        SourceCode("import bar\nfrom bar import submodule\n"),
+    )
+    report_printer = Mock()
+    use_case = CheckDependenciesUC(
+        configuration,
+        report_printer,
+        PARSER,
+        iter([source_file]),
+    )
+
+    # When
+    use_case.run()
+
+    # Then
+    assert not report_printer.print_report.call_args[0][0]
+
+
+def test_not_passing_inverted_rule() -> None:
+    # Given
+    dep_rules = {
+        "foo": [
+            ModuleWildcard("bar%"),
+            ModuleWildcard("~bar.baz%"),
+        ]
+    }
+    configuration = Configuration(dep_rules)
+    source_file = SourceFile(
+        Module("foo"),
+        SourceCode("import bar\nfrom bar import baz\n"),
+    )
+    report_printer = Mock()
+    use_case = CheckDependenciesUC(
+        configuration,
+        report_printer,
+        PARSER,
+        iter([source_file]),
+    )
+
+    # When
+    with pytest.raises(ForbiddenDepencyError):
+        use_case.run()
+
+    # Then
+    assert report_printer.print_report.call_args[0][0] == OrderedSet(
+        (
+            DependencyError(
+                module=Module("foo"),
+                dependency=Module("bar.baz"),
+                rules=(ModuleWildcard("bar%"), ModuleWildcard("~bar.baz%")),
+            ),
+        )
+    )
+
+
+def test_passing_inverted_no_unused_rule() -> None:
+    # Given
+    dep_rules = {
+        "foo": [
+            ModuleWildcard("bar%"),
+            ModuleWildcard("~baz%"),
+        ]
+    }
+    configuration = Configuration(dep_rules, unused_level=UnusedLevel.ERROR.value)
+    source_file = SourceFile(Module("foo"), SourceCode("import bar"))
+    report_printer = Mock()
+    use_case = CheckDependenciesUC(
+        configuration,
+        report_printer,
+        PARSER,
+        iter([source_file]),
+    )
+
+    # When
+    use_case.run()
+
+    # Then
+    assert not report_printer.print_report.call_args[0][0]
