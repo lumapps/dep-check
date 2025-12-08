@@ -24,13 +24,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  github-actions-validator:
-    name: "Github-actions-validator"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: lumapps/github-actions-validator@master
-
 
   test-and-lint:
     name: "Test and Lint Pull Request"
