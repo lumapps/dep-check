@@ -1,4 +1,4 @@
-"""Top-level package for dep-check."""
+"""Top-level package for dep-check init."""
 
 __author__ = """LumApps"""
 __email__ = "core-devs@lumapps.com"
