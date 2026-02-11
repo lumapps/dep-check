@@ -11,7 +11,6 @@ init: venv dev-requirements.txt
 venv:
 	$(PYTHON_EXEC) -m venv venv
 	source venv/bin/activate && \
-	pip install --quiet --upgrade pip
 	source venv/bin/activate && \
 	pip install --quiet pip-tools
 
