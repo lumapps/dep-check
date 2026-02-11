@@ -3,6 +3,8 @@
 SHELL=/bin/bash
 PYTHON_EXEC:=python3.13
 
+export PATH := ./venv/bin:$(PATH)
+export PYTHONPATH=.
 
 include dev.mk
 include help.mk
