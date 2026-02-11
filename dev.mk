@@ -21,11 +21,11 @@ update_requirements:
 	# Generate the lock file for production requirements
 	$(PIP_COMPILE) \
 		--output-file requirements.txt \
-		setup.py
+		pyproject.toml
 	# Generate the lock file for development requirements
 	$(PIP_COMPILE) \
 		--output-file dev-requirements.txt \
-		setup.py \
+		pyproject.toml \
 		dev-requirements.in
 	# Install all the requirements in the virtualenv
 	$(MAKE) init
