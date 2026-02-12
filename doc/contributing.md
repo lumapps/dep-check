@@ -63,9 +63,9 @@ development.
 3. Install your local copy into a virtualenv:
 
     ```sh
-    python3.7 -m venv venv
+    python3.13 -m venv venv
     source venv/bin/activate && \
-    python3.7 setup.py develop && \
+    pip install -e . && \
     make init
     ```
 

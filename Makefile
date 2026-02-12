@@ -55,9 +55,7 @@ coverage: ## check code coverage quickly with the default Python
 	xdg-open htmlcov/index.html
 
 install: clean ## install the package to the active Python's site-packages
-	$(PYTHON_EXEC) setup.py install
+	venv/bin/uv pip install .
 
 dist: clean ## builds source and wheel package
-	source venv/bin/activate && \
-	$(PYTHON_EXEC) setup.py sdist && \
-	$(PYTHON_EXEC) setup.py bdist_wheel
+	venv/bin/python -m build
