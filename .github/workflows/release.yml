@@ -33,7 +33,7 @@ jobs:
               echo -e "username = __token__" >> ~/.pypirc
               echo -e "password = ${{ secrets.PYPI_TOKEN }}" >> ~/.pypirc
 
-      - name: Install CircleCI-specific dependencies
+      - name: Install system dependencies
         run: |
               sudo apt update
               sudo apt install -y libenchant-2-2

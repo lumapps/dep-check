@@ -37,7 +37,7 @@ jobs:
         with:
           python-version: ${{ env.python-version }}
 
-      - name: Install CircleCI-specific dependencies
+      - name: Install system dependencies
         run: |
               sudo apt update
               sudo apt install -y libenchant-2-2 graphviz
@@ -46,9 +46,7 @@ jobs:
         run: make init
 
       - name: Run the unit tests
-        run: |
-              source venv/bin/activate
-              make test
+        run: make test
 
       - name: Lint
         run: make lint
