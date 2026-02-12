@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 3.2.0(2026-02-12)
+
+- Bump to python3.13
+- Drop python3.9 support
+- Update dependencies
+
 ## 3.0.1(2023-03-28)
 
 ### BUGFIX
