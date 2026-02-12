@@ -17,4 +17,4 @@ types-PyYAML
 backports-tarfile
 exceptiongroup
 importlib-metadata
-tomli;
+tomli
