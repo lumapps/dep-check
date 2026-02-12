@@ -11,3 +11,9 @@ pre-commit
 twine
 wheel
 types-PyYAML
+
+# conditional-dependency needed by python<=3.11
+backports-tarfile
+exceptiongroup
+importlib-metadata
+tomli;

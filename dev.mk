@@ -1,19 +1,17 @@
+PYTHON?=venv/bin/python3
+PIP_COMPILE?=$(PYTHON) -m uv pip compile --quiet --generate-hashes --strip-extras --python-platform=linux
+PIP_SYNC?=$(PYTHON) -m uv pip sync
+
 # Initialize the development environment, e.g. the Python dependencies
 init: venv dev-requirements.txt
-	source venv/bin/activate && \
-	pip-sync \
-		--quiet \
+	$(PIP_SYNC) \
 		dev-requirements.txt
-	source venv/bin/activate && \
 	pre-commit install
 
 # Make sure the virtualenv exists
 venv:
 	$(PYTHON_EXEC) -m venv venv
-	source venv/bin/activate && \
-	pip install --quiet --upgrade pip
-	source venv/bin/activate && \
-	pip install --quiet pip-tools
+	pip install --quiet --upgrade pip uv
 
 update_requirements:
 	# Remove the virtualenv and the requirements lock files
@@ -21,18 +19,13 @@ update_requirements:
 	# Recrete the virtualenv
 	$(MAKE) venv
 	# Generate the lock file for production requirements
-	source venv/bin/activate && \
-	pip-compile \
-		--quiet \
-		--generate-hashes \
-		--output-file requirements.txt
+	$(PIP_COMPILE) \
+		--output-file requirements.txt \
+		pyproject.toml
 	# Generate the lock file for development requirements
-	source venv/bin/activate && \
-	pip-compile \
-		--quiet \
-		--generate-hashes \
+	$(PIP_COMPILE) \
 		--output-file dev-requirements.txt \
-		setup.py \
+		pyproject.toml \
 		dev-requirements.in
 	# Install all the requirements in the virtualenv
 	$(MAKE) init

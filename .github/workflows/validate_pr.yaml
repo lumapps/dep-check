@@ -4,7 +4,7 @@ on:
   pull_request:
 
 env:
-    python-version: 3.10.6
+    python-version: 3.13.5
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.head_ref }}
@@ -37,7 +37,7 @@ jobs:
         with:
           python-version: ${{ env.python-version }}
 
-      - name: Install CircleCI-specific dependencies
+      - name: Install system dependencies
         run: |
               sudo apt update
               sudo apt install -y libenchant-2-2 graphviz
@@ -46,9 +46,7 @@ jobs:
         run: make init
 
       - name: Run the unit tests
-        run: |
-              source venv/bin/activate
-              make test
+        run: make test
 
       - name: Lint
         run: make lint

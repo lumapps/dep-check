@@ -1,8 +1,10 @@
 .PHONY: clean clean-test clean-pyc clean-build doc help
 .DEFAULT_GOAL := help
 SHELL=/bin/bash
-PYTHON_EXEC:=python3.10
+PYTHON_EXEC:=python3.13
 
+export PATH := ./venv/bin:$(PATH)
+export PYTHONPATH=.
 
 include dev.mk
 include help.mk
