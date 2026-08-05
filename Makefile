@@ -3,7 +3,7 @@
 SHELL=/bin/bash
 PYTHON_EXEC:=python3.13
 
-export PATH := ./venv/bin:$(PATH)
+export PATH := ./.venv/bin:$(PATH)
 export PYTHONPATH=.
 
 include dev.mk
@@ -31,7 +31,7 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .pytest_cache
 
 lint: ## check style with pylint
-	source venv/bin/activate && \
+	source .venv/bin/activate && \
 	pre-commit run --all-files && \
 	black --check dep_check && \
 	black --check tests && \
@@ -41,11 +41,11 @@ lint: ## check style with pylint
 	pylint dep_check tests
 
 test: ## run tests quickly with the default Python
-	source venv/bin/activate && \
+	source .venv/bin/activate && \
 	pytest -v tests
 
 test-all: ## run tests on every Python version with tox
-	source venv/bin/activate && \
+	source .venv/bin/activate && \
 	tox
 
 coverage: ## check code coverage quickly with the default Python
@@ -55,7 +55,7 @@ coverage: ## check code coverage quickly with the default Python
 	xdg-open htmlcov/index.html
 
 install: clean ## install the package to the active Python's site-packages
-	venv/bin/uv pip install .
+	.venv/bin/uv pip install .
 
 dist: clean ## builds source and wheel package
-	venv/bin/python -m build
+	.venv/bin/python -m build

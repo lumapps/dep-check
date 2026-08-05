@@ -1,5 +1,5 @@
 # Don't track content of these folders
-venv/
+.venv/
 __pycache__/
 .eggs/
 dist/
