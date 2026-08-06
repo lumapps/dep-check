@@ -36,6 +36,30 @@ Download = "https://github.com/lumapps/dep-check/tarball/master"
 [project.scripts]
 dep_check = "dep_check.main:main"
 
+[dependency-groups]
+dev = [
+    "build",
+    "tox",
+    "tox-uv",
+    "coverage",
+    "pytest",
+    "pytest-runner",
+    "black",
+    "pylint",
+    "mypy",
+    "pyenchant",
+    "pre-commit",
+    "twine",
+    "wheel",
+    "types-PyYAML",
+
+    # conditional-dependency needed by python<=3.11
+    "backports-tarfile",
+    "exceptiongroup",
+    "importlib-metadata",
+    "tomli",
+]
+
 [tool.setuptools]
 zip-safe = false
 include-package-data = true
