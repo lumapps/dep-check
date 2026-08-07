@@ -3,7 +3,7 @@ UV?=$(PYTHON) -m uv
 
 # Initialize the development environment, e.g. the Python dependencies
 init: .venv
-	UV_EXCLUDE_NEWER="1 week" $(UV) sync --locked
+	$(UV) sync
 	pre-commit install
 
 # Make sure the virtualenv exists
