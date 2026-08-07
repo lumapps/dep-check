@@ -7,7 +7,7 @@ name = "dep_check"
 dynamic = ["version"]
 description = "Python Dependency Check Tool"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11,<3.14"
 license = {text = "MIT License"}
 authors = [
     {name = "LumApps", email = "core-devs@lumapps.com"}
@@ -18,9 +18,9 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
     "Click",
@@ -52,12 +52,6 @@ dev = [
     "twine",
     "wheel",
     "types-PyYAML",
-
-    # conditional-dependency needed by python<=3.11
-    "backports-tarfile",
-    "exceptiongroup",
-    "importlib-metadata",
-    "tomli",
 ]
 
 [tool.setuptools]
