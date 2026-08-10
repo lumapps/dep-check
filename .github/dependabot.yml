@@ -1,0 +1,11 @@
+---
+version: 2
+
+updates:
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "cron"
+      cronjob: "0 9 1 */2 *"  # At 09:00 on day-of-month 1 in every 2nd month
+    cooldown:
+      default-days: 7
