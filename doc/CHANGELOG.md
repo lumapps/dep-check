@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 3.3.0(2026-10-28)
+
+- Drop python3.10 support (now requires python >=3.11,<3.14)
+- Add python3.12 and python3.13 classifiers
+- Migrate dev tooling to uv (`uv.lock`, `[dependency-groups]`)
+- Update dependencies
+
 ## 3.2.0(2026-02-12)
 
 - Bump to python3.13
