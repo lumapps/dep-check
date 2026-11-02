@@ -129,18 +129,19 @@ class MainApp:
     def __init__(self) -> None:
         self.feature = FEATURE_PARSER.parse_args(sys.argv[1:2]).feature
 
-        try:
-            self.args = DEP_CHECK_FEATURES[self.feature].parser.parse_args()
-        except KeyError as error:
-            raise MissingOptionError() from error
+        if self.feature not in DEP_CHECK_FEATURES:
+            raise MissingOptionError()
+
+        self.args = DEP_CHECK_FEATURES[self.feature].parser.parse_args()
 
     def main(self) -> None:
         self.create_app_configuration()
-        try:
-            use_case = DEP_CHECK_FEATURES[self.feature].use_case_factory(self)
-            use_case.run()
-        except KeyError as error:
-            raise MissingOptionError() from error
+
+        if self.feature not in DEP_CHECK_FEATURES:
+            raise MissingOptionError()
+
+        use_case = DEP_CHECK_FEATURES[self.feature].use_case_factory(self)
+        use_case.run()
 
     @staticmethod
     def create_app_configuration() -> None:
